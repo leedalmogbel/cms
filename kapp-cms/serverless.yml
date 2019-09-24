@@ -1,0 +1,26 @@
+service: kapp-cms-api
+
+plugins:
+  - serverless-offline
+  - serverless-mocha-plugin
+
+provider:
+  region: us-east-1
+  name: aws
+  runtime: nodejs8.10
+  memorySize: 128
+  versionFunctions: false
+  environment: ${file(env.yml):${self:custom.stage}}
+  timeout: 30
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+
+functions:
+  app:
+    handler: src/app-serverless.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+          cors: true
