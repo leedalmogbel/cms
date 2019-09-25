@@ -1,9 +1,5 @@
 service: kapp-cognito-auth
 
-plugins:
-  - serverless-offline
-  - serverless-mocha-plugin
-
 provider:
   region: us-east-1
   name: aws
@@ -25,38 +21,38 @@ functions:
           method: POST
           integration: lambda-proxy
 
-  # accesstoken:
-  #   handler: src/auth/accesstoken.handler
-  #   events:
-  #     - http:
-  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/accesstoken
-  #         cors: true
-  #         method: GET
+  accesstoken:
+    handler: src/auth/accesstoken.handler
+    events:
+      - http:
+          path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/accesstoken
+          cors: true
+          method: GET
 
-  # confirm:
-  #   handler: src/auth/signupConfirm.handler
-  #   events:
-  #     - http:
-  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/confirm
-  #         method: POST
+  confirm:
+    handler: src/auth/signupConfirm.handler
+    events:
+      - http:
+          path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/confirm
+          method: POST
 
-  # refreshtoken:
-  #   handler: src/auth/refreshToken.handler
-  #   events:
-  #     - http:
-  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/refreshtoken
-  #         method: POST
+  refreshtoken:
+    handler: src/auth/refreshToken.handler
+    events:
+      - http:
+          path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/refreshtoken
+          method: POST
 
-  # resendCode:
-  #   handler: src/auth/resendCode.handler
-  #   events:
-  #     - http:
-  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/resend-code
-  #         method: POST
+  resendCode:
+    handler: src/auth/resendCode.handler
+    events:
+      - http:
+          path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/resend-code
+          method: POST
 
-  # deletUser:
-  #   handler: src/auth/deleteUser.handler
-  #   events:
-  #     - http:
-  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/delete-user
-  #         method: POST
+  deletUser:
+    handler: src/auth/deleteUser.handler
+    events:
+      - http:
+          path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/delete-user
+          method: POST

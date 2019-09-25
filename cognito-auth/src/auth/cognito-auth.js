@@ -23,7 +23,6 @@ class CognitoAuth {
     const userPool = new AmazonCognitoIdentity.CognitoUserPool(this.poolData);
 
     const { username, attributes } = body;
-
     // Generates a custom password to be used as clientSecret
     const rand = Math.random().toString(36).substring(10);
     const password = rand + '/' + Crypto.createHash('SHA256').update(new Date().getTime() + username).digest('base64');

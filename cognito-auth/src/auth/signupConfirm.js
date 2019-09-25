@@ -7,8 +7,8 @@ module.exports.handler = async (event) => {
   const body = JSON.parse(event.body);
 
   const poolData = {
-    UserPoolId: process.env.USER_POOL_ID,
-    ClientId: process.env.APP_CLIENT_ID,
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    ClientId: process.env.COGNITO_APP_CLIENT_ID,
   };
 
   const params = {
