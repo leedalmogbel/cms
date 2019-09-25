@@ -1,0 +1,62 @@
+service: kapp-cognito-auth
+
+plugins:
+  - serverless-offline
+  - serverless-mocha-plugin
+
+provider:
+  region: us-east-1
+  name: aws
+  runtime: nodejs8.10
+  memorySize: 128
+  versionFunctions: false
+  environment: ${file(env.yml):${self:custom.stage}}
+  timeout: 30
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+
+functions:
+  register:
+    handler: src/auth/register.handler
+    events:
+      - http:
+          path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/register
+          method: POST
+          integration: lambda-proxy
+
+  # accesstoken:
+  #   handler: src/auth/accesstoken.handler
+  #   events:
+  #     - http:
+  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/accesstoken
+  #         cors: true
+  #         method: GET
+
+  # confirm:
+  #   handler: src/auth/signupConfirm.handler
+  #   events:
+  #     - http:
+  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/confirm
+  #         method: POST
+
+  # refreshtoken:
+  #   handler: src/auth/refreshToken.handler
+  #   events:
+  #     - http:
+  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/refreshtoken
+  #         method: POST
+
+  # resendCode:
+  #   handler: src/auth/resendCode.handler
+  #   events:
+  #     - http:
+  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/resend-code
+  #         method: POST
+
+  # deletUser:
+  #   handler: src/auth/deleteUser.handler
+  #   events:
+  #     - http:
+  #         path: auth/api/${file(env.yml):${self:custom.stage}.VERSION}/delete-user
+  #         method: POST
