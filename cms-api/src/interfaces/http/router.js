@@ -24,7 +24,7 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
 
   const apiRouter = Router();
 
-  apiRouter
+  apiRouster
     .use(methodOverride('X-HTTP-Method-Override'))
     .use(cors())
     .use(bodyParser.json())
