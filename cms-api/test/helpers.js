@@ -1,17 +1,15 @@
-const eventPostRequestBody = (body) => {
+const eventPostRequest = (params) => {
   return { 
-    body: JSON.stringify(body),
+    ...params,
     headers: 
           { 
             'Content-Type': 'application/json', 
           },
-    httpMethod: 'POST',
-    path: '/api/users',
     resource: '/{proxy*}', 
   };
 
 };
 
 module.exports = {
-  eventPostRequestBody
+  eventPostRequest
 };

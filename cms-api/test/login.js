@@ -8,31 +8,8 @@ const expect = mochaPlugin.chai.expect;
 let wrapped = mochaPlugin.getWrapper('app', '/src/app-serverless.js', 'handler');
 
 const {
-  eventPostRequestBody 
+  eventPostRequest 
 } = require('./helpers');
 
 
-describe('login', () => {
-  before((done) => {
-    done();
-  });
-
-  it('implement tests here', async  () => {
-    const body = {
-      firstName:'John',
-      lastName:'Doe'
-    };
-    const response = await wrapped.run(eventPostRequestBody(body));
-    const {
-      firstName,
-      lastName
-    } = JSON.parse(response.body);
-
-    expect({
-      firstName,
-      lastName
-    }).to.eql(body);
-  
-  });
-});
 

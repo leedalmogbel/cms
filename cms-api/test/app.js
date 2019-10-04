@@ -8,7 +8,7 @@ const expect = mochaPlugin.chai.expect;
 let wrapped = mochaPlugin.getWrapper('app', '/src/app-serverless.js', 'handler');
 
 const {
-  eventPostRequestBody 
+  eventPostRequest
 } = require('./helpers');
 
 
@@ -17,12 +17,16 @@ describe('app', () => {
     done();
   });
 
-  it('implement tests here', async  () => {
+  it('create user', async  () => {
     const body = {
       firstName:'John',
       lastName:'Doe'
     };
-    const response = await wrapped.run(eventPostRequestBody(body));
+    const response = await wrapped.run(eventPostRequest({
+      body: JSON.stringify(body),
+      path: '/api/users',
+      httpMethod: 'POST',
+    }));
     const {
       firstName,
       lastName
@@ -33,6 +37,21 @@ describe('app', () => {
       lastName
     }).to.eql(body);
   
+  });
+
+  it('create post', async  () => {
+    const body = {
+      data:{
+        content:'The Quick brownfox jump over the lazy dog',
+        attachments:'www.google.com/dog.pdf'
+      },
+    };
+
+    const response = await wrapped.run(eventPostRequest({
+      body: JSON.stringify(body),
+      path: '/api/posts',
+      httpMethod: 'POST',
+    }));
   });
 });
 

@@ -24,3 +24,5 @@ coverage/
 
 # IDE files
 .idea/
+cms-api/.serverless
+cognito-auth/.serverless
