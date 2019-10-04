@@ -7,6 +7,9 @@ const methodOverride = require('method-override');
 const controller = require('./utils/createControllerRoutes');
 const path = require('path');
 const openApiDoc = require('./openApi.json');
+const graphqlHTTP = require('express-graphql');
+const graphqlHandler = require('../graphql');
+const Schema = require('../graphql/schema');
 
 module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler, openApiMiddleware }) => {
   const router = Router();
@@ -51,7 +54,11 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
 
   router.use('/api', apiRouter);
   router.use('/', static(path.join(__dirname, './public')));
-
+  router.post('/graphql', graphqlHandler);
+  router.get('/graphql', graphqlHTTP({
+    schema: Schema,
+    graphiql: true,
+  }));
   router.use(errorHandler);
 
   return router;
