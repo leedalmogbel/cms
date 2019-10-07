@@ -1,36 +1,25 @@
+const Status = require('http-status');
 
 module.exports = {
   Query: {
-    user: async (_, args, { handlers }) => handlers.User.show(args),
-    users: async (_, args, { handlers }) => handlers.User.search(args),
-    usersSummary: async (_, args, { handlers }) => handlers.User.summary(args),
-  },
-  Mutation: {
-    registration: async (_, { data },
-      {
-        handlers,
-        httpInfo,
-        user,
-      },
-    ) => handlers.User.registration(data, httpInfo, user),
-    validateToken: async (_, { data },
-      {
-        handlers,
-        httpInfo,
-        user,
-      }) => handlers.User.validateToken(data, httpInfo, user),
-    updateUser: async (_, { data, where },
-      {
-        handlers,
-        httpInfo,
-        user,
-      }) => handlers.User.updateUser(data, where, httpInfo, user),
-    deleteUser: async (_, { data, where },
-      {
-        handlers,
-        httpInfo,
-        user,
-      }) => handlers.User.deleteUser(data, where, httpInfo, user),
-  },
+    post: async (_, args, { container, res }) => {
+      const operation = container.resolve('ShowPost');
+      const { SUCCESS, NOT_FOUND} = operation.events;
+      
+      operation
+        .on(SUCCESS, (result) => {
+          res
+            .status(Status.OK)
+            .json(result);
+        })
+        .on(NOT_FOUND, (error) => {
+          res.status(Status.NOT_FOUND).json({
+            type: 'NotFoundError',
+            details: error.details
+          });
+        });
+
+      await operation.execute(args);
+    },
+  }
 };
-  

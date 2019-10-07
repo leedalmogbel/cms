@@ -10,7 +10,6 @@ const openApiDoc = require('./openApi.json');
 const graphqlHTTP = require('express-graphql');
 const graphqlHandler = require('../graphql');
 const Schema = require('../graphql/schema');
-
 module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler, openApiMiddleware }) => {
   const router = Router();
   router.use(containerMiddleware);
@@ -52,13 +51,21 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
   
   /* apiRoutes END */
 
-  router.use('/api', apiRouter);
-  router.use('/', static(path.join(__dirname, './public')));
-  router.post('/graphql', graphqlHandler);
-  router.get('/graphql', graphqlHTTP({
+  const graphqlRouter = Router();
+  graphqlRouter.use(methodOverride('X-HTTP-Method-Override'))
+    .use(cors())
+    .use(bodyParser.json())
+    .use(compression())
+    .use('/docs', openApiMiddleware(openApiDoc));
+  graphqlRouter.post('/graphql', graphqlHandler);
+  graphqlRouter.get('/graphql', graphqlHTTP({
     schema: Schema,
     graphiql: true,
   }));
+
+  router.use('/api', apiRouter);
+  router.use('/', graphqlRouter);
+  router.use('/', static(path.join(__dirname, './public')));
   router.use(errorHandler);
 
   return router;

@@ -4,24 +4,11 @@ const Schema = require('./schema');
 
 module.exports = async (req, res, next) => {
   const { query, variables } = req.body;
-  // TODO: DATALOADER FB
-  const logger = req.container.resolve('logger');
+  const { container } = req;
+  const logger = container.resolve('logger');
 
-  /**
-  #jwt token from other implementation
-  const handlers = req.container.resolve('handlers');
-  const middlewares = req.container.resolve('middlewares');
-  const jwt = req.container.resolve('jwt');
-  const token = req.headers.pswebtoken;
-  let user = null;
-  if (typeof token === 'string') {
-    const { data } = jwt.decode(token);
-    user = await middlewares.authentication.authenticate(data);
-    req.container.resolve('authorization').user = user;
-  }
- */
   graphql(Schema, query, null, {
-    // handlers, middlewares, user, httpInfo,
+    container, res, next
   }, variables).then((result) => {
     if (result.errors) {
       logger.error(result.errors);

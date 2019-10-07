@@ -22,8 +22,6 @@ class CreatePost extends Operation {
   
       this.emit(ERROR, error);
     }
-
-    this.emit(SUCCESS, { dog: 1});
   }
 }
 

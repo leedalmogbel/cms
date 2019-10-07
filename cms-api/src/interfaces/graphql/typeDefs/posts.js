@@ -3,6 +3,12 @@ module.exports = `
 
 type Post {
   id: String
+  content : ContentType
+}
+
+type ContentType {
+  body: String
+  createdAt: DateTime
 }
 
 type Query {
@@ -22,5 +28,8 @@ input RegisterInput {
     channel: String
     department: String!
     division: String!
+  }
+  input PostPrimary {
+    id: String!
   }
 `;

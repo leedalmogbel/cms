@@ -3,7 +3,6 @@ const { brew } = require('@brewery/core');
 const config = require('config');
 
 module.exports.handler = (event, context, callback) => {
-
   brew(config, async brewed => {
     try {
       if(typeof brewed.getServerless === 'function'){
@@ -13,7 +12,8 @@ module.exports.handler = (event, context, callback) => {
       }
       throw brewed;
     } catch (err) {
-      callback(null, {
+      console.log({err});
+      const result = {
         statusCode: 500,
         headers: { vary: 'X-HTTP-Method-Override, Accept-Encoding',
           'access-control-allow-origin': '*',
@@ -24,7 +24,9 @@ module.exports.handler = (event, context, callback) => {
         body:JSON.stringify({
           message: err.message
         })
-      });
+      };
+      
+      callback(null, result);
     }
   });
   
