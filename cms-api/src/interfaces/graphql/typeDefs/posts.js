@@ -16,20 +16,20 @@ type Query {
 }
 
 type Mutation {
-  createPost(data: RegisterInput!): Post!
+  createPost(data: CreatePostInput!): Post!
 }
 
-input RegisterInput {
-    name: String!
-    email: String!
-    roleId: String!
-    group: String!
-    mobileNumber: String!
-    channel: String
-    department: String!
-    division: String!
-  }
-  input PostPrimary {
-    id: String!
-  }
+input CreatePostInput {
+    input: ContentTypeInput!
+}
+
+input ContentTypeInput {
+  body: String
+  createdAt: DateTime
+}
+
+
+input PostPrimary {
+  id: String!
+}
 `;

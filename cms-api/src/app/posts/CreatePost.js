@@ -8,12 +8,13 @@ class CreatePost extends Operation {
   }
 
   async execute(data) {
+    console.log({data});
     const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
     const post = new Post(data);
     
     try {
-      const newPost = await this.PostRepository.add(post.toJSON());
-  
+      const newPost = (await this.PostRepository.add(post)).toJSON();
+      console.log(newPost);
       this.emit(SUCCESS, newPost);
     } catch(error) {
       if(error.message === 'ValidationError') {

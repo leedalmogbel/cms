@@ -21,5 +21,29 @@ module.exports = {
 
       await operation.execute(args);
     },
-  }
+  },  
+  Mutation: {
+    createPost: async (_, args, { container, res, next },
+    ) => {
+
+      const operation = container.resolve('CreatePost');
+      const { SUCCESS, ERROR, VALIDATION_ERROR } = operation.events;
+
+      operation
+        .on(SUCCESS, (result) => {
+          res
+            .status(Status.CREATED)
+            .json(result);
+        })
+        .on(VALIDATION_ERROR, (error) => {
+          res.status(Status.BAD_REQUEST).json({
+            type: 'ValidationError',
+            details: error.details
+          });
+        })
+        .on(ERROR, next);
+      await operation.execute(args);
+    },
+
+  },
 };
