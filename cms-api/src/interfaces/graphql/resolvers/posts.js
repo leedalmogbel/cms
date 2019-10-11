@@ -23,9 +23,7 @@ module.exports = {
     },
   },  
   Mutation: {
-    createPost: async (_, args, { container, res, next },
-    ) => {
-
+    createPost: async (_, args, { container, res, next }) => {
       const operation = container.resolve('CreatePost');
       const { SUCCESS, ERROR, VALIDATION_ERROR } = operation.events;
 
