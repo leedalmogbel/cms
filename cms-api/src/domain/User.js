@@ -5,7 +5,6 @@ const User = attributes({
   id: Number,
   firstName: String,
   lastName: String,
-  middleName: String,
   createdAt: Date,
   updatedAt: Date,
 })(class User {
