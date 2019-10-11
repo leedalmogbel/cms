@@ -1,6 +1,3 @@
-
-module.exports = `
-
 type Post {
   id: String
   content : ContentType
@@ -32,4 +29,3 @@ input ContentTypeInput {
 input PostPrimary {
   id: String!
 }
-`;
