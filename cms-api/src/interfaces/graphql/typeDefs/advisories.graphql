@@ -1,12 +1,33 @@
-module.exports = `
-
 type Advisory {
-  id: String
+  id: ID!
+  advisoryId: Int
+  userId: Int
   title: String
   content: String
-  attachment: String
-  tags: String
+  priorityLevel: String
+  source: String
+  locationLat: String
+  locationLong: String
+  locationAddress: String
+  # categoryID: Int
+  # subCategoryId: Int
+  # schedule: DateTime
+  # expiration: DateTime
+  # comments: [Comment]
+  # attachment: [Attachment]
+  # tags: [String]
+  # publishedAt: DateTime
 }
+
+# type Comment {
+#   id: Int
+#   content: String
+# }
+
+# type Attachment {
+#   name: String
+#   link: String
+# }
 
 type Query {
   advisories: [Advisory]
@@ -27,10 +48,9 @@ input AdvisoryInput {
 }
 
 input AdvisoryPrimary {
-  id: String!
+  id: ID!
 }
 
 type DefaultResponse {
   message: String
 }
-`;

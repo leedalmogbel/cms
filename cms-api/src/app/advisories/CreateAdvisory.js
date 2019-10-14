@@ -22,6 +22,4 @@ class CreateAdvisory extends Operation {
   }
 }
 
-CreateAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
-
 module.exports = CreateAdvisory;

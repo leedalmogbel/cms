@@ -6,7 +6,7 @@ class ShowAdvisory extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute({where : { id }}) {
+  async execute({where: { id }}) {
 
     try {
       const advisory = await this.AdvisoryRepository.getById(id);
@@ -17,8 +17,6 @@ class ShowAdvisory extends Operation {
     }
   }
 }
-
-ShowAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = ShowAdvisory;
     

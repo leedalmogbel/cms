@@ -17,7 +17,5 @@ class ListAdvisories extends Operation {
   }
 }
 
-ListAdvisories.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
-
 module.exports = ListAdvisories;
     
