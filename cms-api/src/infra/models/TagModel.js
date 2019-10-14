@@ -9,7 +9,7 @@ module.exports = {
           autoIncrement: true,
           type: DataTypes.INTEGER,
         }, 
-        title : {
+        name : {
           type: DataTypes.STRING
         }
       }, {
