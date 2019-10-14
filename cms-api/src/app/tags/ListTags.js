@@ -7,19 +7,14 @@ class ListTags extends Operation {
   }
 
   async execute() {
-    const { SUCCESS, ERROR } = this.events;
-
     try {
-      const tags = await this.TagRepository.getAll({});
-
-      this.emit(SUCCESS, tags);
+      const tags = await this.TagRepository.getAll();
+      return tags;
     } catch(error) {
-      this.emit(ERROR, error);
+      throw new Error(error.message);      
     }
   }
 }
-
-ListTags.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = ListTags;
     

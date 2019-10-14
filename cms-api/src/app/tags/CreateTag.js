@@ -8,23 +8,15 @@ class CreateTag extends Operation {
   }
 
   async execute({ data }) {
-    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
     const tag = new Tag(data);
     
     try {
-      const newTag = (await this.TagRepository.add(tag)).toJSON();
-
-      this.emit(SUCCESS, newTag);
+      const newTag = await this.TagRepository.add(tag);
+      return newTag;
     } catch(error) {
-      if(error.message === 'ValidationError') {
-        return this.emit(VALIDATION_ERROR, error);
-      }
-
-      this.emit(ERROR, error);
+      throw new Error(error.message);
     }
   }
 }
-
-CreateTag.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = CreateTag;

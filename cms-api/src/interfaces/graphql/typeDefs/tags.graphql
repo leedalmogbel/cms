@@ -8,10 +8,14 @@ type Query {
   tag(where: TagPrimary!): Tag!
 }
 
+type DefaultResponse {
+  message: String
+}
+
 type Mutation {
   createTag(data: TagInput!): Tag!
   updateTag(where: TagPrimary!, data: TagInput!): Tag!
-  deleteTag(where: TagPrimary!): Boolean
+  deleteTag(where: TagPrimary!): DefaultResponse
 }
 
 input TagInput {

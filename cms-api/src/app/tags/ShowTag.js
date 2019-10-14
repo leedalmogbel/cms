@@ -8,21 +8,14 @@ class ShowTag extends Operation {
   }
 
   async execute({ where: { id } }) {
-    const { SUCCESS, NOT_FOUND } = this.events;
-
     try {
-      const tag = (await this.TagRepository.getById(id)).toJSON();
+      const tag = await this.TagRepository.getById(id);
       
-      this.emit(SUCCESS, tag);
+      return tag;
     } catch(error) {
-      this.emit(NOT_FOUND, {
-        type: error.message,
-        details: error.details
-      });
+      throw new Error(error.message);
     }
   }
 }
-
-ShowTag.setEvents(['SUCCESS', 'NOT_FOUND']);
 
 module.exports = ShowTag;
