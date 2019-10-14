@@ -11,6 +11,7 @@ type Query {
 type Mutation {
   createTag(data: TagInput!): Tag!
   updateTag(where: TagPrimary!, data: TagInput!): Tag!
+  deleteTag(where: TagPrimary!): Boolean
 }
 
 input TagInput {
