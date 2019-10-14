@@ -2,14 +2,14 @@ const Status = require('http-status');
 
 module.exports = {
   Query: {
-    tags: async (_, args, { container, res }) => {
+    getTags: async (_, args, { container, res }) => {
       const operation = container.resolve('ListTags');
       
       // fetch tags
       const tags = await operation.execute(args);
       return tags;
     },
-    tag: async (_, args, { container, res }) => {
+    getTag: async (_, args, { container, res }) => {
       const operation = container.resolve('ShowTag');
 
       //  fetch tag
