@@ -12,6 +12,9 @@ module.exports = {
       data : {
         type: DataTypes.JSONB
       },
+      content: {
+        type: DataTypes.STRING
+      }
     }, {
       tableName: 'posts',
       timestamps: true

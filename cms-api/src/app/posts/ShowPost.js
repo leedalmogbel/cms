@@ -13,14 +13,13 @@ class ShowPost extends Operation {
     try {
       const post = (await this.PostRepository.getById(id)).toJSON();
       
-      this.emit(SUCCESS, {
+      return  {
         id: post.id,
-        data: {
+        content: {
           body: post.data.body,
           createdAt: post.createdAt
         }
-      });
-      
+      };
     } catch(error) {
       this.emit(NOT_FOUND, {
         type: error.message,

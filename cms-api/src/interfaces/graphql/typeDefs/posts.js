@@ -20,7 +20,7 @@ type Mutation {
 }
 
 input CreatePostInput {
-    input: ContentTypeInput!
+  input: ContentTypeInput!
 }
 
 input ContentTypeInput {
