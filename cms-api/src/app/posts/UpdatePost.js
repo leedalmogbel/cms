@@ -1,6 +1,5 @@
 const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
-const Helpers = require('src/interfaces/http/utils/helpers');
 
 class CreatePost extends Operation {
   constructor({ PostRepository }) {
@@ -9,10 +8,6 @@ class CreatePost extends Operation {
   }
 
   async execute({ data }) {
-    // generate postId
-    const uid = Helpers.generateUID(6);
-    data.postId = uid;
-
     // build post data
     const post = new Post(data);
     

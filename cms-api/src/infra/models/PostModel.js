@@ -9,9 +9,23 @@ module.exports = {
         autoIncrement: true,
         type: DataTypes.INTEGER,
       }, 
-      data : {
-        type: DataTypes.JSONB
-      },
+      userId: DataTypes.INTEGER,
+      categoryId: DataTypes.INTEGER,
+      subCategory: DataTypes.INTEGER,
+      postId: DataTypes.STRING,
+      title: DataTypes.STRING,
+      content: DataTypes.TEXT,
+      priorityLevel: DataTypes.STRING,
+      source: DataTypes.STRING,
+      locationLat: DataTypes.STRING,
+      locationLong: DataTypes.STRING,
+      locationAddress: DataTypes.STRING,
+      comments: DataTypes.JSONB,
+      advisories: DataTypes.JSONB,
+      attachments: DataTypes.JSONB,
+      schedule: DataTypes.DATE,
+      expiration: DataTypes.DATE,
+      publishedAt: DataTypes.DATE
     }, {
       tableName: 'posts',
       timestamps: true

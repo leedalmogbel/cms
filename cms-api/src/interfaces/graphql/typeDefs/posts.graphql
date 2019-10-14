@@ -1,31 +1,69 @@
 type Post {
-  id: String
-  content : ContentType
+  id: ID
+  userId: Int
+  categoryId: Int
+  subCategory: Int
+  postId: ID
+  title: String!
+  content: String!
+  priorityLevel: String
+  source: String
+  locationLat: String
+  locationLong: String
+  locationAddress: String
+  comments: [Comment]
+  advisories: [Advisory]
+  attachments: [Attachment]
+  schedule: DateTime
+  expiration: DateTime
+  publishedAt: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
-type ContentType {
-  body: String
-  createdAt: DateTime
+type Comment {
+  id: ID
+  name: String
+  message: String
+  timeStamp: DateTime
+}
+
+type Advisory {
+  id: ID
+  title: String
+}
+
+type Attachment {
+  link: String
+  name: String
 }
 
 type Query {
-  post(where: PostPrimary!): Post
+  getPosts: [Post]
+  getPost(where: PostPrimary!): Post
 }
 
 type Mutation {
-  createPost(data: CreatePostInput!): Post!
+  createPost(data: PostInput!): Post!
 }
 
-input CreatePostInput {
-    input: ContentTypeInput!
+input PostInput {
+  userId: Int
+  categoryId: Int
+  subCategory: Int
+  postId: ID
+  title: String!
+  content: String!
+  priorityLevel: String
+  source: String
+  locationLat: String
+  locationLong: String
+  locationAddress: String
+  schedule: DateTime
+  expiration: DateTime
+  publishedAt: DateTime
 }
-
-input ContentTypeInput {
-  body: String
-  createdAt: DateTime
-}
-
 
 input PostPrimary {
-  id: String!
+  id: ID!
 }
