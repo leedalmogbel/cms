@@ -4,41 +4,15 @@ module.exports = {
   Query: {
     advisories: async (_, args, { container, res }) => {
       const operation = container.resolve('ListAdvisories');
-      const { SUCCESS, NOT_FOUND } = operation.events;
+      const advisories = await operation.execute(args);
 
-      operation
-        .on(SUCCESS, (result) => {
-          res
-            .status(Status.OK)
-            .json(result);
-        })
-        .on(NOT_FOUND, (error) => {
-          res.status(Status.NOT_FOUND).json({
-            type: 'NotFoundError',
-            details: error.details
-          });
-        });
-
-      await operation.execute(args);
+      return advisories;
     },
     advisory: async (_, args, { container, res }) => {
         const operation = container.resolve('ShowAdvisory');
-        const { SUCCESS, NOT_FOUND } = operation.events;
+        const advisory = await operation.execute(args);
 
-        operation
-          .on(SUCCESS, (result) => {
-            res
-              .status(Status.OK)
-              .json(result);
-          })
-          .on(NOT_FOUND, (error) => {
-            res.status(Status.NOT_FOUND).json({
-              type: 'NotFoundError',
-              details: error.details
-            });
-          });
-
-        await operation.execute(args);
+        return advisory;
     },
   },  
   Mutation: {
@@ -46,23 +20,28 @@ module.exports = {
     ) => {
 
       const operation = container.resolve('CreateAdvisory');
-      const { SUCCESS, ERROR, VALIDATION_ERROR } = operation.events;
+      const advisory = await operation.execute(args);
 
-      operation
-        .on(SUCCESS, (result) => {
-          res
-            .status(Status.CREATED)
-            .json(result);
-        })
-        .on(VALIDATION_ERROR, (error) => {
-          res.status(Status.BAD_REQUEST).json({
-            type: 'ValidationError',
-            details: error.details
-          });
-        })
-        .on(ERROR, next);
-      await operation.execute(args);
+      return advisory;
     },
+
+    updateAdvisory: async (_, args, { container, res, next },
+      ) => {
+  
+        const operation = container.resolve('UpdateAdvisory');
+        const advisory = await operation.execute(args);
+
+        return advisory;
+      },
+
+      deleteAdvisory: async (_, args, { container, res, next },
+        ) => {
+    
+          const operation = container.resolve('DeleteAdvisory');
+          const advisory = await operation.execute(args);
+  
+          return advisory;
+        },
 
   },
 };

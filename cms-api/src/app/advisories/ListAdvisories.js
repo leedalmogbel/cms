@@ -7,14 +7,12 @@ class ListAdvisories extends Operation {
   }
 
   async execute(data) {
-    const { SUCCESS, ERROR } = this.events;
-
     try {
       const advisories = await this.AdvisoryRepository.getAll({});
 
-      this.emit(SUCCESS, {data: {advisories}});
+      return advisories;
     } catch(error) {
-      this.emit(ERROR, error);
+      throw new Error(error.message);
     }
   }
 }

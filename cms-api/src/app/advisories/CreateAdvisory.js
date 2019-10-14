@@ -7,23 +7,18 @@ class CreateAdvisory extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute(data) {
-    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
+  async execute({ data }) {
     const advisory = new Advisory(data);
-    
+
     try {
-      const newAdvisory = await this.AdvisoryRepository.add(advisory.toJSON());
+      const newAdvisory = await this.AdvisoryRepository.add(advisory);
   
-      this.emit(SUCCESS, newAdvisory);
+      return newAdvisory;
     } catch(error) {
       if(error.message === 'ValidationError') {
-        return this.emit(VALIDATION_ERROR, error);
+        throw new Error(error.message)
       }
-  
-      this.emit(ERROR, error);
     }
-
-    this.emit(SUCCESS, { dog: 1});
   }
 }
 

@@ -8,17 +8,12 @@ class ShowAdvisory extends Operation {
 
   async execute({where : { id }}) {
 
-    const { SUCCESS, NOT_FOUND } = this.events;
-
     try {
       const advisory = await this.AdvisoryRepository.getById(id);
 
-      this.emit(SUCCESS, advisory);
+      return advisory;
     } catch(error) {
-      this.emit(NOT_FOUND, {
-        type: error.message,
-        details: error.details
-      });
+      throw new Error(error.message);
     }
   }
 }

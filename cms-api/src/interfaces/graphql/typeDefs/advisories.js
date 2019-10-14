@@ -14,10 +14,12 @@ type Query {
 }
 
 type Mutation {
-  createAdvisory(data: CreateAdvisoryInput!): Advisory!
+  createAdvisory(data: AdvisoryInput!): Advisory!
+  updateAdvisory(where: AdvisoryPrimary!, data: AdvisoryInput!): Advisory!
+  deleteAdvisory(where: AdvisoryPrimary!): DefaultResponse
 }
 
-input CreateAdvisoryInput {
+input AdvisoryInput {
   title: String
   content: String
   attachment: String
@@ -26,5 +28,9 @@ input CreateAdvisoryInput {
 
 input AdvisoryPrimary {
   id: String!
+}
+
+type DefaultResponse {
+  message: String
 }
 `;
