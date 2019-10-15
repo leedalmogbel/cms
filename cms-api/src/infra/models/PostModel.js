@@ -23,9 +23,13 @@ module.exports = {
       comments: DataTypes.JSONB,
       advisories: DataTypes.JSONB,
       attachments: DataTypes.JSONB,
+      draft: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: '0'
+      },
       schedule: DataTypes.DATE,
       expiration: DataTypes.DATE,
-      publishedAt: DataTypes.DATE
+      published: DataTypes.DATE
     }, {
       tableName: 'posts',
       timestamps: true

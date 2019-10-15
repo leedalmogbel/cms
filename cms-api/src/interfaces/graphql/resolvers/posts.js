@@ -25,12 +25,12 @@ module.exports = {
       const post = await operation.execute(args);
       return post;
     },
-    // updatePost: async (_, args, { container, res, next }) => {
-    //   const operation = container.resolve('UpdatePost');
+    updatePost: async (_, args, { container, res, next }) => {
+      const operation = container.resolve('UpdatePost');
 
-    //   // udpate post
-    //   const post = await operation.execute(args);
-    //   return post;
-    // },
+      // udpate post
+      const post = await operation.execute(args);
+      return post;
+    },
   },
 };

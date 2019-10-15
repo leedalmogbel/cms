@@ -44,7 +44,9 @@ type Query {
 }
 
 type Mutation {
+  createPostDraft(data: PostInput!): Post!
   createPost(data: PostInput!): Post!
+  updatePost(where: PostPrimary!, data: PostInput): Boolean
 }
 
 input PostInput {
@@ -52,13 +54,14 @@ input PostInput {
   categoryId: Int
   subCategory: Int
   postId: ID
-  title: String!
-  content: String!
+  title: String
+  content: String
   priorityLevel: String
   source: String
   locationLat: String
   locationLong: String
   locationAddress: String
+  draft: Boolean
   schedule: DateTime
   expiration: DateTime
   publishedAt: DateTime

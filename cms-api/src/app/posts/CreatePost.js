@@ -10,7 +10,7 @@ class CreatePost extends Operation {
 
   async execute({ data }) {
     // generate postId
-    const uid = Helpers.generateUID(6);
+    const uid = Helpers.generateUID(8);
     data.postId = uid;
 
     // build post data
