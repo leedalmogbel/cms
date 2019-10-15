@@ -1,14 +1,21 @@
 const { Operation } = require('@brewery/core');
-const Post = require('src/domain/Post');
 
 class Login extends Operation {
-  constructor({ UserRepository }) {
+  constructor({ UserRepository, httpClient}) {
     super();
     this.UserRepository = UserRepository;
+    this.httpClient = httpClient;
   }
 
   async execute(data) {
 
+    const retrieveAccessToken = async () => {
+      const response = this.httpClient.get(`${process.env.COGNITO_ENDPOINT}/accesstoken`, {
+        clientId: process.env.AUTH_CLIENT_ID,
+        clientSecret: process.env.AUTH_CLIENT_SECRET,
+      });
+      return response;
+    };
     const isKappUser = async () =>{
       const users = await this.UserRepository.getAll({});
       console.log({users});
@@ -22,11 +29,10 @@ class Login extends Operation {
       //Call Cognito
       //Return Access tolen
 
-    if(await isKappUser()){
-      return {
-        accessToken:'ACCESS_TOKEN',
-      };
-    }
+    //if(await isKappUser()){
+    const { results } = await retrieveAccessToken();
+    return results;
+    //}
     
 
   }

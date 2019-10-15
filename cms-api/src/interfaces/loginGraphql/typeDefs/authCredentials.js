@@ -3,6 +3,7 @@ module.exports = `
 
 type AuthCredentials {
   accessToken: String!
+  accessTokenExpiresAt: Int! 
 }
 
 type Mutation {
