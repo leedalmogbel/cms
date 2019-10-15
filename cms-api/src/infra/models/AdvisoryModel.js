@@ -13,20 +13,31 @@ module.exports = {
       userId: DataTypes.INTEGER,
       title : DataTypes.STRING,
       content : DataTypes.STRING,
-      priorityLevel : DataTypes.STRING,
       source : DataTypes.STRING,
       locationLat : DataTypes.STRING,
       locationLong : DataTypes.STRING,
       locationAddress : DataTypes.STRING,
-      categoryId : DataTypes.INTEGER,
-      subCategoryId : DataTypes.INTEGER,
-      schedule : DataTypes.DATE,
-      expiration : DataTypes.DATE,
-      comments : DataTypes.JSONB,
-      advisories : DataTypes.JSONB,
-      attachments : DataTypes.JSONB,
-      tags : DataTypes.JSONB,
-      publishedAt : DataTypes.DATE,
+      verified: DataTypes.BOOLEAN,
+      draft: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: '0'
+      },
+      categoryId : {
+        type:DataTypes.INTEGER,
+        allowNull: true
+      },
+      tags : {
+        type: DataTypes.JSONB,
+        allowNull: true
+      },
+      attachments : {
+        type: DataTypes.JSONB,
+        allowNull: true
+      },
+      publishedAt : {
+        type:DataTypes.DATE,
+        allowNull: true
+      },
       createdAt : DataTypes.DATE,
       updatedAt : DataTypes.DATE,
     }, {
@@ -50,4 +61,3 @@ module.exports = {
     return AdvisoryModel;
   }
 };
-  

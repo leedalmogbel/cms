@@ -6,14 +6,13 @@ class DeleteAdvisory extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute({where: {id}}) {
+  async execute( {where: {id} }) {
+    await this.AdvisoryRepository.getById(id);
 
     try {
       await this.AdvisoryRepository.remove(id);
       
-      return {
-        message: 'Advisory has been deleted.'
-      };
+      return true;
     } catch(error) {
       throw new Error(error);
     }

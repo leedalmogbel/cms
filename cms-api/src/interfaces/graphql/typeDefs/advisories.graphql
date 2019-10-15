@@ -4,53 +4,44 @@ type Advisory {
   userId: Int
   title: String
   content: String
-  priorityLevel: String
   source: String
   locationLat: String
   locationLong: String
   locationAddress: String
-  # categoryID: Int
-  # subCategoryId: Int
-  # schedule: DateTime
-  # expiration: DateTime
-  # comments: [Comment]
-  # attachment: [Attachment]
-  # tags: [String]
-  # publishedAt: DateTime
+  categoryID: Int
+  tags: [String]
+  verified: Boolean
+  draft: Boolean
+  publishedAt: DateTime
 }
 
-# type Comment {
-#   id: Int
-#   content: String
-# }
-
-# type Attachment {
-#   name: String
-#   link: String
-# }
-
 type Query {
-  advisories: [Advisory]
-  advisory(where: AdvisoryPrimary!): Advisory!
+  getAdvisories: [Advisory]
+  getAdvisory(where: AdvisoryPrimary!): Advisory!
 }
 
 type Mutation {
   createAdvisory(data: AdvisoryInput!): Advisory!
   updateAdvisory(where: AdvisoryPrimary!, data: AdvisoryInput!): Advisory!
-  deleteAdvisory(where: AdvisoryPrimary!): DefaultResponse
+  deleteAdvisory(where: AdvisoryPrimary!): Boolean
 }
 
 input AdvisoryInput {
+  advisoryId: Int
+  userId: Int
   title: String
   content: String
-  attachment: String
-  tags: String
+  source: String
+  locationLat: String
+  locationLong: String
+  locationAddress: String
+  categoryID: Int
+  tags: [String]
+  verified: Boolean
+  draft: Boolean
+  publishedAt: DateTime
 }
 
 input AdvisoryPrimary {
   id: ID!
-}
-
-type DefaultResponse {
-  message: String
 }
