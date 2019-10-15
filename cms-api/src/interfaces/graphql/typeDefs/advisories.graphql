@@ -13,10 +13,12 @@ type Advisory {
   verified: Boolean
   draft: Boolean
   publishedAt: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type Query {
-  getAdvisories: [Advisory]
+  getAdvisories(where: AdvisoryFilter): [Advisory]!
   getAdvisory(where: AdvisoryPrimary!): Advisory!
 }
 
@@ -44,4 +46,8 @@ input AdvisoryInput {
 
 input AdvisoryPrimary {
   id: ID!
+}
+
+input AdvisoryFilter {
+  verified: Boolean
 }

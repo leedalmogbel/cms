@@ -6,9 +6,9 @@ class ListAdvisories extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute(data) {
+  async execute(args) {
     try {
-      const advisories = await this.AdvisoryRepository.getAll({});
+      const advisories = await this.AdvisoryRepository.getAdvisories(args);
 
       return advisories;
     } catch(error) {
