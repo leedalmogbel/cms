@@ -18,7 +18,7 @@ const Post = attributes({
   advisories: Array,
   attachments: Array,
   draft: Boolean,
-  schedule: Date,
+  scheduled: Date,
   expiration: Date,
   published: Date,
   createdAt: Date,

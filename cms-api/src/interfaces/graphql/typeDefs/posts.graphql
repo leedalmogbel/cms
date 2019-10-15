@@ -14,9 +14,9 @@ type Post {
   comments: [Comment]
   advisories: [Advisory]
   attachments: [Attachment]
-  schedule: DateTime
+  scheduled: DateTime
   expiration: DateTime
-  publishedAt: DateTime
+  published: DateTime
   createdAt: DateTime
   updatedAt: DateTime
 }
@@ -36,15 +36,21 @@ type Advisory {
 type Attachment {
   link: String
   name: String
+  updatedAt: DateTime
+}
+
+type Comment {
+  id: ID
+  name: String
+  message: String
 }
 
 type Query {
-  getPosts: [Post]
+  getPosts(where: PostFilter): [Post]
   getPost(where: PostPrimary!): Post
 }
 
 type Mutation {
-  createPostDraft(data: PostInput!): Post!
   createPost(data: PostInput!): Post!
   updatePost(where: PostPrimary!, data: PostInput): Boolean
 }
@@ -62,11 +68,16 @@ input PostInput {
   locationLong: String
   locationAddress: String
   draft: Boolean
-  schedule: DateTime
+  scheduled: DateTime
   expiration: DateTime
-  publishedAt: DateTime
+  published: DateTime
 }
 
 input PostPrimary {
   id: ID!
+}
+
+input PostFilter {
+  scheduled: Boolean
+  published: Boolean
 }

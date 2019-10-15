@@ -27,7 +27,7 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: '0'
       },
-      schedule: DataTypes.DATE,
+      scheduled: DataTypes.DATE,
       expiration: DataTypes.DATE,
       published: DataTypes.DATE
     }, {
