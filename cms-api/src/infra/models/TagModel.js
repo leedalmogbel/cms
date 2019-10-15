@@ -16,6 +16,18 @@ module.exports = {
         tableName: 'tags',
         timestamps: true
       });
+
+      /**
+       * Associate to Post Model
+       */
+      TagModel.associate = () => {
+        TagModel.belongsToMany(datasource.models.PostModel, {
+          through: datasource.models.PostTagModel,
+          as: 'posts',
+          foreignKey: 'tagId',
+          otherKey: 'postId'
+        })
+      };
   
       /**
        * Examples on how to associate or set relationship with other models

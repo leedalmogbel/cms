@@ -1,5 +1,5 @@
 type Tag {
-  id: ID!
+  id: ID
   name: String
 }
 
@@ -15,6 +15,7 @@ type Mutation {
 }
 
 input TagInput {
+  id: ID
   name: String
 }
 

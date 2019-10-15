@@ -8,6 +8,11 @@ class CreateTag extends Operation {
   }
 
   async execute({ data }) {
+    // return if already exists
+    const existsTag = await this.TagRepository.getTagByName(data.name);
+    if (existsTag) return existsTag;
+
+    // create new tag
     const tag = new Tag(data);
     
     try {

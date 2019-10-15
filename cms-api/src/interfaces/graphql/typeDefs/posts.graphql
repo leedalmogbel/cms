@@ -14,6 +14,7 @@ type Post {
   comments: [Comment]
   advisories: [Advisory]
   attachments: [Attachment]
+  tags: [Tag]
   draft: Boolean
   scheduled: DateTime
   expiration: DateTime
@@ -72,6 +73,7 @@ input PostInput {
   locationLat: String
   locationLong: String
   locationAddress: String
+  tags: [TagInput]
   draft: Boolean
   scheduled: DateTime
   expiration: DateTime
