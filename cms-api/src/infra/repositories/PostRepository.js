@@ -8,33 +8,43 @@ class PostRepository extends BaseRepository {
     super(PostModel);
   }
 
-  async getPosts(args) {
-    // init filters
-    let filters = {};
+  async getPosts(data) {
+    // init fetch arguments
+    let args = {};
 
     // where arguments
-    if ('where' in args) {
+    if ('where' in data) {
+      let where = {};
+
       // set scheduled flag
-      if ('scheduled' in args.where && args.where.scheduled) {
-        filters.scheduled = {
+      if ('scheduled' in data.where && data.where.scheduled) {
+        where.scheduled = {
           [Op.ne]: null
         };
       }
 
       // set published flag
-      if ('published' in args.where && args.where.published) {
-        filters.published = {
+      if ('published' in data.where && data.where.published) {
+        where.published = {
           [Op.ne]: null
         }
       }
+
+      // set filters
+      args.where = where;
     }
 
-    // fetch arguments
-    const fetchArgs = {
-      where: filters
-    };
+    // offset
+    if ('offset' in args) {
+      args.offset = args.offset;
+    }
 
-    return this.getAll(fetchArgs);
+    // limit
+    if ('limit' in args) {
+      args.limit = args.limit;
+    }
+
+    return this.getAll(args);
   }
 }
 

@@ -31,6 +31,6 @@ module.exports = {
       // udpate post
       const post = await operation.execute(args);
       return post;
-    },
-  },
+    }
+  }
 };

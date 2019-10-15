@@ -14,6 +14,7 @@ type Post {
   comments: [Comment]
   advisories: [Advisory]
   attachments: [Attachment]
+  draft: Boolean
   scheduled: DateTime
   expiration: DateTime
   published: DateTime
@@ -46,7 +47,11 @@ type Comment {
 }
 
 type Query {
-  getPosts(where: PostFilter): [Post]
+  getPosts(
+    where: PostFilter,
+    offset: Int,
+    limit: Int
+  ): [Post]
   getPost(where: PostPrimary!): Post
 }
 
