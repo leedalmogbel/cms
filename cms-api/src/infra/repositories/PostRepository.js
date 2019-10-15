@@ -17,16 +17,28 @@ class PostRepository extends BaseRepository {
       let where = {};
 
       // set scheduled flag
-      if ('scheduled' in data.where && data.where.scheduled) {
-        where.scheduled = {
-          [Op.ne]: null
-        };
+      if ('scheduled' in data.where) {
+        if (data.where.scheduled) {
+          where.scheduled = {
+            [Op.ne]: null
+          };
+        } else {
+          where.scheduled = {
+            [Op.eq]: null
+          }
+        }
       }
 
       // set published flag
-      if ('published' in data.where && data.where.published) {
-        where.published = {
-          [Op.ne]: null
+      if ('published' in data) {
+        if (data.where.published) {
+          where.published = {
+            [Op.ne]: null
+          }
+        } else {
+          where.published = {
+            [Op.eq]: null
+          }
         }
       }
 
