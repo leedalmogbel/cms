@@ -6,36 +6,36 @@ module.exports = {
       id : {
         primaryKey: true,
         autoIncrement: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
       },
-      advisoryId : DataTypes.STRING,
-      userId: DataTypes.INTEGER,
-      categoryId : DataTypes.INTEGER,
-      title : DataTypes.STRING,
-      content : DataTypes.STRING,
-      source : DataTypes.STRING,
-      locationLat : DataTypes.STRING,
-      locationLong : DataTypes.STRING,
-      locationAddress : DataTypes.STRING,
-      verified: DataTypes.BOOLEAN,
+      advisoryId : Sequelize.STRING,
+      userId: Sequelize.INTEGER,
+      categoryId : Sequelize.INTEGER,
+      title : Sequelize.STRING,
+      content : Sequelize.STRING,
+      source : Sequelize.STRING,
+      locationLat : Sequelize.STRING,
+      locationLong : Sequelize.STRING,
+      locationAddress : Sequelize.STRING,
+      verified: Sequelize.BOOLEAN,
       draft: {
-        type: DataTypes.BOOLEAN,
+        type: Sequelize.BOOLEAN,
         defaultValue: '0'
       },
       tags : {
-        type: DataTypes.JSONB,
+        type: Sequelize.JSONB,
         allowNull: true
       },
       attachments : {
-        type: DataTypes.JSONB,
+        type: Sequelize.JSONB,
         allowNull: true
       },
       publishedAt : {
-        type:DataTypes.DATE,
+        type:Sequelize.DATE,
         allowNull: true
       },
-      createdAt : DataTypes.DATE,
-      updatedAt : DataTypes.DATE,
+      createdAt : Sequelize.DATE,
+      updatedAt : Sequelize.DATE,
     });
   },
 
