@@ -7,6 +7,16 @@ const httpClient = require('./infra/http-request');
 
 
 module.exports.handler = (event, context, callback) => {
+  console.log({
+    resource: event.resource,
+    path: event.path,
+    httpMethod: event.httpMethod,
+    headers:{
+      Accept: event.headers.Accept,
+      'content-type': event.headers['content-type'],
+    },
+    body: event.body
+  });
   brew(config, async brewed => {
     try {
       if(typeof brewed.getServerless === 'function'){
