@@ -8,16 +8,15 @@ class CreateAdvisory extends Operation {
   }
 
   async execute({ data }) {
+    // build data
+    const advisory = new Advisory(data);
 
+    // create advisory
     try {
       const newAdvisory = await this.AdvisoryRepository.add(advisory);
-
       return newAdvisory;
     } catch(error) {
-      console.log(error)
-      if(error.message === 'ValidationError') {
-        throw new Error(error.message)
-      }
+      throw new Error(error.message);
     }
   }
 }

@@ -11,6 +11,10 @@ class ShowAdvisory extends Operation {
     try {
       const advisory = await this.AdvisoryRepository.getById(id);
 
+      // get tags for advisory
+      advisory.tags = await advisory.getAdvisoryTags();
+
+      // return advisory
       return advisory;
     } catch(error) {
       throw new Error(error.message);

@@ -9,6 +9,7 @@ module.exports = {
         type: DataTypes.INTEGER,
       }, 
       name: DataTypes.STRING,
+      type: DataTypes.STRING,
       updatedAt: Sequelize.DATE,
       createdAt: Sequelize.DATE
     });

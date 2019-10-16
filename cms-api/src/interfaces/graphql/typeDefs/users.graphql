@@ -1,12 +1,15 @@
 
-module.exports = `
-
 type User {
   id: String
   content : ContentType
 }
 
 type ContentType {
+  firstName: String
+  lastName: String
+}
+
+input ContentTypeInput {
   firstName: String
   lastName: String
 }
@@ -27,4 +30,4 @@ input CreateUserInput {
 input UserPrimary {
   id: String!
 }
-`;
+

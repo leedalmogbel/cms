@@ -1,5 +1,5 @@
 type Advisory {
-  id: ID!
+  id: ID
   advisoryId: Int
   userId: Int
   title: String
@@ -9,7 +9,7 @@ type Advisory {
   locationLong: String
   locationAddress: String
   categoryID: Int
-  tags: [String]
+  tags: [Tag]
   verified: Boolean
   draft: Boolean
   publishedAt: DateTime
@@ -24,7 +24,7 @@ type Query {
 
 type Mutation {
   createAdvisory(data: AdvisoryInput!): Advisory!
-  updateAdvisory(where: AdvisoryPrimary!, data: AdvisoryInput!): Advisory!
+  updateAdvisory(where: AdvisoryPrimary!, data: AdvisoryInput!): Boolean
   deleteAdvisory(where: AdvisoryPrimary!): Boolean
 }
 
@@ -38,7 +38,7 @@ input AdvisoryInput {
   locationLong: String
   locationAddress: String
   categoryID: Int
-  tags: [String]
+  tags: [TagInput]
   verified: Boolean
   draft: Boolean
   publishedAt: DateTime

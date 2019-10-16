@@ -9,7 +9,8 @@ module.exports = {
           autoIncrement: true,
           type: DataTypes.INTEGER,
         }, 
-        name: DataTypes.STRING
+        name: DataTypes.STRING,
+        type: DataTypes.STRING
       }, {
         tableName: 'tags',
         timestamps: true
@@ -24,6 +25,13 @@ module.exports = {
           as: 'posts',
           foreignKey: 'tagId',
           otherKey: 'postId'
+        })
+
+        TagModel.belongsToMany(datasource.models.AdvisoryModel, {
+          through: datasource.models.AdvisoryTagModel,
+          as: 'advisories',
+          foreignKey: 'tagId',
+          otherKey: 'advisoryId'
         })
       };
   
