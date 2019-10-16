@@ -6,10 +6,10 @@ module.exports = {
       id : {
         primaryKey: true,
         autoIncrement: true,
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
       }, 
-      advisoryId: DataTypes.INTEGER,
-      tagId: DataTypes.INTEGER,
+      advisoryId: Sequelize.INTEGER,
+      tagId: Sequelize.INTEGER,
       updatedAt: Sequelize.DATE,
       createdAt: Sequelize.DATE
     });
