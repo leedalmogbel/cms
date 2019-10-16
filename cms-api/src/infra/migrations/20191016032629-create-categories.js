@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       }, 
       name: Sequelize.STRING,
-      comments: Sequelize.JSONB,
+      subCategories: Sequelize.JSONB,
       updatedAt: Sequelize.DATE,
       createdAt: Sequelize.DATE
     });
