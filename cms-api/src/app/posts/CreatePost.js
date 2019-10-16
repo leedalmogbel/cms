@@ -1,5 +1,6 @@
 const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
+const Helpers = require('src/interfaces/http/utils/helpers');
 
 class CreatePost extends Operation {
   constructor({ PostRepository }) {
@@ -7,25 +8,22 @@ class CreatePost extends Operation {
     this.PostRepository = PostRepository;
   }
 
-  async execute(data) {
-    console.log({data});
-    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
+  async execute({ data }) {
+    // generate postId
+    const uid = Helpers.generateUID(8);
+    data.postId = uid;
+
+    // build post data
     const post = new Post(data);
     
+    // create post
     try {
-      const newPost = (await this.PostRepository.add(post)).toJSON();
-      console.log(newPost);
-      this.emit(SUCCESS, newPost);
+      const newPost = await this.PostRepository.add(post);
+      return newPost;
     } catch(error) {
-      if(error.message === 'ValidationError') {
-        return this.emit(VALIDATION_ERROR, error);
-      }
-  
-      this.emit(ERROR, error);
+      throw new Error(error.message);
     }
   }
 }
-
-CreatePost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = CreatePost;

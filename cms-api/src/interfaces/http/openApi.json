@@ -182,6 +182,64 @@
           }
         }
       }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "listTags",
+        "tags": [ "Tags" ],
+        "responses": {
+          "200": {
+            "description": "List of all tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTag",
+        "tags": [ "Tags" ],
+        "requestBody": {
+          "description": "Tag data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewTag"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tag created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Tag not created because of validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/defaultResponses/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "defaultResponses": {
@@ -239,6 +297,19 @@
             "type": "string"
           },
           "lastName": {
+            "type": "string"
+          }
+        }
+      },
+      "Tag": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unique Identifier representing a tag",
+            "x-primary-key": true
+          },
+          "title": {
             "type": "string"
           }
         }

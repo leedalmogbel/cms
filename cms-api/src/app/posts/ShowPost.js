@@ -1,5 +1,6 @@
 const { Operation } = require('@brewery/core');
-const Post = require('src/domain/Post');
+const TagModel = require('src/infra/models/TagModel');
+const PostTagModel = require('src/infra/models/PostTagModel');
 
 class ShowPost extends Operation {
   constructor({ PostRepository }) {
@@ -8,28 +9,17 @@ class ShowPost extends Operation {
   }
 
   async execute({ where: { id } }) {
-    const { SUCCESS, NOT_FOUND } = this.events;
-
     try {
-      const post = (await this.PostRepository.getById(id)).toJSON();
-      
-      this.emit(SUCCESS, {
-        id: post.id,
-        data: {
-          body: post.data.body,
-          createdAt: post.createdAt
-        }
-      });
-      
+      // get post
+      const post = await this.PostRepository.getById(id);
+      // get associated tags
+      post.tags = await post.getTags();
+      // return post
+      return post;
     } catch(error) {
-      this.emit(NOT_FOUND, {
-        type: error.message,
-        details: error.details
-      });
+      throw new Error('Post does not exists.');
     }
   }
 }
-
-ShowPost.setEvents(['SUCCESS', 'NOT_FOUND']);
 
 module.exports = ShowPost;

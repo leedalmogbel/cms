@@ -1,0 +1,24 @@
+type Tag {
+  id: ID
+  name: String
+}
+
+type Query {
+  getTags: [Tag]
+  getTag(where: TagPrimary!): Tag!
+}
+
+type Mutation {
+  createTag(data: TagInput!): Tag!
+  updateTag(where: TagPrimary!, data: TagInput!): Boolean!
+  deleteTag(where: TagPrimary!): Boolean!
+}
+
+input TagInput {
+  id: ID
+  name: String
+}
+
+input TagPrimary {
+  id: ID!
+}
