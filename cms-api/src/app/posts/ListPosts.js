@@ -13,7 +13,7 @@ class ListPosts extends Operation {
 
       // get post tags
       for (let post of posts) {
-        post.tags = await post.getTags();
+        post.tags = await post.getPostTags();
       }
 
       // return posts

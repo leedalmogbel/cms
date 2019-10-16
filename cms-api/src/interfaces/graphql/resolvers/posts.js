@@ -32,7 +32,7 @@ module.exports = {
         processTags = async (tags) => {
           for (let tag of tags) {
             const newTag = await tagOperation.execute({ data: tag });
-            await post.addTag(newTag);
+            await post.addPostTag(newTag);
           }
         }
 
@@ -40,7 +40,7 @@ module.exports = {
         await processTags(tags);
         
         // fetch associated post tags
-        post.tags = post.getTags();
+        post.tags = post.getPostTags();
       }
 
       // return created post
@@ -65,12 +65,12 @@ module.exports = {
         processTags = async (tags) => {
           for (let tag of tags) {
             const newTag = await tagOperation.execute({ data: tag });
-            await post.addTag(newTag);
+            await post.addPostTag(newTag);
           }
         }
 
         // first remove tags
-        await post.setTags([]);
+        await post.setPostTags([]);
 
         // process and associate tags
         await processTags(tags);

@@ -41,7 +41,7 @@ module.exports = {
     PostModel.associate = () => {
       PostModel.belongsToMany(datasource.models.TagModel, {
         through: datasource.models.PostTagModel,
-        as: 'tags',
+        as: 'postTags',
         foreignKey: 'postId',
         otherKey: 'tagId'
       })

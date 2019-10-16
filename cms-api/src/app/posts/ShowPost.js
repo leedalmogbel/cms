@@ -13,7 +13,7 @@ class ShowPost extends Operation {
       // get post
       const post = await this.PostRepository.getById(id);
       // get associated tags
-      post.tags = await post.getTags();
+      post.tags = await post.getPostTags();
       // return post
       return post;
     } catch(error) {
