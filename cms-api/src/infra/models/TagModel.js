@@ -4,14 +4,12 @@ module.exports = {
     datasource: 'kapp-cms',
     definition: function(datasource, DataTypes) {
       const TagModel = datasource.define('TagModel', {
-        id : {
+        id: {
           primaryKey: true,
           autoIncrement: true,
           type: DataTypes.INTEGER,
         }, 
-        name : {
-          type: DataTypes.STRING
-        }
+        name: DataTypes.STRING
       }, {
         tableName: 'tags',
         timestamps: true
