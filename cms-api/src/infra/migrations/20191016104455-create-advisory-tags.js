@@ -2,20 +2,20 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('postTags', {
+    return queryInterface.createTable('advisoryTags', {
       id : {
         primaryKey: true,
         autoIncrement: true,
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
       }, 
-      postId: Sequelize.INTEGER,
-      tagId: Sequelize.INTEGER,
+      advisoryId: DataTypes.INTEGER,
+      tagId: DataTypes.INTEGER,
       updatedAt: Sequelize.DATE,
       createdAt: Sequelize.DATE
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('postTags');
+    return queryInterface.dropTable('advisoryTags');
   }
 };
