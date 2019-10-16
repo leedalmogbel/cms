@@ -2,19 +2,20 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('tags', {
+    return queryInterface.createTable('categories', {
       id: {
         primaryKey: true,
         autoIncrement: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       }, 
       name: Sequelize.STRING,
+      comments: Sequelize.JSONB,
       updatedAt: Sequelize.DATE,
       createdAt: Sequelize.DATE
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('tags');
+    return queryInterface.dropTable('categories');
   }
 };
