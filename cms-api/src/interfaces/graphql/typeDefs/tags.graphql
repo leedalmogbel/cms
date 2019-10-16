@@ -1,6 +1,7 @@
 type Tag {
   id: ID
   name: String
+  type: String
 }
 
 type Query {
@@ -17,6 +18,7 @@ type Mutation {
 input TagInput {
   id: ID
   name: String
+  type: String
 }
 
 input TagPrimary {

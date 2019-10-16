@@ -1,0 +1,53 @@
+type Advisory {
+  id: ID
+  advisoryId: Int
+  userId: Int
+  title: String
+  content: String
+  source: String
+  locationLat: String
+  locationLong: String
+  locationAddress: String
+  categoryID: Int
+  tags: [Tag]
+  verified: Boolean
+  draft: Boolean
+  publishedAt: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type Query {
+  getAdvisories(where: AdvisoryFilter): [Advisory]!
+  getAdvisory(where: AdvisoryPrimary!): Advisory!
+}
+
+type Mutation {
+  createAdvisory(data: AdvisoryInput!): Advisory!
+  updateAdvisory(where: AdvisoryPrimary!, data: AdvisoryInput!): Boolean
+  deleteAdvisory(where: AdvisoryPrimary!): Boolean
+}
+
+input AdvisoryInput {
+  advisoryId: Int
+  userId: Int
+  title: String
+  content: String
+  source: String
+  locationLat: String
+  locationLong: String
+  locationAddress: String
+  categoryID: Int
+  tags: [TagInput]
+  verified: Boolean
+  draft: Boolean
+  publishedAt: DateTime
+}
+
+input AdvisoryPrimary {
+  id: ID!
+}
+
+input AdvisoryFilter {
+  verified: Boolean
+}

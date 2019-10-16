@@ -8,7 +8,8 @@ module.exports = {
         autoIncrement: true,
         type: Sequelize.INTEGER,
       }, 
-      name: Sequelize.STRING,
+      name: DataTypes.STRING,
+      type: DataTypes.STRING,
       updatedAt: Sequelize.DATE,
       createdAt: Sequelize.DATE
     });
