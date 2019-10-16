@@ -1,0 +1,35 @@
+type Category {
+  id: ID
+  name: String!
+  subCategories: [SubCategory]
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type SubCategory {
+  name: String
+}
+
+type Query {
+  getCategories: [Category]
+  getCategory(where: CategoryPrimary!): Category
+}
+
+type Mutation {
+  createCategory(data: CategoryInput): Category
+  updateCategory(where: CategoryPrimary!, data: CategoryInput!): Boolean!
+  deleteCategory(where: CategoryPrimary!): Boolean!
+}
+
+input CategoryInput {
+  name: String!
+  subCategories: [SubCategoryInput]
+}
+
+input SubCategoryInput {
+  name: String
+}
+
+input CategoryPrimary {
+  id: ID!
+}

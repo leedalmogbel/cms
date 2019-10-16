@@ -1,6 +1,5 @@
 const { Operation } = require('@brewery/core');
 
-
 class ListPosts extends Operation {
   constructor({ PostRepository }) {
     super();
