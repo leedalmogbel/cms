@@ -27,3 +27,6 @@ coverage/
 cms-api/.serverless
 cognito-auth/.serverless
 cms-api/.serverless/serverless-state.json
+cms-api/.serverless/kapp-cms-api.zip
+cms-api/.serverless/serverless-state.json
+cms-api/.serverless/cloudformation-template-update-stack.json
