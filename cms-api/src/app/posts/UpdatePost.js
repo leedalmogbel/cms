@@ -1,9 +1,8 @@
 const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
 const Tag = require('src/domain/Tag');
-const CreateTag = require('src/app/tags/CreateTag');
 
-class CreatePost extends Operation {
+class UpdatePost extends Operation {
   constructor({ PostRepository, TagRepository }) {
     super();
     this.PostRepository = PostRepository;
@@ -67,4 +66,4 @@ class CreatePost extends Operation {
   }
 }
 
-module.exports = CreatePost;
+module.exports = UpdatePost;
