@@ -1,11 +1,29 @@
 require('module').Module._initPaths();
 const { brew } = require('@brewery/core');
 const config = require('config');
+const awilix = require('awilix');
+const { asClass } = awilix;
+const httpClient = require('./infra/http-request');
+
 
 module.exports.handler = (event, context, callback) => {
+  console.log({
+    resource: event.resource,
+    path: event.path,
+    httpMethod: event.httpMethod,
+    headers:{
+      Accept: event.headers.Accept,
+      'content-type': event.headers['content-type'],
+    },
+    body: event.body
+  });
   brew(config, async brewed => {
     try {
       if(typeof brewed.getServerless === 'function'){
+        brewed.container.register({
+          httpClient: asClass(httpClient).singleton()
+        });
+
         const app = await brewed.getServerless();
         const res = await app(event, context);
         callback(null, res);

@@ -44,7 +44,7 @@ module.exports = {
         as: 'postTags',
         foreignKey: 'postId',
         otherKey: 'tagId'
-      })
+      });
     };
 
     /**

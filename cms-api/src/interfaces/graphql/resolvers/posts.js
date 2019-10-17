@@ -34,7 +34,7 @@ module.exports = {
             const newTag = await tagOperation.execute({ data: tag });
             await post.addPostTag(newTag);
           }
-        }
+        };
 
         // process and associate tags
         await processTags(tags);
@@ -67,7 +67,7 @@ module.exports = {
             const newTag = await tagOperation.execute({ data: tag });
             await post.addPostTag(newTag);
           }
-        }
+        };
 
         // first remove tags
         await post.setPostTags([]);

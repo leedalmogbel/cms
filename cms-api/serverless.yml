@@ -5,13 +5,19 @@ plugins:
   - serverless-mocha-plugin
 
 provider:
-  region: us-east-1
+  region: ap-southeast-1
   name: aws
   runtime: nodejs8.10
-  memorySize: 128
+  memorySize: 256
   versionFunctions: false
-  environment: ${file(env.yml):${self:custom.stage}}
   timeout: 30
+  environment: ${file(env.yml):${self:custom.stage}}
+  vpc:
+    securityGroupIds:
+      - ${file(env.yml):${self:custom.stage}.VPC_SECURITY_GROUP}
+    subnetIds:
+      - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_1}
+      - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_2}
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -20,7 +26,23 @@ functions:
   app:
     handler: src/app-serverless.handler
     events:
-      - http:
+      - http: 
           path: /{proxy+}
+          method: any
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
+  login:
+    handler: src/app-serverless.handler
+    events:
+      - http:
+          path: /login
+          method: any
+          cors: true
+  sample:
+    handler: src/handler.index
+    events:
+      - http:
+          path: /sample
           method: any
           cors: true

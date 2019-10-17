@@ -9,9 +9,13 @@ module.exports = {
         autoIncrement: true,
         type: DataTypes.INTEGER,
       }, 
-      firstName : {
+      username : {
         type: DataTypes.STRING
-      }, lastName : {
+      }, 
+      lastName : {
+        type: DataTypes.STRING
+      },
+      firstName : {
         type: DataTypes.STRING
       },
     }, {
