@@ -14,7 +14,7 @@ module.exports = {
     },
     getPost: (_, args, { container, res }) => {
       const operation = container.resolve('ShowPost');
-      
+
       // fetch post
       try {
         return operation.execute(args);
@@ -26,7 +26,7 @@ module.exports = {
   Mutation: {
     createPost: (_, args, { container, res, next }) => {
       const operation = container.resolve('CreatePost');
-      
+
       // create post
       try {
         return operation.execute(args);
@@ -36,7 +36,7 @@ module.exports = {
     },
     updatePost: (_, args, { container, res, next }) => {
       const operation = container.resolve('UpdatePost');
-      
+
       // udpate post 
       try {
         return operation.execute(args);
