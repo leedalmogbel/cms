@@ -29,13 +29,11 @@ describe('app', () => {
     );
     const {
       data:{
-        login: {
-          accessToken,
-          accessTokenExpiresAt
-        }
+        login
       }
     } = JSON.parse(response.body);
-  
+    expect(login).to.have.property('accessToken');
+    expect(login).to.have.property('accessTokenExpiresAt');
   });
 });
 
