@@ -2,42 +2,57 @@ const Status = require('http-status');
 
 module.exports = {
   Query: {
-    getTags: async (_, args, { container, res }) => {
+    getTags: (_, args, { container, res }) => {
       const operation = container.resolve('ListTags');
       
       // fetch tags
-      const tags = await operation.execute(args);
-      return tags;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     },
-    getTag: async (_, args, { container, res }) => {
+    getTag: (_, args, { container, res }) => {
       const operation = container.resolve('ShowTag');
 
       //  fetch tag
-      const tag = await operation.execute(args);
-      return tag;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     }
   },  
   Mutation: {
-    createTag: async (_, args, { container, res, next }) => {
+    createTag: (_, args, { container, res, next }) => {
       const operation = container.resolve('CreateTag');
 
       // create tag
-      const tag = await operation.execute(args);
-      return tag;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     },
-    updateTag: async (_, args, { container, res, next }) => {
+    updateTag: (_, args, { container, res, next }) => {
       const operation = container.resolve('UpdateTag');
 
       // update tag
-      const tag = await operation.execute(args);
-      return tag;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     },
-    deleteTag: async (_, args, { container, res, next }) => {
+    deleteTag: (_, args, { container, res, next }) => {
       const operation = container.resolve('DeleteTag');
 
       // delete tag
-      const result = await operation.execute(args);
-      return result;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     }
   }
 };
