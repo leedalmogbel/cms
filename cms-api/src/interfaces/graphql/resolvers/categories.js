@@ -2,42 +2,57 @@ const Status = require('http-status');
 
 module.exports = {
   Query: {
-    getCategories: async (_, args, { container, res }) => {
+    getCategories: (_, args, { container, res }) => {
       const operation = container.resolve('ListCategories');
       
       // fetch categories
-      const categories = await operation.execute(args);
-      return categories;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     },
-    getCategory: async (_, args, { container, res }) => {
+    getCategory: (_, args, { container, res }) => {
       const operation = container.resolve('ShowCategory');
 
       //  fetch category
-      const category = await operation.execute(args);
-      return category;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     }
   },  
   Mutation: {
-    createCategory: async (_, args, { container, res }) => {
+    createCategory: (_, args, { container, res }) => {
       const operation = container.resolve('CreateCategory');
 
       // create category
-      const category = await operation.execute(args);
-      return category;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     },
-    updateCategory: async (_, args, { container, res }) => {
+    updateCategory: (_, args, { container, res }) => {
       const operation = container.resolve('UpdateCategory');
 
-      // create category
-      const category = await operation.execute(args);
-      return category;
+      // update category
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     },
-    deleteCategory: async (_, args, { container, res }) => {
+    deleteCategory: (_, args, { container, res }) => {
       const operation = container.resolve('DeleteCategory');
 
-      // create category
-      const category = await operation.execute(args);
-      return category;
+      // delete category
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     }
   }
 };
