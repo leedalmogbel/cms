@@ -44,11 +44,10 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
    * Avoid hardcoding in this file as much. Deleting comments in this file
    * may cause errors on scaffoldings
    */
-
-  // apiRouter.use('/users', controller('controllers/UsersController'));
-
   apiRouter.use('/users', controller('controllers/UsersController.js'));
   apiRouter.use('/posts', controller('controllers/PostsController.js'));
+  apiRouter.use('/advisories', controller('controllers/AdvisoriesController'));
+  apiRouter.use('/tags', controller('controllers/TagsController.js'));
   
   /* apiRoutes END */
 

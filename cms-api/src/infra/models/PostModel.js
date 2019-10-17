@@ -9,16 +9,43 @@ module.exports = {
         autoIncrement: true,
         type: DataTypes.INTEGER,
       }, 
-      data : {
-        type: DataTypes.JSONB
+      userId: DataTypes.INTEGER,
+      categoryId: DataTypes.INTEGER,
+      subCategory: DataTypes.INTEGER,
+      postId: DataTypes.STRING,
+      title: DataTypes.STRING,
+      content: DataTypes.TEXT,
+      priorityLevel: DataTypes.STRING,
+      source: DataTypes.STRING,
+      locationLat: DataTypes.STRING,
+      locationLong: DataTypes.STRING,
+      locationAddress: DataTypes.STRING,
+      comments: DataTypes.JSONB,
+      advisories: DataTypes.JSONB,
+      attachments: DataTypes.JSONB,
+      draft: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: '0'
       },
-      content: {
-        type: DataTypes.STRING
-      }
+      scheduled: DataTypes.DATE,
+      expiration: DataTypes.DATE,
+      published: DataTypes.DATE
     }, {
       tableName: 'posts',
       timestamps: true
     });
+
+    /**
+     * Associate to Tag Model
+     */
+    PostModel.associate = () => {
+      PostModel.belongsToMany(datasource.models.TagModel, {
+        through: datasource.models.PostTagModel,
+        as: 'postTags',
+        foreignKey: 'postId',
+        otherKey: 'tagId'
+      });
+    };
 
     /**
      * Examples on how to associate or set relationship with other models
