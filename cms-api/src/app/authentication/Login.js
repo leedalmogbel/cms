@@ -24,10 +24,9 @@ class Login extends Operation {
       throw new Error('user not found.');
     }; 
       
-    if(await isKappUser()){
-      const { results } = await retrieveAccessToken();
-      return results;
-    }
+    const { results } = await retrieveAccessToken();
+    return results;
+    
 
   }
 }
