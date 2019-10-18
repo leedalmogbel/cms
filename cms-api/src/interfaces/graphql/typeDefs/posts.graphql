@@ -5,15 +5,15 @@ type Post {
   subCategory: Int
   postId: ID
   title: String!
-  content: String!
+  content: String
   priorityLevel: String
   source: String
   locationLat: String
   locationLong: String
   locationAddress: String
-  comments: [Comment]
-  advisories: [Advisory]
-  attachments: [Attachment]
+  comments: [PostComment]
+  advisories: [PostAdvisory]
+  attachments: [PostAttachment]
   tags: [Tag]
   draft: Boolean
   scheduled: DateTime
@@ -23,28 +23,22 @@ type Post {
   updatedAt: DateTime
 }
 
-type Comment {
+type PostComment {
   id: ID
   name: String
   message: String
   timeStamp: DateTime
 }
 
-type Advisory {
+type PostAdvisory {
   id: ID
   title: String
 }
 
-type Attachment {
+type PostAttachment {
   link: String
   name: String
   updatedAt: DateTime
-}
-
-type Comment {
-  id: ID
-  name: String
-  message: String
 }
 
 type Query {
