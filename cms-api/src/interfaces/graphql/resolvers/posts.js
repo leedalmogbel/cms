@@ -37,7 +37,7 @@ module.exports = {
     savePost: (_, args, { container, res, next }) => {
       const operation = container.resolve('UpdatePost');
 
-      // udpate post 
+      // save post 
       try {
         return operation.save(args);
       } catch (err) {
@@ -47,7 +47,7 @@ module.exports = {
     publishPost: (_, args, { container, res, next }) => {
       const operation = container.resolve('UpdatePost');
 
-      // udpate post 
+      // publish post 
       try {
         return operation.publish(args);
       } catch (err) {

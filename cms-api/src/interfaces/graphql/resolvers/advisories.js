@@ -1,51 +1,60 @@
 module.exports = {
   Query: {
-    getAdvisories: async (_, args, { container, res }) => {
+    getAdvisories: (_, args, { container, res }) => {
       const operation = container.resolve('ListAdvisories');
 
       try {
         return operation.execute(args);
-      } catch (error) {
-        throw new Error(error.message);
+      } catch (err) {
+        throw err;
       }
     },
-    getAdvisory: async (_, args, { container, res }) => {
-        const operation = container.resolve('ShowAdvisory');
+    getAdvisory: (_, args, { container, res }) => {
+      const operation = container.resolve('ShowAdvisory');
 
-        try {
-          return operation.execute(args);
-        } catch (error) {
-          throw new Error(error.message);
-        }
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     },
   },  
   Mutation: {
-    createAdvisory: async (_, args, { container, res, next }) => {
+    createAdvisoryDraft: (_, args, { container, res, next }) => {
       const operation = container.resolve('CreateAdvisory');
       
       try {
         return operation.execute(args);
-      } catch (error) {
-        throw new Error(error.message);
+      } catch (err) {
+        throw err;
       }
     },
-
-    updateAdvisory: async (_, args, { container, res, next }) => {
+    saveAdvisory: (_, args, { container, res, next }) => {
       const operation = container.resolve('UpdateAdvisory');
 
       try {
-        operation.execute(args);
-      } catch (error) {
-        throw new Error(error.message);
+        return operation.save(args);
+      } catch (err) {
+        throw err;
       }
     },
+    publishAdvisory: (_, args, { container, res, next }) => {
+      const operation = container.resolve('UpdateAdvisory');
 
-    deleteAdvisory: async (_, args, { container, res, next }) => {
+      try {
+        return operation.publish(args);
+      } catch (err) {
+        throw err;
+      }
+    },
+    deleteAdvisory: (_, args, { container, res, next }) => {
       const operation = container.resolve('DeleteAdvisory');
-      const advisory = await operation.execute(args);
 
-      return advisory;
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
     }
-
   },
 };
