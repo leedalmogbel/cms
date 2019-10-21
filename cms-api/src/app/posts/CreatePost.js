@@ -10,33 +10,26 @@ class CreatePost extends Operation {
     this.TagRepository = TagRepository;
   }
 
-  async execute({ data }) {
+  async execute() {
     let newPost;
 
-    // generate postId
-    const uid = Helpers.generateUID(8);
-    data.postId = uid;
+    // set data and generate postId
+    const data = {
+      postId: Helpers.generateUID(8)
+    };
 
-    // build post data
-    const post = new Post(data);
+    // build post payload
+    const payload = new Post(data);
     
     // create post
     try {
-      newPost = await this.PostRepository.add(post);
-
-      // associate tags to post
-      // if post tags exists
-      if ('tags' in data) {
-        await this.addPostTags(newPost, data.tags);
-      }
-
-      // get associated tags
-      newPost.tags = await newPost.getPostTags();
-      // return new post
-      return newPost;
+      newPost = await this.PostRepository.add(payload);
     } catch(error) {
       throw err;
     }
+
+    // return new post
+    return { id: newPost.id };
   }
 
   async addPostTags(post, tags) {

@@ -4,7 +4,7 @@ type Post {
   categoryId: Int
   subCategory: Int
   postId: ID
-  title: String!
+  title: String
   content: String
   priorityLevel: String
   source: String
@@ -16,11 +16,15 @@ type Post {
   attachments: [PostAttachment]
   tags: [Tag]
   draft: Boolean
-  scheduled: DateTime
-  expiration: DateTime
-  published: DateTime
+  scheduledAt: DateTime
+  expiredAt: DateTime
+  publishedAt: DateTime
   createdAt: DateTime
   updatedAt: DateTime
+}
+
+type PostPrimary {
+  id: ID
 }
 
 type PostComment {
@@ -47,12 +51,13 @@ type Query {
     offset: Int,
     limit: Int
   ): [Post]
-  getPost(where: PostPrimary!): Post
+  getPost(where: PostPrimaryInput!): Post
 }
 
 type Mutation {
-  createPost(data: PostInput!): Post!
-  updatePost(where: PostPrimary!, data: PostInput): Boolean
+  createPostDraft: PostPrimary
+  savePost(where: PostPrimaryInput!, data: PostInput): Post
+  publishPost(where: PostPrimaryInput!, data: PostInput): Post
 }
 
 input PostInput {
@@ -69,12 +74,12 @@ input PostInput {
   locationAddress: String
   tags: [TagInput]
   draft: Boolean
-  scheduled: DateTime
-  expiration: DateTime
-  published: DateTime
+  scheduledAt: DateTime
+  expiredAt: DateTime
+  publishedAt: DateTime
 }
 
-input PostPrimary {
+input PostPrimaryInput {
   id: ID!
 }
 

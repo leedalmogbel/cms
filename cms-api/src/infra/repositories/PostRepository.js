@@ -10,20 +10,27 @@ class PostRepository extends BaseRepository {
 
   async getPosts(data) {
     // init fetch arguments
-    let args = {};
+    let args = {
+      where: {
+        draft: false
+      }
+    };
 
     // where arguments
     if ('where' in data) {
-      let where = {};
+      // set draft
+      if ('draft' in data.where) {
+        args.where.draft = data.where.draft;
+      }
 
       // set scheduled flag
       if ('scheduled' in data.where) {
         if (data.where.scheduled) {
-          where.scheduled = {
+          args.where.scheduledAt = {
             [Op.ne]: null
           };
         } else {
-          where.scheduled = {
+          where.scheduledAt = {
             [Op.eq]: null
           }
         }
@@ -32,18 +39,15 @@ class PostRepository extends BaseRepository {
       // set published flag
       if ('published' in data) {
         if (data.where.published) {
-          where.published = {
+          args.where.publishedAt = {
             [Op.ne]: null
           }
         } else {
-          where.published = {
+          where.publishedAt = {
             [Op.eq]: null
           }
         }
       }
-
-      // set filters
-      args.where = where;
     }
 
     // offset

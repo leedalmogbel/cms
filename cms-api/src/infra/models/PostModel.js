@@ -27,9 +27,9 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: '0'
       },
-      scheduled: DataTypes.DATE,
-      expiration: DataTypes.DATE,
-      published: DataTypes.DATE
+      scheduledAt: DataTypes.DATE,
+      expiredAt: DataTypes.DATE,
+      publishedAt: DataTypes.DATE
     }, {
       tableName: 'posts',
       timestamps: true

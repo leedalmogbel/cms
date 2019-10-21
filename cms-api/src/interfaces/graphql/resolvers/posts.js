@@ -24,7 +24,7 @@ module.exports = {
     }
   },  
   Mutation: {
-    createPost: (_, args, { container, res, next }) => {
+    createPostDraft: (_, args, { container, res, next }) => {
       const operation = container.resolve('CreatePost');
 
       // create post
@@ -34,12 +34,22 @@ module.exports = {
         throw err;
       }
     },
-    updatePost: (_, args, { container, res, next }) => {
+    savePost: (_, args, { container, res, next }) => {
       const operation = container.resolve('UpdatePost');
 
       // udpate post 
       try {
-        return operation.execute(args);
+        return operation.save(args);
+      } catch (err) {
+        throw err;
+      }
+    },
+    publishPost: (_, args, { container, res, next }) => {
+      const operation = container.resolve('UpdatePost');
+
+      // udpate post 
+      try {
+        return operation.publish(args);
       } catch (err) {
         throw err;
       }

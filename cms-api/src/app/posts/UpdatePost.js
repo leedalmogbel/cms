@@ -9,7 +9,7 @@ class UpdatePost extends Operation {
     this.TagRepository = TagRepository;
   }
 
-  async execute({ where: {id}, data }) {
+  async save({ where: {id}, data }) {
     let post;
 
     // validate post
@@ -37,8 +37,53 @@ class UpdatePost extends Operation {
       await this.addPostTags(post, data.tags);
     }
 
-    // return true as success response
-    return true;
+    // return updated post
+    return await this.getPost(id);
+  }
+
+  async publish({ where: {id}, data }) {
+    let post;
+
+    // validate post
+    try {
+      post = await this.PostRepository.getById(id);
+    } catch (error) {
+      throw new Error('Post does not exists.');
+    }
+
+    // set publish timestamp
+    const publishDate = new Date().toISOString();
+    data.publishedAt = publishDate;
+
+    // build post payload
+    const payload = new Post(data);
+
+    // update post
+    try {
+      await this.PostRepository.update(id, payload);
+    } catch(err) {
+      throw err;
+    }
+
+    // if post tags exists
+    if ('tags' in data) {
+      // first remove tags
+      // then associate tags to post
+      await post.setPostTags([]);
+      await this.addPostTags(post, data.tags);
+    }
+
+    // return updated post
+    return await this.getPost(id);
+  }
+
+  async getPost(id) {
+    // get updated post with associated tags
+    const post = await this.PostRepository.getById(id);
+    post.tags = await post.getPostTags();
+    
+    // return post
+    return post;
   }
 
   async addPostTags(post, tags) {
