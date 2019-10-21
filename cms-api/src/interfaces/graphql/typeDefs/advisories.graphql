@@ -8,7 +8,7 @@ type Advisory {
   locationLat: String
   locationLong: String
   locationAddress: String
-  categoryID: Int
+  categoryId: Int
   tags: [Tag]
   verified: Boolean
   draft: Boolean
@@ -17,15 +17,20 @@ type Advisory {
   updatedAt: DateTime
 }
 
+type AdvisoryPrimary {
+  id: ID
+}
+
 type Query {
   getAdvisories(where: AdvisoryFilter): [Advisory]!
-  getAdvisory(where: AdvisoryPrimary!): Advisory!
+  getAdvisory(where: AdvisoryPrimaryInput!): Advisory!
 }
 
 type Mutation {
-  createAdvisory(data: AdvisoryInput!): Advisory!
-  updateAdvisory(where: AdvisoryPrimary!, data: AdvisoryInput!): Boolean
-  deleteAdvisory(where: AdvisoryPrimary!): Boolean
+  createAdvisoryDraft: AdvisoryPrimary
+  saveAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
+  publishAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
+  deleteAdvisory(where: AdvisoryPrimaryInput!): Boolean
 }
 
 input AdvisoryInput {
@@ -37,14 +42,14 @@ input AdvisoryInput {
   locationLat: String
   locationLong: String
   locationAddress: String
-  categoryID: Int
+  categoryId: Int
   tags: [TagInput]
   verified: Boolean
   draft: Boolean
   publishedAt: DateTime
 }
 
-input AdvisoryPrimary {
+input AdvisoryPrimaryInput {
   id: ID!
 }
 

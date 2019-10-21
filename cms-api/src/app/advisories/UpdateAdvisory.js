@@ -9,7 +9,7 @@ class UpdateAdvisory extends Operation {
     this.TagRepository = TagRepository;
   }
 
-  async execute({where: {id}, data}) {
+  async save({where: {id}, data}) {
     let advisory;
 
     // validate advisory
@@ -19,25 +19,44 @@ class UpdateAdvisory extends Operation {
       throw new Error('Advisory does not exists');
     }
 
-    // build advisory payload
+    // build advisory payloadexecute
     const payload = new Advisory(data);
 
     try {
-      await this.AdvisoryRepository.update(id, advisory);
+      await this.AdvisoryRepository.update(id, payload);
     } catch(error) {
-      throw new Error(error.message);
+      throw error;
     }
 
     // advisory tags exists;
     if ('tags' in data) {
       // remove first tags
-      await advisory.setAdvisoryTags([]);
       // then associate tags to advisory
+      await advisory.setAdvisoryTags([]);
       await this.addAdvisoryTags(advisory, data.tags);
     }
 
-    // return true as success response
-    return true;
+    // get updated advisory with associated tags
+    advisory = await this.AdvisoryRepository.getById(id);
+    advisory.tags = await advisory.getAdvisoryTags();
+    
+    // return advisory
+    return advisory;
+  }
+
+  async publish({where: {id}, data}) {
+    // set publish timestamp and draft flag
+    data = {
+      ...data,
+      publishedAt: new Date().toISOString(),
+      draft: false
+    };
+
+    // use save process
+    return await this.save({
+      where: { id },
+      data
+    });
   }
 
   async addAdvisoryTags (advisory, tags) {

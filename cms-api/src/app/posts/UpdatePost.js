@@ -37,53 +37,27 @@ class UpdatePost extends Operation {
       await this.addPostTags(post, data.tags);
     }
 
+    // get updated post with associated tags
+    post = await this.PostRepository.getById(id);
+    post.tags = await post.getPostTags();
+
     // return updated post
-    return await this.getPost(id);
+    return post;
   }
 
   async publish({ where: {id}, data }) {
-    let post;
+    // set publish timestamp and draft flag
+    data = {
+      ...data,
+      publishedAt: new Date().toISOString(),
+      draft: false
+    };
 
-    // validate post
-    try {
-      post = await this.PostRepository.getById(id);
-    } catch (error) {
-      throw new Error('Post does not exists.');
-    }
-
-    // set publish timestamp
-    const publishDate = new Date().toISOString();
-    data.publishedAt = publishDate;
-
-    // build post payload
-    const payload = new Post(data);
-
-    // update post
-    try {
-      await this.PostRepository.update(id, payload);
-    } catch(err) {
-      throw err;
-    }
-
-    // if post tags exists
-    if ('tags' in data) {
-      // first remove tags
-      // then associate tags to post
-      await post.setPostTags([]);
-      await this.addPostTags(post, data.tags);
-    }
-
-    // return updated post
-    return await this.getPost(id);
-  }
-
-  async getPost(id) {
-    // get updated post with associated tags
-    const post = await this.PostRepository.getById(id);
-    post.tags = await post.getPostTags();
-    
-    // return post
-    return post;
+    // use save process
+    return await this.save({
+      where: { id },
+      data
+    });
   }
 
   async addPostTags(post, tags) {
