@@ -1,0 +1,9 @@
+type Location {
+  lat: String,
+  lng: String,
+  address: String
+}
+
+type Query {
+  getLocation(placeId: String): Location
+}
