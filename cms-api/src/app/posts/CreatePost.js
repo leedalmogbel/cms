@@ -24,7 +24,7 @@ class CreatePost extends Operation {
     // create post
     try {
       newPost = await this.PostRepository.add(payload);
-    } catch(error) {
+    } catch(err) {
       throw err;
     }
 
