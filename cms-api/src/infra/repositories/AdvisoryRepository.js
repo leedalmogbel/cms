@@ -9,27 +9,29 @@ class AdvisoryRepository extends BaseRepository {
   }
 
   async getAdvisories (data) {
-    let args = {};
+    // init fetch arguments
+    let args = {
+      where: {
+        draft: false // default draft false
+      }
+    };
+
     let order = [['createdAt', 'DESC']]; // set order by default descending
 
+    // filters
     if ('where' in data) {
-      let where = {};
-
       // fetch verified
       if ('verified' in data.where) {
         if (data.where.verified) {
-          where.verified = {
+          args.where.verified = {
             [Op.eq]: true
           };
         } else {
-          where.verified = {
+          args.where.verified = {
             [Op.eq]: false
           };
         }
       }
-
-      // filters
-      args.where = where;
     }
 
     // offset

@@ -55,4 +55,5 @@ input AdvisoryPrimaryInput {
 
 input AdvisoryFilter {
   verified: Boolean
+  draft: Boolean
 }

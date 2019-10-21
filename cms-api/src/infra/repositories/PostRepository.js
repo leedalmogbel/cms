@@ -12,7 +12,7 @@ class PostRepository extends BaseRepository {
     // init fetch arguments
     let args = {
       where: {
-        draft: false
+        draft: false // default draft false
       }
     };
 
