@@ -26,9 +26,9 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: '0'
       },
-      scheduled: Sequelize.DATE,
-      expiration: Sequelize.DATE,
-      published: Sequelize.DATE,
+      scheduledAt: Sequelize.DATE,
+      expiredAt: Sequelize.DATE,
+      publishedAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,
       createdAt: Sequelize.DATE
     });
