@@ -1,5 +1,3 @@
-const Status = require('http-status');
-
 module.exports = {
   Query: {
     getCategories: (_, args, { container, res }) => {

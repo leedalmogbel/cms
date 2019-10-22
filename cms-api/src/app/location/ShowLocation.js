@@ -3,10 +3,15 @@ const https = require('https');
 
 class ShowLocation extends Operation {
   async execute({ placeId }) {
-    const key = process.env.GOOGLE_KEY;
+    // get google key and endpoint
+    const key = process.env.PLACE_KEY;
+    const endpoint = process.env.PLACE_ENDPOINT;
+
+    // set fields and url
     const fields = 'address_component,adr_address,formatted_address,geometry';
-    const url = `https://maps.googleapis.com/maps/api/place/details/json?key=${key}&place_id=${placeId}&fields=${fields}`;
+    const url = `${endpoint}?key=${key}&place_id=${placeId}&fields=${fields}`;
   
+    // send place detail request
     try {
       let res = await this.request(url);
 
@@ -41,7 +46,7 @@ class ShowLocation extends Operation {
           data += chunk;
         });
 
-        res.on('end', chunk => {
+        res.on('end', _ => {
           resolve(JSON.parse(data));
         });
       });

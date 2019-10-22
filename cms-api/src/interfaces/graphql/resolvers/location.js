@@ -1,5 +1,3 @@
-const Status = require('http-status');
-
 module.exports = {
   Query: {
     getLocation: (_, args, { container, res }) => {
@@ -12,6 +10,5 @@ module.exports = {
         throw err;
       }
     }
-  },  
-  Mutation: {}
+  }
 };
