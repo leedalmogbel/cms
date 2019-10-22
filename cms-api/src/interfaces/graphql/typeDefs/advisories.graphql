@@ -32,12 +32,13 @@ type Mutation {
   saveAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   publishAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   deleteAdvisory(where: AdvisoryPrimaryInput!): Boolean
-  getAwsSignedUrl(files: [AttachmentInput]): Urls #[Attachment]
+  getAwsSignedUrl(files: [AttachmentInput]): [Urls]
 }
 
 type Urls{
-  get: String
-  put: String
+  fileName: String
+  getUrl: String
+  putUrl: String
 }
 
 input AdvisoryInput {
