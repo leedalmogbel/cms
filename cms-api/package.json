@@ -36,8 +36,6 @@
     "cross-env": "^3.2.3",
     "del": "^2.2.2",
     "dotenv": "^4.0.0",
-    "eslint": "^4.7.2",
-    "express": "^4.15.2",
     "express-graphql": "^0.9.0",
     "express-status-monitor": "^1.2.7",
     "graphql": "^14.5.8",
@@ -48,8 +46,6 @@
     "merge-graphql-schemas": "^1.7.0",
     "method-override": "^2.3.7",
     "mysql2": "^1.7.0",
-    "pg": "^7.12.1",
-    "pg-hstore": "^2.3.3",
     "serverless-http": "^2.3.0",
     "serverless-mocha-plugin": "^1.11.0",
     "structure": "^1.5.0",
@@ -66,8 +62,6 @@
     "nodemon": "^1.11.0",
     "nyc": "^11.2.1",
     "replace-in-file": "^2.5.0",
-    "serverless-offline": "^5.10.1",
-    "supertest": "^3.0.0",
-    "supertest-as-promised": "^4.0.2"
+    "serverless-offline": "^5.10.1"
   }
 }

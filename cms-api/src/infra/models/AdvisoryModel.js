@@ -24,11 +24,11 @@ module.exports = {
         defaultValue: '0'
       },
       tags : {
-        type: DataTypes.JSONB,
+        type: DataTypes.JSON,
         allowNull: true
       },
       attachments : {
-        type: DataTypes.JSONB,
+        type: DataTypes.JSON,
         allowNull: true
       },
       publishedAt : {
@@ -48,7 +48,7 @@ module.exports = {
         as: 'advisoryTags',
         foreignKey: 'advisoryId',
         otherKey: 'tagId'
-      })
+      });
     };
 
     return AdvisoryModel;

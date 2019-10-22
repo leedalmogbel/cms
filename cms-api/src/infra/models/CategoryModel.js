@@ -10,7 +10,7 @@ module.exports = {
         type: DataTypes.INTEGER,
       }, 
       name: DataTypes.STRING,
-      subCategories: DataTypes.JSONB
+      subCategories: DataTypes.JSON
     }, {
       tableName: 'categories',
       timestamps: true

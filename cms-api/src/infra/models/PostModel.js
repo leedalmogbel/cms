@@ -18,10 +18,10 @@ module.exports = {
       priorityLevel: DataTypes.STRING,
       source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
-      locationDetails: DataTypes.JSONB,
-      comments: DataTypes.JSONB,
-      advisories: DataTypes.JSONB,
-      attachments: DataTypes.JSONB,
+      locationDetails: DataTypes.JSON,
+      comments: DataTypes.JSON,
+      advisories: DataTypes.JSON,
+      attachments: DataTypes.JSON,
       draft: {
         type: DataTypes.BOOLEAN,
         defaultValue: '0'
