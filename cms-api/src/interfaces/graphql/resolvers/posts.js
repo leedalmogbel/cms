@@ -1,5 +1,3 @@
-const Status = require('http-status');
-
 module.exports = {
   Query: {
     getPosts: (_, args, { container, res }) => {
