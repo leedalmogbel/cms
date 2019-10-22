@@ -1,14 +1,5 @@
 const { Operation } = require('@brewery/core');
 const AWS = require('aws-sdk');
-const BUCKET_NAME = 'kapp-cms-upload-dev';
-const awsID = 'AKIATB4WJMQJKPOCPEJA';
-const awsSecret = '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';
-
-const s3 = new AWS.S3({
-  accessKeyId: awsID,
-  secretAccessKey: awsSecret,
-  signatureVersion: 'v4'
-});
 
 class GetAwsSignedUrl extends Operation {
   constructor({ AdvisoryRepository }) {
@@ -16,44 +7,50 @@ class GetAwsSignedUrl extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute(args) {
-    console.log('test')
-    let url = '';
-    let files = args.files;
-    console.log(args)
-    console.log(files[0].fileName)
-    let params = {
-      Bucket: BUCKET_NAME,
-      Key: 'post/' + files[0].fileName + '.jpeg',
-      ContentType: 'image/jpeg',
+  async execute(args) {   
+    AWS.config.update({
+      accessKeyId: 'AKIATB4WJMQJKPOCPEJA',
+      secretAccessKey: 'xohq7p/Bcc83NygwbERdy7ivlDAo53EvNYd0Gpv3',
+      signatureVersion: 'v4'
+    });
+  
+    const s3 = new AWS.S3();
+    const Key = 'sample.png';
+    const Bucket = 'kapp-cms';    
+    
+    const putUrl = () => {
+      return new Promise((resolve, reject) => {
+        s3.getSignedUrl('putObject', {
+          Bucket,
+          Key,
+          ContentType: 'image/png'
+        }, function (err, url) {
+          if (err) {
+            reject(err);
+          }
+          resolve(url);
+        });
+      });
+    }; 
+    
+    const getUrl =  () =>{
+      return new Promise((resolve, reject) => {
+        s3.getSignedUrl('getObject', {
+          Bucket,
+          Key,
+        }, function (err, url) {
+          if (err) {
+            reject(err);
+          }
+          resolve(url);
+        });
+      });
     };
-
-    url = s3.getSignedUrl('putObject', params);
-    let sample = encodeURI(url);
-    return decodeURI(url); //decodeURI(sample);
-    console.log('The URL is', decodeURI(url)+'');
-
-    // for (let file of files) {
-    //   console.log(file.fileName)
-      
-
-    // }
-
-    // return [url];
-
-    try {
-      // const advisories = await this.AdvisoryRepository.getAdvisories(args);
-
-      // // get advisory tags
-      // for (let advisory of advisories) {
-      //   advisory.tags = await advisory.getAdvisoryTags();
-      // }
-
-
-      // return advisories;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    
+    return {
+      get: await getUrl(),
+      put: await putUrl()
+    };
   }
 }
 

@@ -1,7 +1,3 @@
-const { GraphQLSchema, GraphQLObjectType, GraphQLBoolean } = require('graphql');
-const { GraphQLUpload } = require('graphql-upload');
-
-
 module.exports = {
   Query: {
     getAdvisories: (_, args, { container, res }) => {
