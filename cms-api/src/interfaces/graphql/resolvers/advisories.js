@@ -1,6 +1,6 @@
 module.exports = {
   Query: {
-    getAdvisories: (_, args, { container, res }) => {
+    getAdvisories: (_, args, { container }) => {
       const operation = container.resolve('ListAdvisories');
 
       try {
@@ -9,7 +9,7 @@ module.exports = {
         throw err;
       }
     },
-    getAdvisory: (_, args, { container, res }) => {
+    getAdvisory: (_, args, { container }) => {
       const operation = container.resolve('ShowAdvisory');
 
       try {
@@ -20,7 +20,7 @@ module.exports = {
     },
   },  
   Mutation: {
-    createAdvisoryDraft: (_, args, { container, res, next }) => {
+    createAdvisoryDraft: (_, args, { container }) => {
       const operation = container.resolve('CreateAdvisory');
 
       try {
@@ -29,7 +29,7 @@ module.exports = {
         throw err;
       }
     },
-    saveAdvisory: (_, args, { container, res, next }) => {
+    saveAdvisory: (_, args, { container }) => {
       const operation = container.resolve('UpdateAdvisory');
 
       try {
@@ -38,7 +38,7 @@ module.exports = {
         throw err;
       }
     },
-    publishAdvisory: (_, args, { container, res, next }) => {
+    publishAdvisory: (_, args, { container }) => {
       const operation = container.resolve('UpdateAdvisory');
 
       try {
@@ -47,7 +47,7 @@ module.exports = {
         throw err;
       }
     },
-    deleteAdvisory: (_, args, { container, res, next }) => {
+    deleteAdvisory: (_, args, { container}) => {
       const operation = container.resolve('DeleteAdvisory');
       const advisory = operation.execute(args);
 
@@ -57,7 +57,7 @@ module.exports = {
         throw err;
       }
     },
-    getAwsSignedUrl: (_, args, { container, res }) => {
+    getAwsSignedUrl: (_, args, { container }) => {
       const operation = container.resolve('GetAwsSignedUrl');
 
       try {
