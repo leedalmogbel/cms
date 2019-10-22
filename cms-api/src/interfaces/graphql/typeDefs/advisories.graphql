@@ -12,6 +12,7 @@ type Advisory {
   tags: [Tag]
   verified: Boolean
   draft: Boolean
+  attachment: [Attachment]
   publishedAt: DateTime
   createdAt: DateTime
   updatedAt: DateTime
@@ -31,6 +32,7 @@ type Mutation {
   saveAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   publishAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   deleteAdvisory(where: AdvisoryPrimaryInput!): Boolean
+  getAwsSignedUrl(files: [AttachmentInput]): String #[Attachment]
 }
 
 input AdvisoryInput {
@@ -51,6 +53,15 @@ input AdvisoryInput {
 
 input AdvisoryPrimaryInput {
   id: ID!
+}
+type Attachment {
+  advisoryId: Int
+  fileName: String
+}
+
+input AttachmentInput {
+  advisoryId: Int
+  fileName: String
 }
 
 input AdvisoryFilter {
