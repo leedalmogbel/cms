@@ -1,3 +1,7 @@
+const { GraphQLSchema, GraphQLObjectType, GraphQLBoolean } = require('graphql');
+const { GraphQLUpload } = require('graphql-upload');
+
+
 module.exports = {
   Query: {
     getAdvisories: (_, args, { container, res }) => {
@@ -14,15 +18,15 @@ module.exports = {
 
       try {
         return operation.execute(args);
-      } catch (err) {
-        throw err;
+      } catch (error) {
+        throw new Error(error.message);
       }
     },
   },  
   Mutation: {
     createAdvisoryDraft: (_, args, { container, res, next }) => {
       const operation = container.resolve('CreateAdvisory');
-      
+
       try {
         return operation.execute(args);
       } catch (err) {
@@ -49,12 +53,22 @@ module.exports = {
     },
     deleteAdvisory: (_, args, { container, res, next }) => {
       const operation = container.resolve('DeleteAdvisory');
+      const advisory = operation.execute(args);
 
       try {
         return operation.execute(args);
       } catch (err) {
         throw err;
       }
+    },
+    getAwsSignedUrl: (_, args, { container, res }) => {
+      const operation = container.resolve('GetAwsSignedUrl');
+
+      try {
+        return operation.execute(args);
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
-  },
+  }
 };

@@ -17,8 +17,10 @@ class GetAwsSignedUrl extends Operation {
   }
 
   async execute(args) {
+    console.log('test')
     let url = '';
     let files = args.files;
+    console.log(args)
     console.log(files[0].fileName)
     let params = {
       Bucket: BUCKET_NAME,
@@ -26,7 +28,6 @@ class GetAwsSignedUrl extends Operation {
       ContentType: 'image/jpeg',
     };
 
-    console.log(params)
     url = s3.getSignedUrl('putObject', params);
     let sample = encodeURI(url);
     return decodeURI(url); //decodeURI(sample);
