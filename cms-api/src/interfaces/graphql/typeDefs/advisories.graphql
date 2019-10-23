@@ -2,13 +2,13 @@ type Advisory {
   id: ID
   advisoryId: Int
   userId: Int
+  categoryName: String
   title: String
   content: String
   source: String
   locationLat: String
   locationLong: String
   locationAddress: String
-  categoryId: Int
   tags: [Tag]
   verified: Boolean
   draft: Boolean
@@ -44,13 +44,13 @@ type Urls {
 input AdvisoryInput {
   advisoryId: Int
   userId: Int
+  categoryName: String
   title: String
   content: String
   source: String
   locationLat: String
   locationLong: String
   locationAddress: String
-  categoryId: Int
   tags: [TagInput]
   verified: Boolean
   draft: Boolean
