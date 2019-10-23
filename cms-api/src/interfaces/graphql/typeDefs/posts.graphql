@@ -1,9 +1,9 @@
 type Post {
   id: ID
+  postId: String
   userId: Int
-  categoryId: Int
-  subCategory: Int
-  postId: ID
+  category: String
+  subCategory: String
   title: String
   content: String
   priorityLevel: String
@@ -75,10 +75,10 @@ type Mutation {
 }
 
 input PostInput {
+  postId: String
   userId: Int
-  categoryId: Int
-  subCategory: Int
-  postId: ID
+  category: String
+  subCategory: String
   title: String
   content: String
   priorityLevel: String
