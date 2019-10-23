@@ -2,8 +2,8 @@ type Advisory {
   id: ID
   advisoryId: Int
   userId: Int
+  categoryId: ID
   category: String
-  categoryId: Int
   title: String
   content: String
   source: String
@@ -45,7 +45,7 @@ type Urls {
 input AdvisoryInput {
   advisoryId: Int
   userId: Int
-  categoryId: Int
+  categoryId: ID
   category: String
   title: String
   content: String
