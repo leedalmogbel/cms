@@ -2,7 +2,7 @@ const { Operation } = require('@brewery/core');
 const Advisory = require('src/domain/Advisory');
 const Tag = require('src/domain/Tag');
 
-class UpdateAdvisory extends Operation {
+class SaveDraftAdvisory extends Operation {
   constructor({ AdvisoryRepository, TagRepository }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
@@ -18,6 +18,11 @@ class UpdateAdvisory extends Operation {
     } catch (error) {
       throw new Error('Advisory does not exists');
     }
+
+    data = {
+      ...data,
+      draft: false
+    };
 
     // build advisory payloadexecute
     const payload = new Advisory(data);
@@ -39,7 +44,7 @@ class UpdateAdvisory extends Operation {
     // get updated advisory with associated tags
     advisory = await this.AdvisoryRepository.getById(id);
     advisory.tags = await advisory.getAdvisoryTags();
-    
+
     // return advisory
     return advisory;
   }
@@ -85,5 +90,5 @@ class UpdateAdvisory extends Operation {
   }
 }
 
-module.exports = UpdateAdvisory; 
+module.exports = SaveDraftAdvisory; 
     

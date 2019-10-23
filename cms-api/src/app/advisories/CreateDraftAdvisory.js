@@ -1,8 +1,7 @@
 const { Operation } = require('@brewery/core');
 const Advisory = require('src/domain/Advisory');
-const Tag = require('src/domain/Tag');
 
-class CreateAdvisory extends Operation {
+class CreateDraftAdvisory extends Operation {
   constructor({ AdvisoryRepository, TagRepository }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
@@ -29,4 +28,4 @@ class CreateAdvisory extends Operation {
   }
 }
 
-module.exports = CreateAdvisory;
+module.exports = CreateDraftAdvisory;
