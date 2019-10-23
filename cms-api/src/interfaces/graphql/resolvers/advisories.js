@@ -1,6 +1,6 @@
 module.exports = {
   Query: {
-    getAdvisories: (_, args, { container, res }) => {
+    getAdvisories: (_, args, { container }) => {
       const operation = container.resolve('ListAdvisories');
 
       try {
@@ -9,7 +9,7 @@ module.exports = {
         throw err;
       }
     },
-    getAdvisory: (_, args, { container, res }) => {
+    getAdvisory: (_, args, { container }) => {
       const operation = container.resolve('ShowAdvisory');
 
       try {
@@ -47,7 +47,7 @@ module.exports = {
         throw err;
       }
     },
-    deleteAdvisory: (_, args, { container, res, next }) => {
+    deleteAdvisory: (_, args, { container}) => {
       const operation = container.resolve('DeleteAdvisory');
       // const advisory = operation.execute(args);
 
