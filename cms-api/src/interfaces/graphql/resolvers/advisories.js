@@ -20,7 +20,7 @@ module.exports = {
     },
   },  
   Mutation: {
-    createDraftAdvisory: (_, args, { container, res, next }) => {
+    createAdvisoryDraft: (_, args, { container, res, next }) => {
       const operation = container.resolve('CreateDraftAdvisory');
 
       try {
@@ -29,7 +29,7 @@ module.exports = {
         throw err;
       }
     },
-    saveDraftAdvisory: (_, args, { container, res, next }) => {
+    saveAdvisory: (_, args, { container, res, next }) => {
       const operation = container.resolve('SaveDraftAdvisory');
 
       try {

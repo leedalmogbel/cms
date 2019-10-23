@@ -9,7 +9,7 @@ class PublishAdvisory extends Operation {
     this.TagRepository = TagRepository;
   }
 
-  async save({where: {id}, data}) {
+  async publish({where: {id}, data}) {
     let advisory;
 
     // validate advisory

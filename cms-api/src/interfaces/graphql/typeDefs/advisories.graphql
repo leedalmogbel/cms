@@ -28,8 +28,8 @@ type Query {
 }
 
 type Mutation {
-  createDraftAdvisory: AdvisoryPrimary
-  saveDraftAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
+  createAdvisoryDraft: AdvisoryPrimary
+  saveAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   publishAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   deleteAdvisory(where: AdvisoryPrimaryInput!): Boolean
   attachmentUrlAdvisory(files: [AttachmentInput]): [Urls]
