@@ -2,6 +2,7 @@ type Post {
   id: ID
   postId: String
   userId: Int
+  categoryId: Int
   category: String
   subCategory: String
   title: String
@@ -77,6 +78,7 @@ type Mutation {
 input PostInput {
   postId: String
   userId: Int
+  categoryId: Int
   category: String
   subCategory: String
   title: String
