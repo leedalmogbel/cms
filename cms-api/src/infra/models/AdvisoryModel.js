@@ -11,6 +11,7 @@ module.exports = {
       },
       advisoryId : DataTypes.STRING,
       userId: DataTypes.INTEGER,
+      categoryId: DataTypes.INTEGER,
       category : DataTypes.STRING,
       title : DataTypes.STRING,
       content : DataTypes.STRING,
