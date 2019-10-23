@@ -9,7 +9,7 @@ type Post {
   priorityLevel: String
   source: String
   locationAddress: String
-  locationDetails: LocationDetails
+  locationDetails: PostLocation
   comments: [PostComment]
   advisories: [PostAdvisory]
   attachments: [PostAttachment]
@@ -44,6 +44,21 @@ type PostAttachment {
   updatedAt: DateTime
 }
 
+type PostLocation {
+  placeId: String
+  lng: String
+  lat: String
+  country: String
+  region: String
+  province: String
+  city: String
+  district: String
+  barangay: String
+  street: String
+  streetNumber: String
+  locationLevel: String
+}
+
 type Query {
   getPosts(
     where: PostFilter,
@@ -68,28 +83,12 @@ input PostInput {
   content: String
   priorityLevel: String
   source: String
-  locationAddress: String
-  locationDetails: LocationInput
+  placeId: String
   tags: [TagInput]
   draft: Boolean
   scheduledAt: DateTime
   expiredAt: DateTime
   publishedAt: DateTime
-}
-
-input LocationInput {
-  placeId: String
-  lng: String
-  lat: String
-  country: String
-  region: String
-  province: String
-  city: String
-  district: String
-  barangay: String
-  street: String
-  streetNumber: String
-  locationLevel: String
 }
 
 input PostPrimaryInput {

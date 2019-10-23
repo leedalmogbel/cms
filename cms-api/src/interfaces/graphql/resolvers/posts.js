@@ -3,7 +3,6 @@ module.exports = {
     getPosts: (_, args, { container, res }) => {
       const operation = container.resolve('ListPosts');
 
-      // fetch posts
       try {
         return operation.execute(args);
       } catch (err) {
@@ -13,7 +12,6 @@ module.exports = {
     getPost: (_, args, { container, res }) => {
       const operation = container.resolve('ShowPost');
 
-      // fetch post
       try {
         return operation.execute(args);
       } catch (err) {
@@ -23,31 +21,29 @@ module.exports = {
   },  
   Mutation: {
     createPostDraft: (_, args, { container, res, next }) => {
-      const operation = container.resolve('CreatePost');
+      const operation = container.resolve('CreatePostDraft');
 
-      // create post
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
+    },      // publish post 
+
+    savePost: (_, args, { container, res, next }) => {
+      const operation = container.resolve('SavePost');
+
       try {
         return operation.execute(args);
       } catch (err) {
         throw err;
       }
     },
-    savePost: (_, args, { container, res, next }) => {
-      const operation = container.resolve('UpdatePost');
-
-      // save post 
-      try {
-        return operation.save(args);
-      } catch (err) {
-        throw err;
-      }
-    },
     publishPost: (_, args, { container, res, next }) => {
-      const operation = container.resolve('UpdatePost');
+      const operation = container.resolve('PublishPost');
 
-      // publish post 
       try {
-        return operation.publish(args);
+        return operation.execute(args);
       } catch (err) {
         throw err;
       }
