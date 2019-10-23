@@ -28,8 +28,7 @@ module.exports = {
       } catch (err) {
         throw err;
       }
-    },      // publish post 
-
+    },
     savePost: (_, args, { container, res, next }) => {
       const operation = container.resolve('SavePost');
 
