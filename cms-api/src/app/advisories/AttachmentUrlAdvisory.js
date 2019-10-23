@@ -1,7 +1,6 @@
 const { Operation } = require('@brewery/core');
 const AWS = require('aws-sdk');
 
-// constant
 const s3 = new AWS.S3();
 const Bucket = 'kapp-cms';
 
