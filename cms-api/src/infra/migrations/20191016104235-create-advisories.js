@@ -10,7 +10,7 @@ module.exports = {
       },
       advisoryId : Sequelize.STRING,
       userId: Sequelize.INTEGER,
-      categoryName : Sequelize.STRING,
+      category : Sequelize.STRING,
       title : Sequelize.STRING,
       content : Sequelize.STRING,
       source : Sequelize.STRING,

@@ -5,7 +5,7 @@ const Advisory = attributes({
   id: Number,
   advisoryId: Number,
   userId: Number,
-  categoryName: String,
+  category: String,
   title: String,
   content: String,
   source: String,
