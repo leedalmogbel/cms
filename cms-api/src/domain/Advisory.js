@@ -15,7 +15,7 @@ const Advisory = attributes({
   draft: Boolean,
   categoryId: Number,
   tags: Array,
-  attachment: Object,
+  attachments: Array,
   publishedAt: Date,
   createdAt: Date,
   updatedAt: Date,

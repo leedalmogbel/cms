@@ -5,7 +5,7 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 const Bucket = 'kapp-cms';
 
-class GetAwsSignedUrl extends Operation {
+class AttachmentUrlAdvisory extends Operation {
   constructor({ AdvisoryRepository }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
@@ -24,15 +24,13 @@ class GetAwsSignedUrl extends Operation {
     for (let file of args.files) {
       keyName = file.fileName;
 
-      // save to array container
       url.push({
         'fileName': keyName,
-        'getUrl': await this.getUrl(keyName),
-        'putUrl': await this.putUrl(keyName)
+        'downloadUrl': await this.getUrl(keyName),
+        'uploadUrl': await this.putUrl(keyName)
       });
     }
 
-    // return url with filename
     return url;
   }
 
@@ -71,5 +69,5 @@ class GetAwsSignedUrl extends Operation {
 
 }
 
-module.exports = GetAwsSignedUrl;
+module.exports = AttachmentUrlAdvisory;
     

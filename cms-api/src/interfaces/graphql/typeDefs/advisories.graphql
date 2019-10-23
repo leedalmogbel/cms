@@ -12,7 +12,7 @@ type Advisory {
   tags: [Tag]
   verified: Boolean
   draft: Boolean
-  attachment: [Attachment]
+  attachments: [Urls]
   publishedAt: DateTime
   createdAt: DateTime
   updatedAt: DateTime
@@ -28,17 +28,17 @@ type Query {
 }
 
 type Mutation {
-  createAdvisoryDraft: AdvisoryPrimary
-  saveAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
+  createDraftAdvisory: AdvisoryPrimary
+  saveDraftAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   publishAdvisory(where: AdvisoryPrimaryInput, data: AdvisoryInput!): Advisory
   deleteAdvisory(where: AdvisoryPrimaryInput!): Boolean
-  getAwsSignedUrl(files: [AttachmentInput]): [Urls]
+  attachmentUrlAdvisory(files: [AttachmentInput]): [Urls]
 }
 
-type Urls{
+type Urls {
   fileName: String
-  getUrl: String
-  putUrl: String
+  downloadUrl: String
+  uploadUrl: String
 }
 
 input AdvisoryInput {
@@ -54,23 +54,20 @@ input AdvisoryInput {
   tags: [TagInput]
   verified: Boolean
   draft: Boolean
+  attachments: [AttachmentInput]
   publishedAt: DateTime
 }
 
+
 input AdvisoryPrimaryInput {
   id: ID!
-}
-type Attachment {
-  advisoryId: Int
-  fileName: String
-}
-
-input AttachmentInput {
-  advisoryId: Int
-  fileName: String
 }
 
 input AdvisoryFilter {
   verified: Boolean
   draft: Boolean
+}
+
+input AttachmentInput {
+  fileName: String
 }

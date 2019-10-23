@@ -14,14 +14,14 @@ module.exports = {
 
       try {
         return operation.execute(args);
-      } catch (error) {
-        throw new Error(error.message);
+      } catch (err) {
+        throw err;
       }
     },
   },  
   Mutation: {
-    createAdvisoryDraft: (_, args, { container, res, next }) => {
-      const operation = container.resolve('CreateAdvisory');
+    createDraftAdvisory: (_, args, { container, res, next }) => {
+      const operation = container.resolve('CreateDraftAdvisory');
 
       try {
         return operation.execute(args);
@@ -29,8 +29,8 @@ module.exports = {
         throw err;
       }
     },
-    saveAdvisory: (_, args, { container, res, next }) => {
-      const operation = container.resolve('UpdateAdvisory');
+    saveDraftAdvisory: (_, args, { container, res, next }) => {
+      const operation = container.resolve('SaveDraftAdvisory');
 
       try {
         return operation.save(args);
@@ -39,7 +39,7 @@ module.exports = {
       }
     },
     publishAdvisory: (_, args, { container, res, next }) => {
-      const operation = container.resolve('UpdateAdvisory');
+      const operation = container.resolve('PublishAdvisory');
 
       try {
         return operation.publish(args);
@@ -49,7 +49,7 @@ module.exports = {
     },
     deleteAdvisory: (_, args, { container, res, next }) => {
       const operation = container.resolve('DeleteAdvisory');
-      const advisory = operation.execute(args);
+      // const advisory = operation.execute(args);
 
       try {
         return operation.execute(args);
@@ -57,13 +57,13 @@ module.exports = {
         throw err;
       }
     },
-    getAwsSignedUrl: (_, args, { container, res }) => {
-      const operation = container.resolve('GetAwsSignedUrl');
+    attachmentUrlAdvisory: (_, args, { container, res }) => {
+      const operation = container.resolve('AttachmentUrlAdvisory');
 
       try {
         return operation.execute(args);
-      } catch (error) {
-        throw new Error(error.message);
+      } catch (err) {
+        throw err;
       }
     }
   }
