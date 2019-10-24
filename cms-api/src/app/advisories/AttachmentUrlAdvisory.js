@@ -56,9 +56,9 @@ class AttachmentUrlAdvisory extends Operation {
       s3.getSignedUrl('putObject', {
         Bucket,
         Key,
-        // ContentType: 'application/octet-stream',
-        // Expires: 10000,
-        // ACL: 'public-read'
+          // ContentType: 'application/octet-stream',
+          // Expires: 10000,
+          // ACL: 'public-read'
       }, (err, url) => {
         if (err) {
           reject(err);
