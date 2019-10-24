@@ -46,3 +46,10 @@ functions:
           path: /sample
           method: any
           cors: true
+  autocomplete:
+    handler: src/autocomplete.index
+    events:
+      - http:
+          path: /location/autocomplete
+          method: any
+          cors: true
