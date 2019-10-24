@@ -12,7 +12,6 @@ module.exports.index = async (event, context, callback) => {
       })
       .then(res => res.json())
       .then((json) => {
-        console.log(json);
         resolve(json);
       })
     });
