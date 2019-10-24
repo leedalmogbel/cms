@@ -20,7 +20,7 @@ module.exports = {
     },
   },  
   Mutation: {
-    createAdvisoryDraft: (_, args, { container, res, next }) => {
+    createAdvisoryDraft: (_, args, { container }) => {
       const operation = container.resolve('CreateDraftAdvisory');
 
       try {
@@ -29,7 +29,7 @@ module.exports = {
         throw err;
       }
     },
-    saveAdvisory: (_, args, { container, res, next }) => {
+    saveAdvisory: (_, args, { container }) => {
       const operation = container.resolve('SaveDraftAdvisory');
 
       try {
@@ -38,7 +38,7 @@ module.exports = {
         throw err;
       }
     },
-    publishAdvisory: (_, args, { container, res, next }) => {
+    publishAdvisory: (_, args, { container }) => {
       const operation = container.resolve('PublishAdvisory');
 
       try {
@@ -47,7 +47,7 @@ module.exports = {
         throw err;
       }
     },
-    deleteAdvisory: (_, args, { container}) => {
+    deleteAdvisory: (_, args, { container }) => {
       const operation = container.resolve('DeleteAdvisory');
       // const advisory = operation.execute(args);
 
@@ -57,9 +57,9 @@ module.exports = {
         throw err;
       }
     },
-    attachmentUrlAdvisory: (_, args, { container, res }) => {
+    attachmentUrlAdvisory: (_, args, { container }) => {
       const operation = container.resolve('AttachmentUrlAdvisory');
-
+console.log('sample')
       try {
         return operation.execute(args);
       } catch (err) {
