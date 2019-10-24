@@ -12,17 +12,16 @@ class ListPosts extends Operation {
       const posts = await this.PostRepository.getPosts(args);
 
       // get post tags
-      for (let post of posts) {
+      for (const post of posts) {
         post.tags = await post.getPostTags();
       }
 
       // return posts
       return posts;
-    } catch(error) {
+    } catch (error) {
       throw new Error(error);
     }
   }
 }
 
 module.exports = ListPosts;
-    

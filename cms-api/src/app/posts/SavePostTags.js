@@ -11,7 +11,7 @@ class SavePostTags extends Operation {
     // first remove tags
     await post.setPostTags([]);
 
-    for (let tag of tags) {
+    for (const tag of tags) {
       // associate tag if exists
       const existsTag = await this.TagRepository.getTagByName(tag.name);
       if (existsTag) {
@@ -20,7 +20,7 @@ class SavePostTags extends Operation {
       }
 
       // if tag does not exists
-      // create new tag 
+      // create new tag
       const payload = new Tag(tag);
 
       try {
