@@ -1,19 +1,17 @@
 module.exports = (post) => {
   const {
-    locationDetails:{
+    locationDetails: {
       city,
       region,
       province,
       country,
       district,
       barangay,
-      locationLevel,placeId
-    }
+      locationLevel, placeId,
+    },
   } = post;
 
-  const nullable = (value) => {
-    return typeof value === 'undefined' ? null : value
-  }
+  const nullable = (value) => (typeof value === 'undefined' ? null : value);
 
   return {
     postId: post.postId,
@@ -25,18 +23,18 @@ module.exports = (post) => {
     postAcceptedKeywords: [],
     postRejectedKeywords: [],
     postAddedKeywords: [],
-    postLocation:{
-      locationAddress: post.locationAddress, 
-      lat: post.locationDetails.lat, 
+    postLocation: {
+      locationAddress: post.locationAddress,
+      lat: post.locationDetails.lat,
       long: post.locationDetails.lng,
     },
     postCountry: nullable(country),
-    postRegion: nullable(region), 
-    postProvince: nullable(province), 
-    postCity: nullable(city), 
-    postDistrict: nullable(district), 
+    postRegion: nullable(region),
+    postProvince: nullable(province),
+    postCity: nullable(city),
+    postDistrict: nullable(district),
     postBarangay: nullable(barangay),
-    locationLevel, 
+    locationLevel,
     placeId,
     postTimestampPosted: post.publishedAt,
     postTimestampEvent: null,
@@ -54,9 +52,9 @@ module.exports = (post) => {
     sponsorFlag: null,
     sponsorName: null,
     sponsorType: null,
-    postType: "Text",
-    postSourceType: "Writer/Editor",
-    postSource: "Juan Dela Cruz",
+    postType: 'Text',
+    postSourceType: 'Writer/Editor',
+    postSource: 'Juan Dela Cruz',
     postAgeRestriction: null,
     postGenderRestriction: null,
     postTarget: null,
@@ -69,8 +67,8 @@ module.exports = (post) => {
     postTimeOfDay: null,
     postDayOfWeek: null,
     postOtherRestriction: null,
-    postStatus: "Active",
+    postStatus: 'Active',
     reportedFlag: null,
-    postScore: null
+    postScore: null,
   };
 };
