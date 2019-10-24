@@ -13,14 +13,15 @@ class CreatePostDraft extends Operation {
 
     const data = {
       draft: true,
-      postId: Helpers.generateUID(8)
+      postId: Helpers.generateUID(8),
     };
 
+
     const payload = new Post(data);
-    
+
     try {
       newPost = await this.PostRepository.add(payload);
-    } catch(err) {
+    } catch (err) {
       throw err;
     }
 
