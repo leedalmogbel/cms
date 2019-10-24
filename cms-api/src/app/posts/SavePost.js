@@ -24,13 +24,13 @@ class SavePost extends Operation {
         // get location details
         const {
           locationDetails,
-          locationAddress
+          locationAddress,
         } = await this.GetLocation.execute(data.placeId);
 
         data = {
           ...data,
           locationDetails,
-          locationAddress
+          locationAddress,
         };
       } catch (err) {
         throw err;
@@ -40,8 +40,8 @@ class SavePost extends Operation {
     const payload = new Post(data);
 
     try {
-      await this.PostRepository.update(id, payload);      
-    } catch(err) {
+      await this.PostRepository.update(id, payload);
+    } catch (err) {
       throw err;
     }
 

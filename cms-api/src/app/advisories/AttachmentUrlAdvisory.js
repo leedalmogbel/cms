@@ -10,23 +10,23 @@ class AttachmentUrlAdvisory extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute(args) {   
+  async execute(args) {
     AWS.config.update({
       accessKeyId: 'AKIATB4WJMQJKPOCPEJA',
       secretAccessKey: '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',
-      signatureVersion: 'v4'
+      // signatureVersion: 'v4',
     });
 
-    let url = [];
+    const url = [];
     let keyName = '';
 
-    for (let file of args.files) {
+    for (const file of args.files) {
       keyName = file.fileName;
 
       url.push({
-        'fileName': keyName,
-        'downloadUrl': await this.getUrl(keyName),
-        'uploadUrl': await this.putUrl(keyName)
+        fileName: keyName,
+        downloadUrl: await this.getUrl(keyName),
+        uploadUrl: await this.putUrl(keyName),
       });
     }
 
@@ -40,7 +40,7 @@ class AttachmentUrlAdvisory extends Operation {
       s3.getSignedUrl('getObject', {
         Bucket,
         Key,
-      }, function (err, url) {
+      }, (err, url) => {
         if (err) {
           reject(err);
         }
@@ -55,9 +55,8 @@ class AttachmentUrlAdvisory extends Operation {
     return new Promise((resolve, reject) => {
       s3.getSignedUrl('putObject', {
         Bucket,
-        Key,
-        ContentType: 'image/png'
-      }, function (err, url) {
+        Key
+      }, (err, url) => {
         if (err) {
           reject(err);
         }
@@ -65,8 +64,6 @@ class AttachmentUrlAdvisory extends Operation {
       });
     });
   }
-
 }
 
 module.exports = AttachmentUrlAdvisory;
-    

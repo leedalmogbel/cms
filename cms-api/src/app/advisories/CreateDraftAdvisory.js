@@ -13,13 +13,13 @@ class CreateDraftAdvisory extends Operation {
 
     // build data
     const advisory = new Advisory({
-      draft: true
+      draft: true,
     });
 
     // create advisory
     try {
       newAdvisory = await this.AdvisoryRepository.add(advisory);
-    } catch(error) {
+    } catch (error) {
       throw error;
     }
 
