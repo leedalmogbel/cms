@@ -10,7 +10,7 @@ class SaveDraftAdvisory extends Operation {
     this.GetLocation = GetLocation;
   }
 
-  async save({where: {id}, data}) {
+  async save({ where: { id }, data }) {
     let advisory;
 
     // validate advisory
