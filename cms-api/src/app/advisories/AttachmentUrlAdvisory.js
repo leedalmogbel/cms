@@ -55,7 +55,10 @@ class AttachmentUrlAdvisory extends Operation {
     return new Promise((resolve, reject) => {
       s3.getSignedUrl('putObject', {
         Bucket,
-        Key
+        Key,
+        // ContentType: 'application/octet-stream',
+        // Expires: 10000,
+        // ACL: 'public-read'
       }, (err, url) => {
         if (err) {
           reject(err);

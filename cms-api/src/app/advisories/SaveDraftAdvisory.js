@@ -3,10 +3,11 @@ const Advisory = require('src/domain/Advisory');
 const Tag = require('src/domain/Tag');
 
 class SaveDraftAdvisory extends Operation {
-  constructor({ AdvisoryRepository, TagRepository }) {
+  constructor({ AdvisoryRepository, TagRepository, GetLocation }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
     this.TagRepository = TagRepository;
+    this.GetLocation = GetLocation;
   }
 
   async save({where: {id}, data}) {
@@ -17,6 +18,24 @@ class SaveDraftAdvisory extends Operation {
       advisory = await this.AdvisoryRepository.getById(id);
     } catch (error) {
       throw new Error('Advisory does not exists');
+    }
+
+    if ('placeId' in data) {
+      try {
+        // get location details
+        const {
+          locationDetails,
+          locationAddress,
+        } = await this.GetLocation.execute(data.placeId);
+
+        data = {
+          ...data,
+          locationDetails,
+          locationAddress,
+        };
+      } catch (err) {
+        throw err;
+      }
     }
 
     data = {

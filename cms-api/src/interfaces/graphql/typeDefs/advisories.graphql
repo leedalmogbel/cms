@@ -7,9 +7,8 @@ type Advisory {
   title: String
   content: String
   source: String
-  locationLat: String
-  locationLong: String
   locationAddress: String
+  locationDetails: AdvisoryLocation
   tags: [Tag]
   verified: Boolean
   draft: Boolean
@@ -50,9 +49,7 @@ input AdvisoryInput {
   title: String
   content: String
   source: String
-  locationLat: String
-  locationLong: String
-  locationAddress: String
+  placeId: String
   tags: [TagInput]
   verified: Boolean
   draft: Boolean
@@ -72,4 +69,19 @@ input AdvisoryFilter {
 
 input AttachmentInput {
   fileName: String
+}
+
+type AdvisoryLocation {
+  placeId: String
+  lng: String
+  lat: String
+  country: String
+  region: String
+  province: String
+  city: String
+  district: String
+  barangay: String
+  street: String
+  streetNumber: String
+  locationLevel: String
 }
