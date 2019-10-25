@@ -9,19 +9,12 @@ class CreateDraftAdvisory extends Operation {
   }
 
   async execute() {
-    let newAdvisory;
-
     // build data
     const advisory = new Advisory({
       draft: true,
     });
 
-    // create advisory
-    try {
-      newAdvisory = await this.AdvisoryRepository.add(advisory);
-    } catch (error) {
-      throw error;
-    }
+    const newAdvisory = await this.AdvisoryRepository.add(advisory);
 
     // return advisory
     return { id: newAdvisory.id };
