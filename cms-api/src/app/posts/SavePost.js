@@ -10,40 +10,26 @@ class SavePost extends Operation {
   }
 
   async execute({ where: { id }, data }) {
-    let post;
-
-    try {
-      // validate post id
-      post = await this.PostRepository.getById(id);
-    } catch (err) {
-      throw err;
-    }
+    // validate post id
+    let post = await this.PostRepository.getById(id);
 
     if ('placeId' in data) {
-      try {
-        // get location details
-        const {
-          locationDetails,
-          locationAddress,
-        } = await this.GetLocation.execute(data.placeId);
+      // get location details
+      const {
+        locationDetails,
+        locationAddress,
+      } = await this.GetLocation.execute(data.placeId);
 
-        data = {
-          ...data,
-          locationDetails,
-          locationAddress,
-        };
-      } catch (err) {
-        throw err;
-      }
+      data = {
+        ...data,
+        locationDetails,
+        locationAddress,
+      };
     }
 
+    // update post
     const payload = new Post(data);
-
-    try {
-      await this.PostRepository.update(id, payload);
-    } catch (err) {
-      throw err;
-    }
+    await this.PostRepository.update(id, payload);
 
     // if post tags exists
     // associate tags to post
