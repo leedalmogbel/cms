@@ -29,11 +29,7 @@ class PublishAdvisory extends Operation {
     // build advisory payloadexecute
     const payload = new Advisory(data);
 
-    try {
-      await this.AdvisoryRepository.update(id, payload);
-    } catch (error) {
-      throw error;
-    }
+    await this.AdvisoryRepository.update(id, payload);
 
     // advisory tags exists;
     if ('tags' in data) {

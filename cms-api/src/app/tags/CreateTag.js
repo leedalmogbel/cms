@@ -14,13 +14,9 @@ class CreateTag extends Operation {
 
     // create new tag
     const tag = new Tag(data);
-    
-    try {
-      const newTag = await this.TagRepository.add(tag);
-      return newTag;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    const newTag = await this.TagRepository.add(tag);
+
+    return newTag;
   }
 }
 

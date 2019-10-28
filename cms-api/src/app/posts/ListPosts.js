@@ -9,12 +9,13 @@ class ListPosts extends Operation {
   async execute(args) {
     try {
       // get posts
-      const posts = await this.PostRepository.getPosts(args);
+      let posts = await this.PostRepository.getPosts(args);
 
       // get post tags
-      for (const post of posts) {
-        post.tags = await post.getPostTags();
-      }
+      posts = posts.map((post) => ({
+        ...post.toJSON(),
+        tags: post.getPostTags(),
+      }));
 
       // return posts
       return posts;

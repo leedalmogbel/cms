@@ -14,13 +14,14 @@ class AttachmentUrlAdvisory extends Operation {
     AWS.config.update({
       accessKeyId: 'AKIATB4WJMQJKPOCPEJA',
       secretAccessKey: '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',
-      // signatureVersion: 'v4',
+      signatureVersion: 'v4',
     });
 
     const url = [];
     let keyName = '';
+    const { files } = args;
 
-    for (const file of args.files) {
+    files.map(async (file) => {
       keyName = file.fileName;
 
       url.push({
@@ -28,7 +29,7 @@ class AttachmentUrlAdvisory extends Operation {
         downloadUrl: await this.getUrl(keyName),
         uploadUrl: await this.putUrl(keyName),
       });
-    }
+    });
 
     return url;
   }
@@ -56,9 +57,9 @@ class AttachmentUrlAdvisory extends Operation {
       s3.getSignedUrl('putObject', {
         Bucket,
         Key,
-        // ContentType: 'application/octet-stream',
-        // Expires: 10000,
-        // ACL: 'public-read'
+        ContentType: 'application/octet-stream',
+        Expires: 10000,
+        ACL: 'public-read',
       }, (err, url) => {
         if (err) {
           reject(err);

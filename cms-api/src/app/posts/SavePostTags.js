@@ -11,25 +11,21 @@ class SavePostTags extends Operation {
     // first remove tags
     await post.setPostTags([]);
 
-    for (const tag of tags) {
+    // add post tags
+    tags.map(async (tag) => {
       // associate tag if exists
       const existsTag = await this.TagRepository.getTagByName(tag.name);
       if (existsTag) {
         await post.addPostTag(existsTag);
-        continue;
+        return;
       }
 
       // if tag does not exists
       // create new tag
       const payload = new Tag(tag);
-
-      try {
-        const newTag = await this.TagRepository.add(payload);
-        await post.addPostTag(newTag);
-      } catch (err) {
-        throw err;
-      }
-    }
+      const newTag = await this.TagRepository.add(payload);
+      await post.addPostTag(newTag);
+    });
   }
 }
 

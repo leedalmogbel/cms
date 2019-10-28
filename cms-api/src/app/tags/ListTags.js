@@ -7,14 +7,9 @@ class ListTags extends Operation {
   }
 
   async execute() {
-    try {
-      const tags = await this.TagRepository.getAll();
-      return tags;
-    } catch(error) {
-      throw new Error(error.message);      
-    }
+    const tags = await this.TagRepository.getAll();
+    return tags;
   }
 }
 
 module.exports = ListTags;
-    
