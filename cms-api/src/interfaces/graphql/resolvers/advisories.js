@@ -1,6 +1,6 @@
 module.exports = {
   Query: {
-    getAdvisories: (_, args, { container, res }) => {
+    getAdvisories: (_, args, { container }) => {
       const operation = container.resolve('ListAdvisories');
 
       try {
@@ -9,19 +9,8 @@ module.exports = {
         throw err;
       }
     },
-    getAdvisory: (_, args, { container, res }) => {
+    getAdvisory: (_, args, { container }) => {
       const operation = container.resolve('ShowAdvisory');
-
-      try {
-        return operation.execute(args);
-      } catch (error) {
-        throw new Error(error.message);
-      }
-    },
-  },  
-  Mutation: {
-    createAdvisoryDraft: (_, args, { container, res, next }) => {
-      const operation = container.resolve('CreateAdvisory');
 
       try {
         return operation.execute(args);
@@ -29,8 +18,19 @@ module.exports = {
         throw err;
       }
     },
-    saveAdvisory: (_, args, { container, res, next }) => {
-      const operation = container.resolve('UpdateAdvisory');
+  },  
+  Mutation: {
+    createAdvisoryDraft: (_, args, { container }) => {
+      const operation = container.resolve('CreateDraftAdvisory');
+
+      try {
+        return operation.execute(args);
+      } catch (err) {
+        throw err;
+      }
+    },
+    saveAdvisory: (_, args, { container }) => {
+      const operation = container.resolve('SaveDraftAdvisory');
 
       try {
         return operation.save(args);
@@ -38,8 +38,8 @@ module.exports = {
         throw err;
       }
     },
-    publishAdvisory: (_, args, { container, res, next }) => {
-      const operation = container.resolve('UpdateAdvisory');
+    publishAdvisory: (_, args, { container }) => {
+      const operation = container.resolve('PublishAdvisory');
 
       try {
         return operation.publish(args);
@@ -47,9 +47,9 @@ module.exports = {
         throw err;
       }
     },
-    deleteAdvisory: (_, args, { container, res, next }) => {
+    deleteAdvisory: (_, args, { container }) => {
       const operation = container.resolve('DeleteAdvisory');
-      const advisory = operation.execute(args);
+      // const advisory = operation.execute(args);
 
       try {
         return operation.execute(args);
@@ -57,13 +57,13 @@ module.exports = {
         throw err;
       }
     },
-    getAwsSignedUrl: (_, args, { container, res }) => {
-      const operation = container.resolve('GetAwsSignedUrl');
-
+    attachmentUrlAdvisory: (_, args, { container }) => {
+      const operation = container.resolve('AttachmentUrlAdvisory');
+console.log('sample')
       try {
         return operation.execute(args);
-      } catch (error) {
-        throw new Error(error.message);
+      } catch (err) {
+        throw err;
       }
     }
   }

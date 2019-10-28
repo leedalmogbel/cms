@@ -1,13 +1,12 @@
 const { Operation } = require('@brewery/core');
-const https = require('https');
 
-class ShowLocation extends Operation {
-  async execute({ placeId }) {
-    // get google key and endpoint
-    const key = process.env.PLACE_KEY;
-    const endpoint = process.env.PLACE_ENDPOINT;
+class GetLocation extends Operation {
+  constructor({ httpClient }) {
+    super();
+    this.httpClient = httpClient;
+  }
 
-    // set fields
+  async execute(placeId) {
     const fields = [
       'address_components',
       'formatted_address',
@@ -15,18 +14,18 @@ class ShowLocation extends Operation {
       'place_id',
       'types'
     ].join();
-
-    // construct url with params
-    const url = `${endpoint}?key=${key}&place_id=${placeId}&fields=${fields}`;
   
     // send place detail request
     try {
-      let res = await this.request(url);
+      let res = await this.httpClient.get(process.env.PLACE_ENDPOINT, {
+        key: process.env.PLACE_KEY,
+        place_id: placeId,
+        fields
+      });
 
       if ('status' in res && res.status == 'OK') {
         res = res.result;
 
-        // init response data
         let details = {};
         let data = {
           locationAddress: '',
@@ -97,9 +96,8 @@ class ShowLocation extends Operation {
       const longName = component.long_name;
       const shortName = component.short_name;
 
-      // console.log(component);
-
       // iterate through each required types
+      // to get address type values
       for (let key in required) {
         if (types.includes(key)) {
           components[required[key]] = shortName;
@@ -119,29 +117,6 @@ class ShowLocation extends Operation {
 
     return components;
   }
-
-  request(url) {
-    return new Promise((resolve, reject) => {
-      const req = https.get(url, res => {
-        let data = '';
-        res.setEncoding('utf-8');
-
-        res.on('data', chunk => {
-          data += chunk;
-        });
-
-        res.on('end', _ => {
-          resolve(JSON.parse(data));
-        });
-      });
-
-      req.on('error', err => {
-        reject(err);
-      });
-
-      req.end();
-    });
-  }
 }
 
-module.exports = ShowLocation;
+module.exports = GetLocation;

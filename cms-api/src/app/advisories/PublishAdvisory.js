@@ -2,14 +2,14 @@ const { Operation } = require('@brewery/core');
 const Advisory = require('src/domain/Advisory');
 const Tag = require('src/domain/Tag');
 
-class UpdateAdvisory extends Operation {
+class PublishAdvisory extends Operation {
   constructor({ AdvisoryRepository, TagRepository }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
     this.TagRepository = TagRepository;
   }
 
-  async save({where: {id}, data}) {
+  async publish({where: {id}, data}) {
     let advisory;
 
     // validate advisory
@@ -18,6 +18,13 @@ class UpdateAdvisory extends Operation {
     } catch (error) {
       throw new Error('Advisory does not exists');
     }
+
+    // set publish timestamp and draft flag
+    data = {
+      ...data,
+      publishedAt: new Date().toISOString(),
+      draft: false
+    };
 
     // build advisory payloadexecute
     const payload = new Advisory(data);
@@ -39,24 +46,9 @@ class UpdateAdvisory extends Operation {
     // get updated advisory with associated tags
     advisory = await this.AdvisoryRepository.getById(id);
     advisory.tags = await advisory.getAdvisoryTags();
-    
+
     // return advisory
     return advisory;
-  }
-
-  async publish({where: {id}, data}) {
-    // set publish timestamp and draft flag
-    data = {
-      ...data,
-      publishedAt: new Date().toISOString(),
-      draft: false
-    };
-
-    // use save process
-    return await this.save({
-      where: { id },
-      data
-    });
   }
 
   async addAdvisoryTags (advisory, tags) {
@@ -85,5 +77,5 @@ class UpdateAdvisory extends Operation {
   }
 }
 
-module.exports = UpdateAdvisory; 
+module.exports = PublishAdvisory; 
     

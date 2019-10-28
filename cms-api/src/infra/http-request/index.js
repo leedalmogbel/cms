@@ -29,9 +29,6 @@ class Client {
       })
         .then(res => res.json())
         .then((json) => {
-          if (json.status) {
-            reject(json);
-          }
           resolve(json);
         })
     ));
