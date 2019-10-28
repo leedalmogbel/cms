@@ -22,7 +22,7 @@ class GetLocation extends Operation {
       fields,
     });
 
-    if ('status' in res && res.status == 'OK') {
+    if ('status' in res && res.status === 'OK') {
       res = res.result;
 
       const details = {};

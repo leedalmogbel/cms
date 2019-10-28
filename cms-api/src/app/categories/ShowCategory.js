@@ -8,12 +8,8 @@ class ShowCategory extends Operation {
   }
 
   async execute({ where: { id } }) {
-    try {
-      const category = await this.CategoryRepository.getById(id);
-      return category;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    const category = await this.CategoryRepository.getById(id);
+    return category;
   }
 }
 

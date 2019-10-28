@@ -6,7 +6,7 @@ class UpdateTag extends Operation {
     this.TagRepository = TagRepository;
   }
 
-  async execute({ where: {id}, data }) {
+  async execute({ where: { id }, data }) {
     try {
       // validate tag
       await this.TagRepository.getById(id);
@@ -14,15 +14,10 @@ class UpdateTag extends Operation {
       throw new Error('Tag does not exists.');
     }
 
-    try {
-      // update tag
-      await this.TagRepository.update(id, data);
-      
-      // return true as success response
-      return true;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    // update tag
+    // return true as success response
+    await this.TagRepository.update(id, data);
+    return true;
   }
 }
 
