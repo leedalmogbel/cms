@@ -2,44 +2,44 @@
 module.exports = {
   name: 'AdvisoryModel',
   datasource: 'kapp-cms',
-  definition: function(datasource, DataTypes) {
+  definition(datasource, DataTypes) {
     const AdvisoryModel = datasource.define('AdvisoryModel', {
-      id : {
+      id: {
         primaryKey: true,
         autoIncrement: true,
         type: DataTypes.INTEGER,
       },
-      advisoryId : DataTypes.STRING,
+      advisoryId: DataTypes.STRING,
       userId: DataTypes.INTEGER,
       categoryId: DataTypes.INTEGER,
-      category : DataTypes.STRING,
-      title : DataTypes.STRING,
-      content : DataTypes.TEXT,
-      source : DataTypes.STRING,
+      category: DataTypes.STRING,
+      title: DataTypes.STRING,
+      content: DataTypes.TEXT,
+      source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
-      locationDetails: DataTypes.JSONB,
+      locationDetails: DataTypes.JSON,
       verified: DataTypes.BOOLEAN,
       draft: {
         type: DataTypes.BOOLEAN,
-        defaultValue: '0'
+        defaultValue: '0',
       },
-      tags : {
+      tags: {
         type: DataTypes.JSON,
-        allowNull: true
+        allowNull: true,
       },
-      attachments : {
+      attachments: {
         type: DataTypes.JSON,
-        allowNull: true
+        allowNull: true,
       },
-      publishedAt : {
-        type:DataTypes.DATE,
-        allowNull: true
+      publishedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
       },
-      createdAt : DataTypes.DATE,
-      updatedAt : DataTypes.DATE,
+      createdAt: DataTypes.DATE,
+      updatedAt: DataTypes.DATE,
     }, {
       tableName: 'advisories',
-      timestamps: true
+      timestamps: true,
     });
 
     AdvisoryModel.associate = () => {
@@ -47,10 +47,10 @@ module.exports = {
         through: datasource.models.AdvisoryTagModel,
         as: 'advisoryTags',
         foreignKey: 'advisoryId',
-        otherKey: 'tagId'
+        otherKey: 'tagId',
       });
     };
 
     return AdvisoryModel;
-  }
+  },
 };
