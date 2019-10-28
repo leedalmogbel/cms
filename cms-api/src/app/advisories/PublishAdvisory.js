@@ -9,7 +9,7 @@ class PublishAdvisory extends Operation {
     this.TagRepository = TagRepository;
   }
 
-  async publish({where: {id}, data}) {
+  async publish({ where: { id }, data }) {
     let advisory;
 
     // validate advisory
@@ -23,17 +23,13 @@ class PublishAdvisory extends Operation {
     data = {
       ...data,
       publishedAt: new Date().toISOString(),
-      draft: false
+      draft: false,
     };
 
     // build advisory payloadexecute
     const payload = new Advisory(data);
 
-    try {
-      await this.AdvisoryRepository.update(id, payload);
-    } catch(error) {
-      throw error;
-    }
+    await this.AdvisoryRepository.update(id, payload);
 
     // advisory tags exists;
     if ('tags' in data) {
@@ -51,9 +47,9 @@ class PublishAdvisory extends Operation {
     return advisory;
   }
 
-  async addAdvisoryTags (advisory, tags) {
+  async addAdvisoryTags(advisory, tags) {
     // add advisory tags
-    for (let tag of tags) {
+    for (const tag of tags) {
       // associate existing tag
       const tagExists = await this.TagRepository.getTagByName(tag.name);
       if (tagExists) {
@@ -64,18 +60,16 @@ class PublishAdvisory extends Operation {
       // if tag does not exists
       // create new tag
       const payload = new Tag(tag);
-      
+
       try {
         // add new advisory tag
         const newTag = await this.TagRepository.add(payload);
         await advisory.addAdvisoryTag(newTag);
       } catch (error) {
         throw new Error(error.message);
-        
       }
     }
   }
 }
 
-module.exports = PublishAdvisory; 
-    
+module.exports = PublishAdvisory;
