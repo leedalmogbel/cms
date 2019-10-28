@@ -6,7 +6,7 @@ class UpdateCategory extends Operation {
     this.CategoryRepository = CategoryRepository;
   }
 
-  async execute({ where: {id}, data }) {
+  async execute({ where: { id }, data }) {
     try {
       // validate Category
       await this.CategoryRepository.getById(id);
@@ -14,15 +14,10 @@ class UpdateCategory extends Operation {
       throw new Error('Category does not exists.');
     }
 
-    try {
-      // update category
-      await this.CategoryRepository.update(id, data);
-      
-      // return true as success response
-      return true;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    // update category
+    // return true as success response
+    await this.CategoryRepository.update(id, data);
+    return true;
   }
 }
 

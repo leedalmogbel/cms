@@ -2,55 +2,25 @@ module.exports = {
   Query: {
     getTags: (_, args, { container, res }) => {
       const operation = container.resolve('ListTags');
-      
-      // fetch tags
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
+      return operation.execute(args);
     },
     getTag: (_, args, { container, res }) => {
       const operation = container.resolve('ShowTag');
-
-      //  fetch tag
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
-    }
-  },  
+      return operation.execute(args);
+    },
+  },
   Mutation: {
     createTag: (_, args, { container, res, next }) => {
       const operation = container.resolve('CreateTag');
-
-      // create tag
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
+      return operation.execute(args);
     },
     updateTag: (_, args, { container, res, next }) => {
       const operation = container.resolve('UpdateTag');
-
-      // update tag
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
+      return operation.execute(args);
     },
     deleteTag: (_, args, { container, res, next }) => {
       const operation = container.resolve('DeleteTag');
-
-      // delete tag
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
-    }
-  }
+      return operation.execute(args);
+    },
+  },
 };

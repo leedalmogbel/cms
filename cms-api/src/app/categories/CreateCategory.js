@@ -10,13 +10,9 @@ class CreateCategory extends Operation {
   async execute({ data }) {
     // create new category
     const category = new Category(data);
-    
-    try {
-      const newCategory = await this.CategoryRepository.add(category);
-      return newCategory;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    const newCategory = await this.CategoryRepository.add(category);
+
+    return newCategory;
   }
 }
 

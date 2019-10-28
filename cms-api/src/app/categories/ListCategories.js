@@ -7,17 +7,10 @@ class ListCategories extends Operation {
   }
 
   async execute(args) {
-    try {
-      // get categories
-      const categories = await this.CategoryRepository.getAll(args);
-
-      // return categories
-      return categories;
-    } catch(error) {
-      throw new Error(error);
-    }
+    // get categories
+    const categories = await this.CategoryRepository.getAll(args);
+    return categories;
   }
 }
 
 module.exports = ListCategories;
-    

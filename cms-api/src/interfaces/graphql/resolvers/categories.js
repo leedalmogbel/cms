@@ -2,55 +2,25 @@ module.exports = {
   Query: {
     getCategories: (_, args, { container, res }) => {
       const operation = container.resolve('ListCategories');
-      
-      // fetch categories
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
+      return operation.execute(args);
     },
     getCategory: (_, args, { container, res }) => {
       const operation = container.resolve('ShowCategory');
-
-      //  fetch category
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
-    }
-  },  
+      return operation.execute(args);
+    },
+  },
   Mutation: {
     createCategory: (_, args, { container, res }) => {
       const operation = container.resolve('CreateCategory');
-
-      // create category
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
+      return operation.execute(args);
     },
     updateCategory: (_, args, { container, res }) => {
       const operation = container.resolve('UpdateCategory');
-
-      // update category
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
+      return operation.execute(args);
     },
     deleteCategory: (_, args, { container, res }) => {
       const operation = container.resolve('DeleteCategory');
-
-      // delete category
-      try {
-        return operation.execute(args);
-      } catch (err) {
-        throw err;
-      }
-    }
-  }
+      return operation.execute(args);
+    },
+  },
 };

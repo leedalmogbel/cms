@@ -10,7 +10,7 @@ class SaveDraftAdvisory extends Operation {
     this.GetLocation = GetLocation;
   }
 
-  async save({where: {id}, data}) {
+  async save({ where: { id }, data }) {
     let advisory;
 
     // validate advisory
@@ -21,36 +21,28 @@ class SaveDraftAdvisory extends Operation {
     }
 
     if ('placeId' in data) {
-      try {
-        // get location details
-        const {
-          locationDetails,
-          locationAddress,
-        } = await this.GetLocation.execute(data.placeId);
+      // get location details
+      const {
+        locationDetails,
+        locationAddress,
+      } = await this.GetLocation.execute(data.placeId);
 
-        data = {
-          ...data,
-          locationDetails,
-          locationAddress,
-        };
-      } catch (err) {
-        throw err;
-      }
+      data = {
+        ...data,
+        locationDetails,
+        locationAddress,
+      };
     }
 
     data = {
       ...data,
-      draft: false
+      draft: false,
     };
 
     // build advisory payloadexecute
     const payload = new Advisory(data);
 
-    try {
-      await this.AdvisoryRepository.update(id, payload);
-    } catch(error) {
-      throw error;
-    }
+    await this.AdvisoryRepository.update(id, payload);
 
     // advisory tags exists;
     if ('tags' in data) {
@@ -68,24 +60,9 @@ class SaveDraftAdvisory extends Operation {
     return advisory;
   }
 
-  async publish({where: {id}, data}) {
-    // set publish timestamp and draft flag
-    data = {
-      ...data,
-      publishedAt: new Date().toISOString(),
-      draft: false
-    };
-
-    // use save process
-    return await this.save({
-      where: { id },
-      data
-    });
-  }
-
-  async addAdvisoryTags (advisory, tags) {
+  async addAdvisoryTags(advisory, tags) {
     // add advisory tags
-    for (let tag of tags) {
+    for (const tag of tags) {
       // associate existing tag
       const tagExists = await this.TagRepository.getTagByName(tag.name);
       if (tagExists) {
@@ -96,18 +73,16 @@ class SaveDraftAdvisory extends Operation {
       // if tag does not exists
       // create new tag
       const payload = new Tag(tag);
-      
+
       try {
         // add new advisory tag
         const newTag = await this.TagRepository.add(payload);
         await advisory.addAdvisoryTag(newTag);
       } catch (error) {
         throw new Error(error.message);
-        
       }
     }
   }
 }
 
-module.exports = SaveDraftAdvisory; 
-    
+module.exports = SaveDraftAdvisory;

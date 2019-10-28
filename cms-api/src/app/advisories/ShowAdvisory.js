@@ -13,23 +13,24 @@ class ShowAdvisory extends Operation {
   async execute({ where: { id } }) {
     try {
       const advisory = await this.AdvisoryRepository.getById(id);
+      let { attachments } = advisory;
 
       // get tags for advisory
       advisory.tags = await advisory.getAdvisoryTags();
 
       // check if theres attachments
-      if (advisory.attachments) {
+      if (!attachments) {
         const promises = [];
 
-        for (const attachment of advisory.attachments) {
+        attachments.map(async (attachment) => {
           promises.push({
             fileName: attachment.fileName,
-            downloadUrl: await this.getUrl(attachment.fileName),
+            downloadUrl: await ShowAdvisory.getUrl(attachment.fileName),
             uploadUrl: '',
           });
-        }
+        });
 
-        Promise.all(promises).then(() => advisory.attachments = promises);
+        Promise.all(promises).then(() => { attachments = promises; });
       }
 
       return advisory;
@@ -38,7 +39,7 @@ class ShowAdvisory extends Operation {
     }
   }
 
-  async getUrl(Key) {
+  static async getUrl(Key) {
     return new Promise((resolve, reject) => {
       s3.getSignedUrl('getObject', {
         Bucket,
