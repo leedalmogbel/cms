@@ -23,6 +23,7 @@ class PublishPost extends Operation {
         draft: false,
       },
     });
+
     const params = {
       DeliveryStreamName: 'AddPost-cms', /* required */
       Record: { /* required */

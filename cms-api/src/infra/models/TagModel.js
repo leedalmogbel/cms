@@ -1,54 +1,53 @@
 
 module.exports = {
-    name: 'TagModel',
-    datasource: 'kapp-cms',
-    definition: function(datasource, DataTypes) {
-      const TagModel = datasource.define('TagModel', {
-        id: {
-          primaryKey: true,
-          autoIncrement: true,
-          type: DataTypes.INTEGER,
-        }, 
-        name: DataTypes.STRING,
-        type: DataTypes.STRING
-      }, {
-        tableName: 'tags',
-        timestamps: true
-      });
+  name: 'TagModel',
+  datasource: 'kapp-cms',
+  definition(datasource, DataTypes) {
+    const TagModel = datasource.define('TagModel', {
+      id: {
+        primaryKey: true,
+        autoIncrement: true,
+        type: DataTypes.INTEGER,
+      },
+      name: DataTypes.STRING,
+      type: DataTypes.STRING,
+    }, {
+      tableName: 'tags',
+      timestamps: true,
+    });
 
-      /**
+    /**
        * Associate to Post Model
        */
-      TagModel.associate = () => {
-        TagModel.belongsToMany(datasource.models.PostModel, {
-          through: datasource.models.PostTagModel,
-          as: 'posts',
-          foreignKey: 'tagId',
-          otherKey: 'postId'
-        })
+    TagModel.associate = () => {
+      TagModel.belongsToMany(datasource.models.PostModel, {
+        through: datasource.models.PostTagModel,
+        as: 'posts',
+        foreignKey: 'tagId',
+        otherKey: 'postId',
+      });
 
-        TagModel.belongsToMany(datasource.models.AdvisoryModel, {
-          through: datasource.models.AdvisoryTagModel,
-          as: 'advisories',
-          foreignKey: 'tagId',
-          otherKey: 'advisoryId'
-        })
-      };
-  
-      /**
+      TagModel.belongsToMany(datasource.models.AdvisoryModel, {
+        through: datasource.models.AdvisoryTagModel,
+        as: 'advisories',
+        foreignKey: 'tagId',
+        otherKey: 'advisoryId',
+      });
+    };
+
+    /**
        * Examples on how to associate or set relationship with other models
-       * 
+       *
        *  TagModel.associate = function () {
        *   TagModel.belongsTo(datasource.models.GroupModel, {
        *     foreignKey: 'groupId',
        *     as: 'group',
        *   });
        *  };
-       * 
+       *
        * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
        */
-  
-      return TagModel;
-    }
-  };
-    
+
+    return TagModel;
+  },
+};

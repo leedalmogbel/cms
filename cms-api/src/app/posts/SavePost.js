@@ -10,8 +10,14 @@ class SavePost extends Operation {
   }
 
   async execute({ where: { id }, data }) {
+    let post;
+
     // validate post id
-    let post = await this.PostRepository.getById(id);
+    try {
+      post = await this.PostRepository.getById(id);
+    } catch (err) {
+      throw new Error('Post does not exists.');
+    }
 
     if ('placeId' in data) {
       // get location details
