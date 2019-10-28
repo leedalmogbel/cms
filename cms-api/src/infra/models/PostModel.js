@@ -2,13 +2,13 @@
 module.exports = {
   name: 'PostModel',
   datasource: 'kapp-cms',
-  definition: function(datasource, DataTypes) {
+  definition(datasource, DataTypes) {
     const PostModel = datasource.define('PostModel', {
-      id : {
+      id: {
         primaryKey: true,
         autoIncrement: true,
         type: DataTypes.INTEGER,
-      }, 
+      },
       userId: DataTypes.INTEGER,
       categoryId: DataTypes.INTEGER,
       category: DataTypes.STRING,
@@ -19,20 +19,20 @@ module.exports = {
       priorityLevel: DataTypes.STRING,
       source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
-      locationDetails: DataTypes.JSONB,
-      comments: DataTypes.JSONB,
-      advisories: DataTypes.JSONB,
-      attachments: DataTypes.JSONB,
+      locationDetails: DataTypes.JSON,
+      comments: DataTypes.JSON,
+      advisories: DataTypes.JSON,
+      attachments: DataTypes.JSON,
       draft: {
         type: DataTypes.BOOLEAN,
-        defaultValue: '0'
+        defaultValue: '0',
       },
       scheduledAt: DataTypes.DATE,
       expiredAt: DataTypes.DATE,
-      publishedAt: DataTypes.DATE
+      publishedAt: DataTypes.DATE,
     }, {
       tableName: 'posts',
-      timestamps: true
+      timestamps: true,
     });
 
     /**
@@ -43,24 +43,23 @@ module.exports = {
         through: datasource.models.PostTagModel,
         as: 'postTags',
         foreignKey: 'postId',
-        otherKey: 'tagId'
+        otherKey: 'tagId',
       });
     };
 
     /**
      * Examples on how to associate or set relationship with other models
-     * 
+     *
      *  UserModel.associate = function () {
      *   UserModel.belongsTo(datasource.models.GroupModel, {
      *     foreignKey: 'groupId',
      *     as: 'group',
      *   });
      *  };
-     * 
+     *
      * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
      */
 
     return PostModel;
-  }
+  },
 };
-  

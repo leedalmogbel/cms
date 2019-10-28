@@ -8,10 +8,14 @@ class ShowPost extends Operation {
 
   async execute({ where: { id } }) {
     // get post and associated tags
-    const post = await this.PostRepository.getById(id);
-    post.tags = post.getPostTags();
+    try {
+      const post = await this.PostRepository.getById(id);
+      post.tags = post.getPostTags();
 
-    return post;
+      return post;
+    } catch (err) {
+      throw new Error('Post does not exists.');
+    }
   }
 }
 
