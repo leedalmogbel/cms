@@ -6,23 +6,13 @@ class DeleteTag extends Operation {
     this.TagRepository = TagRepository;
   }
 
-  async execute({ where: {id} }) {
-    try {
-      // validate tag
-      await this.TagRepository.getById(id);
-    } catch (error) {
-      throw new Error('Tag does not exists.');
-    }
+  async execute({ where: { id } }) {
+    await this.TagRepository.getById(id);
 
-    try {
-      // delete tag
-      await this.TagRepository.remove(id);
-
-      // return true as success response
-      return true;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    // delete tag
+    // return true as success response
+    await this.TagRepository.remove(id);
+    return true;
   }
 }
 

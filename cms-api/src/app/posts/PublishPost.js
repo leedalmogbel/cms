@@ -6,14 +6,14 @@ class PublishPost extends Operation {
   constructor({ SavePost }) {
     super();
     this.SavePost = SavePost;
-    this.firehose = new AWS.Firehose({   
+    this.firehose = new AWS.Firehose({
       //  accessKeyId: 'AKIATB4WJMQJKPOCPEJA',
       //  secretAccessKey: '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',
-       apiVersion: '2015-08-04' });
+      apiVersion: '2015-08-04',
+    });
   }
 
   async execute({ where: { id }, data }) {
-  
     // use save post process
     const post = await this.SavePost.execute({
       where: { id },

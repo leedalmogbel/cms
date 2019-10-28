@@ -8,13 +8,8 @@ class ShowTag extends Operation {
   }
 
   async execute({ where: { id } }) {
-    try {
-      const tag = await this.TagRepository.getById(id);
-      
-      return tag;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    const tag = await this.TagRepository.getById(id);
+    return tag;
   }
 }
 

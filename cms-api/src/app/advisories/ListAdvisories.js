@@ -15,40 +15,38 @@ class ListAdvisories extends Operation {
       const advisories = await this.AdvisoryRepository.getAdvisories(args);
 
       // get advisory tags
-      for (let advisory of advisories) {
+      advisories.map(async (advisory) => {
         advisory.tags = await advisory.getAdvisoryTags();
-
         // check if theres attachments
-        // console.log(advisory.attachments)
-        if (advisory.attachments) {
-          let promises = [];
+        if (!advisory.attachments) {
+          const promises = [];
+          const { attachments } = advisory.attachments || [];
 
-          for (let attachment of advisory.attachments) {
+          attachments.map(async (attachment) => {
             promises.push({
               fileName: attachment.fileName,
-              downloadUrl: await this.getUrl(attachment.fileName),
-              uploadUrl: ''
+              downloadUrl: await ListAdvisories.getUrl(attachment.fileName),
+              uploadUrl: '',
             });
-          }
 
-          Promise.all(promises).then(() =>
-            advisory.attachments = promises
-          );
+            Promise.all(promises).then(() => { attachment = promises; });
+          });
         }
-      }
+      });
+
 
       return advisories;
-    } catch(error) {
+    } catch (error) {
       throw new Error(error.message);
     }
   }
 
-  async getUrl(Key) {
+  static async getUrl(Key) {
     return new Promise((resolve, reject) => {
       s3.getSignedUrl('getObject', {
         Bucket,
         Key,
-      }, function (err, url) {
+      }, (err, url) => {
         if (err) {
           reject(err);
         }
@@ -59,4 +57,3 @@ class ListAdvisories extends Operation {
 }
 
 module.exports = ListAdvisories;
-    

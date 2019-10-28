@@ -6,7 +6,7 @@ class DeleteCategory extends Operation {
     this.CategoryRepository = CategoryRepository;
   }
 
-  async execute({ where: {id} }) {
+  async execute({ where: { id } }) {
     try {
       // validate category
       await this.CategoryRepository.getById(id);
@@ -14,15 +14,10 @@ class DeleteCategory extends Operation {
       throw new Error('Category does not exists.');
     }
 
-    try {
-      // delete category
-      await this.CategoryRepository.remove(id);
-
-      // return true as success response
-      return true;
-    } catch(error) {
-      throw new Error(error.message);
-    }
+    // delete category
+    // return true as success response
+    await this.CategoryRepository.remove(id);
+    return true;
   }
 }
 

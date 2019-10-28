@@ -9,21 +9,13 @@ class CreatePostDraft extends Operation {
   }
 
   async execute() {
-    let newPost;
-
     const data = {
       draft: true,
       postId: Helpers.generateUID(8),
     };
 
-
     const payload = new Post(data);
-
-    try {
-      newPost = await this.PostRepository.add(payload);
-    } catch (err) {
-      throw err;
-    }
+    const newPost = await this.PostRepository.add(payload);
 
     return { id: newPost.id };
   }
