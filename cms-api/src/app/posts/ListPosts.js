@@ -7,21 +7,17 @@ class ListPosts extends Operation {
   }
 
   async execute(args) {
-    try {
-      // get posts
-      let posts = await this.PostRepository.getPosts(args);
+    // get posts
+    let posts = await this.PostRepository.getPosts(args);
 
-      // get post tags
-      posts = posts.map((post) => ({
-        ...post.toJSON(),
-        tags: post.getPostTags(),
-      }));
+    // get post tags
+    posts = posts.map((post) => ({
+      ...post.toJSON(),
+      tags: post.getPostTags(),
+    }));
 
-      // return posts
-      return posts;
-    } catch (error) {
-      throw new Error(error);
-    }
+    // return posts
+    return posts;
   }
 }
 

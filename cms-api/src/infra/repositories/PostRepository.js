@@ -1,19 +1,20 @@
 
 const { BaseRepository } = require('@brewery/core');
 const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+
+const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
   constructor({ PostModel }) {
     super(PostModel);
   }
 
-  async getPosts(data) {
+  async getPosts(data = {}) {
     // init fetch arguments
     let args = {
       where: {
-        draft: false // default draft false
-      }
+        draft: false, // default draft false
+      },
     };
 
     // where arguments
@@ -27,37 +28,37 @@ class PostRepository extends BaseRepository {
       if ('scheduled' in data.where) {
         if (data.where.scheduled) {
           args.where.scheduledAt = {
-            [Op.ne]: null
+            [Op.ne]: null,
           };
         } else {
-          where.scheduledAt = {
-            [Op.eq]: null
-          }
+          args.where.scheduledAt = {
+            [Op.eq]: null,
+          };
         }
       }
 
       // set published flag
-      if ('published' in data) {
+      if ('published' in data.where) {
         if (data.where.published) {
           args.where.publishedAt = {
-            [Op.ne]: null
-          }
+            [Op.ne]: null,
+          };
         } else {
-          where.publishedAt = {
-            [Op.eq]: null
-          }
+          args.where.publishedAt = {
+            [Op.eq]: null,
+          };
         }
       }
     }
 
     // offset
-    if ('offset' in args) {
-      args.offset = args.offset;
+    if ('offset' in data) {
+      args.offset = data.offset;
     }
 
     // limit
-    if ('limit' in args) {
-      args.limit = args.limit;
+    if ('limit' in data) {
+      args.limit = data.limit;
     }
 
     return this.getAll(args);
@@ -65,4 +66,3 @@ class PostRepository extends BaseRepository {
 }
 
 module.exports = PostRepository;
-
