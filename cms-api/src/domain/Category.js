@@ -6,7 +6,7 @@ const Category = attributes({
   name: String,
   subCategories: {
     type: Array,
-    itemType: Object
+    itemType: Object,
   },
   createdAt: Date,
   updatedAt: Date,
