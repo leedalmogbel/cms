@@ -11,7 +11,7 @@ class CreatePostDraft extends Operation {
   async execute() {
     const data = {
       draft: true,
-      postId: `kapp-cms-${Helpers.generateUID(8)}`,
+      postId: `KAPP-CMS-${Helpers.generateUID(8)}`,
     };
 
     const payload = new Post(data);
