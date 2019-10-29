@@ -15,12 +15,12 @@ module.exports = {
       return operation.execute(args);
     },
     saveAdvisory: (_, args, { container }) => {
-      const operation = container.resolve('SaveDraftAdvisory');
-      return operation.save(args);
+      const operation = container.resolve('SaveAdvisory');
+      return operation.execute(args);
     },
     publishAdvisory: (_, args, { container }) => {
       const operation = container.resolve('PublishAdvisory');
-      return operation.publish(args);
+      return operation.execute(args);
     },
     deleteAdvisory: (_, args, { container }) => {
       const operation = container.resolve('DeleteAdvisory');

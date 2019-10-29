@@ -6,7 +6,7 @@ const AdvisoryTag = attributes({
   advisoryId: Number,
   tagId: Number,
   createdAt: Date,
-  updatedAt: Date
+  updatedAt: Date,
 })(class AdvisoryTag {
 });
 

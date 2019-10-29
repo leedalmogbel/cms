@@ -19,10 +19,10 @@ class ShowAdvisory extends Operation {
       advisory.tags = await advisory.getAdvisoryTags();
 
       // check if theres attachments
-      if (!attachments) {
+      if (attachments && attachments.length > 0) {
         const promises = [];
 
-        attachments.map(async (attachment) => {
+        attachments.forEach(async (attachment) => {
           promises.push({
             fileName: attachment.fileName,
             downloadUrl: await ShowAdvisory.getUrl(attachment.fileName),

@@ -23,10 +23,6 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: '0',
       },
-      tags: {
-        type: DataTypes.JSON,
-        allowNull: true,
-      },
       attachments: {
         type: DataTypes.JSON,
         allowNull: true,
