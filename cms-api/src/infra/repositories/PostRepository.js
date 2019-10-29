@@ -11,7 +11,7 @@ class PostRepository extends BaseRepository {
 
   async getPosts(data = {}) {
     // init fetch arguments
-    let args = {
+    const args = {
       where: {
         draft: false, // default draft false
       },

@@ -14,20 +14,23 @@ class PublishPost extends Operation {
   }
 
   async execute({ where: { id }, data }) {
+    data.draft = false;
+
+    if (!('scheduledAt' in data) || !data.scheduledAt) {
+      data.publishedAt = new Date().toISOString();
+    }
+
     // use save post process
     const post = await this.SavePost.execute({
       where: { id },
-      data: {
-        ...data,
-        publishedAt: new Date().toISOString(),
-        draft: false,
-      },
+      data,
     });
 
     const params = {
       DeliveryStreamName: 'AddPost-cms', /* required */
       Record: { /* required */
-        Data: JSON.stringify(PublistPostStreams(post.toJSON())), /* Strings will be Base-64 encoded on your behalf */ /* required */
+        /* Strings will be Base-64 encoded on your behalf */ /* required */
+        Data: JSON.stringify(PublistPostStreams(post.toJSON())),
       },
     };
 

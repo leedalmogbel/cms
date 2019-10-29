@@ -14,6 +14,18 @@ class ListPosts extends Operation {
     posts = posts.map((post) => ({
       ...post.toJSON(),
       tags: post.getPostTags(),
+      status: () => {
+        switch (args.where) {
+          case 'draft':
+            return 'draft';
+          case 'published':
+            return 'published';
+          case 'scheduled':
+            return 'scheduled';
+          default:
+            return 'all';
+        }
+      },
     }));
 
     // return posts

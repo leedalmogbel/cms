@@ -1,22 +1,23 @@
 
 const { BaseRepository } = require('@brewery/core');
 const Sequelized = require('sequelize');
-const Op = Sequelized.Op;
+
+const { Op } = Sequelized;
 
 class AdvisoryRepository extends BaseRepository {
   constructor({ AdvisoryModel }) {
     super(AdvisoryModel);
   }
 
-  async getAdvisories (data) {
+  async getAdvisories(data) {
     // init fetch arguments
-    let args = {
+    const args = {
       where: {
-        draft: false // default draft false
-      }
+        draft: false, // default draft false
+      },
     };
 
-    let order = [['createdAt', 'DESC']]; // set order by default descending
+    const order = [['createdAt', 'DESC']]; // set order by default descending
 
     // filters
     if ('where' in data) {
@@ -24,11 +25,11 @@ class AdvisoryRepository extends BaseRepository {
       if ('verified' in data.where) {
         if (data.where.verified) {
           args.where.verified = {
-            [Op.eq]: true
+            [Op.eq]: true,
           };
         } else {
           args.where.verified = {
-            [Op.eq]: false
+            [Op.eq]: false,
           };
         }
       }
@@ -52,4 +53,3 @@ class AdvisoryRepository extends BaseRepository {
 }
 
 module.exports = AdvisoryRepository;
-
