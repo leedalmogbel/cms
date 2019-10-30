@@ -39,17 +39,17 @@ functions:
           path: /login
           method: any
           cors: true
-  sample:
-    handler: src/handler.index
-    events:
-      - http:
-          path: /sample
-          method: any
-          cors: true
   autocomplete:
-    handler: src/autocomplete.index
+    handler: src/handler.location
     events:
       - http:
           path: /location/autocomplete
-          method: any
+          method: post
+          cors: true
+  tags:
+    handler: src/handler.smartTags
+    events:
+      - http:
+          path: /smart/tags
+          method: post
           cors: true
