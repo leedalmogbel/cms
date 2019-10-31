@@ -53,3 +53,12 @@ functions:
           path: /smart/tags
           method: post
           cors: true
+  cron: 
+    handler: src/cron.scheduled
+    events:
+      # - http:
+      #     path: /scheduled/posts
+      #     method: get
+      - schedule: 
+          rate: cron(55 * * * ? *)
+          enabled: true
