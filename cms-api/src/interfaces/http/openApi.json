@@ -1,30 +1,44 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "AmberJS API",
+    "title": "KAPP CMS API",
     "version": "v1"
   },
   "servers": [
     {
-      "description": "Local server",
-      "url": "/api"
+      "description": "rest-temporary",
+      "url": "https://qp3fgsp42g.execute-api.ap-southeast-1.amazonaws.com/rest/api"
+    },
+    {
+      "description": "dev",
+      "url": "https://sztg7uncla.execute-api.ap-southeast-1.amazonaws.com/dev/api"
     }
   ],
   "paths": {
-    "/users": {
+    "/posts": {
       "get": {
-        "operationId": "listUsers",
-        "tags": [ "Users" ],
+        "operationId": "ListPosts",
+        "tags": [ "Posts" ],
         "responses": {
           "200": {
-            "description": "List of all users",
+            "description": "List of all posts",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/User"
+                    "$ref": "#/components/schemas/Post"
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "List of all posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
                 }
               }
             }
@@ -32,36 +46,36 @@
         }
       },
       "post": {
-        "operationId": "createUser",
-        "tags": [ "Users" ],
+        "operationId": "createPostDraft",
+        "tags": [ "Posts" ],
         "requestBody": {
-          "description": "User data",
+          "description": "Creates a draft of a post",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewUser"
+                "$ref": "#/components/schemas/PostDraft"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "User created successfully",
+            "description": "Post draft has started",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/PostDraft"
                 }
               }
             }
           },
           "400": {
-            "description": "User not created because of validation error",
+            "description": "Not created because of validation error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/defaultResponses/ValidationError"
+                  "$ref": '#/components/schemas/ValidationError'
                 }
               }
             }
@@ -69,37 +83,41 @@
         }
       }
     },
-    "/users/{id}": {
+    "/posts/{id}": {
       "get": {
-        "operationId": "showUser",
-        "tags": [ "Users" ],
+        "operationId": "showPost",
+        "tags": [ "Posts" ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Id of user to show",
+            "description": "Id of post to show",
             "required": true,
-            "type": "integer",
-            "format": "int64"
+            "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
           }
         ],
         "responses": {
           "200": {
-            "description": "Return user with given id",
+            "description": "Return post with given id",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/Post"
                 }
               }
             }
           },
           "404": {
-            "description": "User not found",
+            "description": "Item not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/defaultResponses/NotFoundError"
+                  "$ref": '#/components/schemas/NotFoundError'
                 }
               }
             }
@@ -107,177 +125,117 @@
         }
       },
       "put": {
-        "operationId": "updateUser",
-        "tags": [ "Users" ],
+        "operationId": "savePost",
+        "tags": [ "Posts" ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Id of user to update",
+            "description": "Id of post to update",
             "required": true,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "requestBody": {
-          "description": "User new data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewUser"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "User updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/defaultResponses/NotFoundError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "deleteUser",
-        "tags": [ "Users" ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Id of user to delete",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "User deleted successfully"
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/defaultResponses/NotFoundError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/tags": {
-      "get": {
-        "operationId": "listTags",
-        "tags": [ "Tags" ],
-        "responses": {
-          "200": {
-            "description": "List of all tags",
-            "content": {
+              "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Tag"
+                    "$ref": "#/components/schemas/Post"
                   }
                 }
               }
             }
           }
-        }
-      },
-      "post": {
-        "operationId": "createTag",
-        "tags": [ "Tags" ],
+        ],
         "requestBody": {
-          "description": "Tag data",
+          "description": "Post Draft new data",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewTag"
+                "$ref": '#/components/schemas/Post'
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Tag created successfully",
+          "202": {
+            "description": "Post Draft updated successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Tag"
+                  "$ref":'#/components/schemas/Post'
                 }
               }
             }
           },
-          "400": {
-            "description": "Tag not created because of validation error",
+          "404": {
+            "description": "Post not found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/defaultResponses/ValidationError"
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
           }
         }
-      }
-    }
-  },
-  "defaultResponses": {
-    "ValidationError": {
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [ "ValidationError" ]
+      },
+    },
+    "/posts/{id}/publish": {
+      "post": {
+        "operationId": "PublishPost",
+        "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of post to publish",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Post Draft new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": '#/components/schemas/Post'
+              }
+            }
+          }
         },
-        "details": {
-          "type": "array",
-          "items": {
-            "$ref": "#/defaultResponses/ValidationErrorDetail"
+        "responses": {
+          "202": {
+            "description": "Post Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":'#/components/schemas/Post'
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
           }
         }
-      }
-    },
-    "ValidationErrorDetail": {
-      "properties": {
-        "message": {
-          "type": "string"
-        },
-        "path": {
-          "type": "string"
-        }
-      }
-    },
-    "NotFoundError": {
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [ "NotFoundError" ]
-        },
-        "details": {
-          "type": "string",
-          "enum": [ "User with id {id} not found" ]
-        }
-      }
+      },
     }
   },
   "components": {
@@ -300,33 +258,120 @@
             "type": "string"
           }
         }
-      },
-      "Tag": {
+      },   
+      "Post": {
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32",
-            "description": "Unique Identifier representing a tag",
+            "description": "Unique Identifier representing a post",
+            "x-primary-key": true
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Identifier representing an author"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "subCategory": {
+            "type": "string"
+          },
+          "postId": {  
+             "type": "string",
+            "format": "int32",
+            "description": "Unique Identifier representing a post",
             "x-primary-key": true
           },
           "title": {
             "type": "string"
+          },  
+          "content": {
+            "type": "string"
+          },  
+           "priorityLevel": {
+            "type": "string"
+          },"source": {
+            "type": "string"
+          },"locationAddress": {
+            "type": "string"
+          },"locationDetails": {
+            "type": "object"
+          },"advisories": {
+            "type": "object"
+          },"attachments": {
+            "type": "object"
+          },"draft": {
+            "type": "object"
+          },"scheduledAt": {
+            "type": "string"
+          },"expiredAt": {
+            "type": "string"
+          },"publishedAt": {
+            "type": "string"
           }
         }
       },
-      "NewUser": {
+      "PostDraft": {
         "properties": {
-          "firstName": {
-            "type": "string"
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unique Identifier representing a draft of post",
+            "x-primary-key": true,
+            "default": 1
           },
-          "middleName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
+        }
+      },
+    "ValidationError": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [ "ValidationError" ]
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ValidationErrorDetail"
           }
         }
       }
+    },
+    "ValidationErrorDetail": {
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "NotFoundError": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [ "NotFoundError" ]
+        },
+        "message": {
+          "type": "string",
+          "enum": [ "Not found message" ]
+        }
+      }
+    }, 
+    "IntenalServerError": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [ "NotFoundError" ]
+        },
+        "message": {
+          "type": "string",
+          "enum": [ "Not found message" ]
+        }
+      }
+    }
     }
   }
 }
