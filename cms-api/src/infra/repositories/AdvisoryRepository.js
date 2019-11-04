@@ -37,12 +37,12 @@ class AdvisoryRepository extends BaseRepository {
 
     // offset
     if ('offset' in args) {
-      args.offset = args.offset;
+      args.offset = data.offset;
     }
 
     // limit
     if ('limit' in args) {
-      args.limit = args.limit;
+      args.limit = data.limit;
     }
 
     // order

@@ -7,10 +7,7 @@ const methodOverride = require('method-override');
 const controller = require('./utils/createControllerRoutes');
 const path = require('path');
 const openApiDoc = require('./openApi.json');
-const graphqlHTTP = require('express-graphql');
-const graphqlHandler = require('../graphql');
-const loginGraphqlHandler = require('../loginGraphql');
-const Schema = require('../graphql/schema');
+
 module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler, openApiMiddleware }) => {
   const router = Router();
   router.use(containerMiddleware);
@@ -44,33 +41,17 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
    * Avoid hardcoding in this file as much. Deleting comments in this file
    * may cause errors on scaffoldings
    */
+
+  // apiRouter.use('/users', controller('controllers/UsersController'));
+
   apiRouter.use('/users', controller('controllers/UsersController.js'));
   apiRouter.use('/posts', controller('controllers/PostsController.js'));
-  apiRouter.use('/advisories', controller('controllers/AdvisoriesController'));
-  apiRouter.use('/tags', controller('controllers/TagsController.js'));
   
   /* apiRoutes END */
 
-  const graphqlRouter = Router();
-  graphqlRouter.use(methodOverride('X-HTTP-Method-Override'))
-    .use(cors())
-    .use(bodyParser.json())
-    .use(compression())
-    .use('/docs', openApiMiddleware(openApiDoc));
-  graphqlRouter.post('/graphql', graphqlHandler);
-  graphqlRouter.post('/login', loginGraphqlHandler);
-  graphqlRouter.get('/login', graphqlHTTP({
-    schema: Schema,
-    graphiql: true,
-  }));
-  graphqlRouter.get('/graphql', graphqlHTTP({
-    schema: Schema,
-    graphiql: true,
-  }));
-
   router.use('/api', apiRouter);
-  router.use('/', graphqlRouter);
   router.use('/', static(path.join(__dirname, './public')));
+
   router.use(errorHandler);
 
   return router;

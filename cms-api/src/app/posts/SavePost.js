@@ -9,46 +9,44 @@ class SavePost extends Operation {
     this.GetLocation = GetLocation;
   }
 
-  async execute({ where: { id }, data }) {
-    let post;
+  async execute(id, data) {
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = this.events;
 
-    // validate post id
     try {
-      post = await this.PostRepository.getById(id);
-    } catch (err) {
-      throw new Error('Post does not exists.');
+      this.save(id, data);
+      this.emit(SUCCESS, { id });
+    } catch (error) {
+      switch (error.message) {
+        case 'ValidationError':
+          return this.emit(VALIDATION_ERROR, error);
+        case 'NotFoundError':
+          return this.emit(NOT_FOUND, error);
+        default:
+          this.emit(ERROR, error);
+      }
     }
+  }
 
-    if ('placeId' in data) {
-      // get location details
-      const {
-        locationDetails,
-        locationAddress,
-      } = await this.GetLocation.execute(data.placeId);
+  async save(id, data) {
+    const {
+      locationDetails,
+      locationAddress,
+    } = await this.GetLocation.execute(data.placeId);
 
-      data = {
-        ...data,
-        locationDetails,
-        locationAddress,
-      };
-    }
+    const payload = new Post({
+      ...data,
+      locationDetails,
+      locationAddress,
+    });
 
-    // update post
-    const payload = new Post(data);
     await this.PostRepository.update(id, payload);
 
-    // if post tags exists
-    // associate tags to post
-    if ('tags' in data) {
-      await this.SavePostTags.execute(post, data.tags);
-    }
-
-    // get updated post with associated tags
-    post = await this.PostRepository.getById(id);
-    post.tags = await post.getPostTags();
-
-    return post;
+    return this.PostRepository.getById(id);
   }
 }
+
+SavePost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = SavePost;

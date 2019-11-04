@@ -4,10 +4,10 @@ const { BaseController } = require('@brewery/core');
 const Status = require('http-status');
 
 class AdvisoriesController extends BaseController {
-  
   constructor() {
     super();
     const router = Router();
+
     router.get('/', this.injector('ListAdvisory'), this.index);
     router.post('/', this.injector('CreateAdvisory'), this.create);
     router.get('/:id', this.injector('ShowAdvisory'), this.show);
@@ -29,7 +29,7 @@ class AdvisoriesController extends BaseController {
       })
       .on(ERROR, next);
 
-    operation.execute();
+    operation.execute(req.query);
   }
 }
 

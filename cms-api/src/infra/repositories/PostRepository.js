@@ -24,6 +24,49 @@ class PostRepository extends BaseRepository {
         args.where.draft = data.where.draft;
       }
 
+      // set keyword
+      if ('keyword' in data.where) {
+        if (data.where.keyword) {
+          args.where.title = {
+            [Op.like]:
+              `%${data.where.title}%`,
+          };
+        }
+      }
+
+      // set location
+      if ('location' in data.where) {
+        if (data.where.location) {
+          args.where.locationAddress = {
+            [Op.like]:
+              `%${data.where.locationAddress}%`,
+          };
+        }
+      }
+
+      if ('category' in data.where) {
+        args.where.category = data.where.category;
+      }
+
+      // set date
+      if ('date' in data.where) {
+        if (data.where.date) {
+          const d = data.where.date;
+          const newDate = d.split(' ');
+          newDate[1] = '00:00:00';
+          const startDate = newDate.join(' ');
+          newDate[1] = '23:59:59';
+          const endDate = newDate.join(' ');
+
+          args.where.createdAt = {
+            [Op.between]: [
+              startDate,
+              endDate,
+            ],
+          };
+        }
+      }
+
       // set scheduled flag
       if ('scheduled' in data.where) {
         if (data.where.scheduled) {

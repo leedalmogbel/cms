@@ -101,4 +101,5 @@ input PostFilter {
   scheduled: Boolean
   published: Boolean
   draft: Boolean
+  date: DateTime
 }
