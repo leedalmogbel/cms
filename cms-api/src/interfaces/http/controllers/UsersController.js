@@ -3,7 +3,6 @@ const { Router } = require('express');
 const { BaseController } = require('@brewery/core');
 
 class UsersController extends BaseController {
-  
   constructor() {
     super();
     const router = Router();

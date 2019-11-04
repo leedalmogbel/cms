@@ -8,23 +8,13 @@ class ListPosts extends Operation {
 
   async execute(args) {
     const { SUCCESS, ERROR } = this.events;
+
     try {
       const posts = await this.PostRepository.getPosts(args);
       this.emit(SUCCESS, await posts.map((post) => ({
         ...post.toJSON(),
         tags: post.getPostTags(),
-        status: () => {
-          switch (args.where) {
-            case 'draft':
-              return 'draft';
-            case 'published':
-              return 'published';
-            case 'scheduled':
-              return 'scheduled';
-            default:
-              return 'all';
-          }
-        },
+        status: (post.scheduledAt) ? 'scheduled' : 'published',
       })));
     } catch (error) {
       if (error.message === 'ValidationError') {
