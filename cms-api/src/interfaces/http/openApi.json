@@ -75,7 +75,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": '#/components/schemas/ValidationError'
+                  "$ref": "#/components/schemas/ValidationError"
                 }
               }
             }
@@ -117,7 +117,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": '#/components/schemas/NotFoundError'
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -151,7 +151,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": '#/components/schemas/Post'
+                "$ref": "#/components/schemas/Post"
               }
             }
           }
@@ -162,7 +162,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref":'#/components/schemas/Post'
+                  "$ref":"#/components/schemas/Post"
                 }
               }
             }
@@ -178,7 +178,7 @@
             }
           }
         }
-      },
+      }
     },
     "/posts/{id}/publish": {
       "post": {
@@ -208,7 +208,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": '#/components/schemas/Post'
+                "$ref": "#/components/schemas/Post"
               }
             }
           }
@@ -219,7 +219,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref":'#/components/schemas/Post'
+                  "$ref":"#/components/schemas/Post"
                 }
               }
             }
@@ -235,7 +235,7 @@
             }
           }
         }
-      },
+      }
     }
   },
   "components": {
@@ -321,7 +321,7 @@
             "description": "Unique Identifier representing a draft of post",
             "x-primary-key": true,
             "default": 1
-          },
+          }
         }
       },
     "ValidationError": {
