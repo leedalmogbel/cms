@@ -14,5 +14,16 @@ module.exports = {
       min: 0,
       idle: 10,
     },
+    timezone: 'Asia/Manila',
+    dialectOptions: {
+      useUTC: false,
+      dateStrings: true,
+      typeCast(field, next) {
+        if (field.type === 'DATETIME') {
+          return field.string();
+        }
+        return next();
+      },
+    },
   },
 };
