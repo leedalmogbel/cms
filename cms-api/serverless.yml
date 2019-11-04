@@ -18,6 +18,9 @@ provider:
     subnetIds:
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_1}
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_2}
+  stackTags:
+    ProjectCode: "CMS"
+    SupportContact: "Stratpoint"
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -53,3 +56,12 @@ functions:
           path: /smart/tags
           method: post
           cors: true
+  cron: 
+    handler: src/cron.scheduled
+    events:
+      # - http:
+      #     path: /scheduled/posts
+      #     method: get
+      - schedule: 
+          rate: cron(0/10 * * * ? *)
+          enabled: true

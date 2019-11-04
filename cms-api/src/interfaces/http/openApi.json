@@ -19,6 +19,122 @@
       "get": {
         "operationId": "ListPosts",
         "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "draft",
+            "in": "query",
+            "description": "draft filter by where",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "example": [{
+                    "where[draft]": true
+                  }]
+                }
+              }
+            }
+          },
+          {
+            "name": "published",
+            "in": "query",
+            "description": "post published filter by where",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "example": [{
+                    "where[published]": true
+                  }]
+                }
+              }
+            }
+          },
+          {
+            "name": "scheduled",
+            "in": "query",
+            "description": "post scheduled filter by where",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "example": [{
+                    "where[scheduled]": true
+                  }]
+                }
+              }
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "description": "location filter by where",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "example": [{
+                    "where[location]": "Quezon City"
+                  }]
+                }
+              }
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "post date filter by where",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "example": [{
+                    "where[date]": "2019-10-31 03:00:57"
+                  }]
+                }
+              }
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "post category filter by where",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "example": [{
+                    "where[category]": "Jobs"
+                  }]
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of all posts",
@@ -297,6 +413,14 @@
           },"locationAddress": {
             "type": "string"
           },"locationDetails": {
+            "type": "object"
+          },"tagsOriginal": {
+            "type": "object"
+          },"tagsRetained": {
+            "type": "object"
+          },"tagsAdded": {
+            "type": "object"
+          },"tagsRemoved": {
             "type": "object"
           },"advisories": {
             "type": "object"
