@@ -17,7 +17,6 @@ module.exports.scheduled = async () => {
   const container = await getContainer();
   const PostRepository = container.resolve('PostRepository');
 
-
   // get current timestamp
   // and timestamp 2 hours ago
   const utcNow = moment().format('YYYY-MM-DD HH:mm:ss UTC');
@@ -36,7 +35,6 @@ module.exports.scheduled = async () => {
     },
   });
 
-  // publish posts
   posts.forEach(async (post) => {
     const payload = new Post({
       publishedAt: new Date(utcNow),
