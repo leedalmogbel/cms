@@ -50,6 +50,7 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
 
   apiRouter.use('/users', controller('controllers/UsersController.js'));
   apiRouter.use('/posts', controller('controllers/PostsController.js'));
+  apiRouter.use('/advisories', controller('controllers/AdvisoriesController.js'));
   
   /* apiRoutes END */
 
