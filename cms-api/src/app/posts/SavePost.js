@@ -30,17 +30,20 @@ class SavePost extends Operation {
   }
 
   async save(id, data) {
-    const {
-      locationDetails,
-      locationAddress,
-    } = await this.GetLocation.execute(data.placeId);
+    if ('placeId' in data) {
+      const {
+        locationDetails,
+        locationAddress,
+      } = await this.GetLocation.execute(data.placeId);
 
-    const payload = new Post({
-      ...data,
-      locationDetails,
-      locationAddress,
-    });
+      data = {
+        ...data,
+        locationDetails,
+        locationAddress,
+      };
+    }
 
+    const payload = new Post(data);
     await this.PostRepository.update(id, payload);
 
     return this.PostRepository.getById(id);
