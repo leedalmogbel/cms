@@ -7,22 +7,28 @@ class PublishPost extends Operation {
   constructor({ SavePost }) {
     super();
     this.SavePost = SavePost;
-    // this.firehose = new AWS.Firehose({
-    //   apiVersion: '2015-08-04',
-    // });
+    this.firehose = new AWS.Firehose({
+      apiVersion: '2015-08-04',
+    });
   }
 
-  async execute(id, data) {
+  async execute(id, data = {}) {
     const { SUCCESS, ERROR } = this.events;
+
+    data.draft = false;
+    if (!('scheduledAt' in data) || !data.scheduledAt) {
+      data.publishedAt = new Date().toISOString();
+    }
+
     try {
       const post = await this.SavePost.save(id, data);
 
-      // await this.firehose.putRecord({
-      //   DeliveryStreamName: 'AddPost-cms',
-      //   Record: {
-      //     Data: JSON.stringify(PublistPostStreams(post.toJSON())),
-      //   },
-      // }).promise();
+      await this.firehose.putRecord({
+        DeliveryStreamName: 'AddPost-cms',
+        Record: {
+          Data: JSON.stringify(PublistPostStreams(post.toJSON())),
+        },
+      }).promise();
 
       this.emit(SUCCESS, { id });
     } catch (error) {
