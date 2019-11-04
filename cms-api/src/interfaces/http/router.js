@@ -74,8 +74,6 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
   }));
 
   router.use('/', graphqlRouter);
-
-
   router.use(errorHandler);
 
   return router;
