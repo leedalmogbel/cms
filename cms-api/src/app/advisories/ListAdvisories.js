@@ -11,11 +11,13 @@ class ListAdvisories extends Operation {
   }
 
   async execute(args) {
+    const { SUCCESS, ERROR } = this.events;
+
     try {
       const advisories = await this.AdvisoryRepository.getAdvisories(args);
 
       // get advisory tags
-      advisories.map(async (advisory) => {
+      this.emit(SUCCESS, await advisories.map((advisory) => {
         advisory.tags = advisory.getAdvisoryTags();
         // check if theres attachments
         if (advisory.attachments && advisory.attachments.length > 0) {
@@ -32,12 +34,14 @@ class ListAdvisories extends Operation {
             Promise.all(promises).then(() => { attachment = promises; });
           });
         }
-      });
 
-
-      return advisories;
+        return advisory.toJSON();
+      }));
     } catch (error) {
-      throw new Error(error.message);
+      if (error.message === 'ValidationError') {
+        return this.emit(ERROR, error);
+      }
+      this.emit(ERROR, error);
     }
   }
 
@@ -55,5 +59,7 @@ class ListAdvisories extends Operation {
     });
   }
 }
+
+ListAdvisories.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = ListAdvisories;

@@ -17,80 +17,76 @@ class PostRepository extends BaseRepository {
       },
     };
 
-    // where arguments
-    if ('where' in data) {
-      // set draft
-      if ('draft' in data.where) {
-        args.where.draft = data.where.draft;
+    // set draft
+    if ('draft' in data) {
+      args.where.draft = data.draft;
+    }
+
+    // set keyword
+    if ('keyword' in data) {
+      if (data.keyword) {
+        args.where.title = {
+          [Op.like]:
+              `%${data.title}%`,
+        };
       }
+    }
 
-      // set keyword
-      if ('keyword' in data.where) {
-        if (data.where.keyword) {
-          args.where.title = {
-            [Op.like]:
-              `%${data.where.title}%`,
-          };
-        }
+    // set location
+    if ('location' in data) {
+      if (data.location) {
+        args.locationAddress = {
+          [Op.like]:
+              `%${data.locationAddress}%`,
+        };
       }
+    }
 
-      // set location
-      if ('location' in data.where) {
-        if (data.where.location) {
-          args.where.locationAddress = {
-            [Op.like]:
-              `%${data.where.locationAddress}%`,
-          };
-        }
+    if ('category' in data) {
+      args.category = data.category;
+    }
+
+    // set date
+    if ('date' in data) {
+      if (data.date) {
+        const newDate = data.date.split(' ');
+        newDate[1] = '00:00:00';
+        const startDate = newDate.join(' ');
+        newDate[1] = '23:59:59';
+        const endDate = newDate.join(' ');
+        console.log(startDate, endDate);
+        args.where.createdAt = {
+          [Op.between]: [
+            startDate,
+            endDate,
+          ],
+        };
       }
+    }
 
-      if ('category' in data.where) {
-        args.where.category = data.where.category;
+    // set scheduled flag
+    if ('scheduled' in data) {
+      if (data.scheduled) {
+        args.where.scheduledAt = {
+          [Op.ne]: null,
+        };
+      } else {
+        args.where.scheduledAt = {
+          [Op.eq]: null,
+        };
       }
+    }
 
-      // set date
-      if ('date' in data.where) {
-        if (data.where.date) {
-          const d = data.where.date;
-          const newDate = d.split(' ');
-          newDate[1] = '00:00:00';
-          const startDate = newDate.join(' ');
-          newDate[1] = '23:59:59';
-          const endDate = newDate.join(' ');
-
-          args.where.createdAt = {
-            [Op.between]: [
-              startDate,
-              endDate,
-            ],
-          };
-        }
-      }
-
-      // set scheduled flag
-      if ('scheduled' in data.where) {
-        if (data.where.scheduled) {
-          args.where.scheduledAt = {
-            [Op.ne]: null,
-          };
-        } else {
-          args.where.scheduledAt = {
-            [Op.eq]: null,
-          };
-        }
-      }
-
-      // set published flag
-      if ('published' in data.where) {
-        if (data.where.published) {
-          args.where.publishedAt = {
-            [Op.ne]: null,
-          };
-        } else {
-          args.where.publishedAt = {
-            [Op.eq]: null,
-          };
-        }
+    // set published flag
+    if ('published' in data) {
+      if (data.published) {
+        args.where.publishedAt = {
+          [Op.ne]: null,
+        };
+      } else {
+        args.where.publishedAt = {
+          [Op.eq]: null,
+        };
       }
     }
 
