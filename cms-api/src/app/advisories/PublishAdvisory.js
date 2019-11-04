@@ -7,19 +7,28 @@ class PublishAdvisory extends Operation {
     this.SaveAdvisory = SaveAdvisory;
   }
 
-  async execute({ where: { id }, data }) {
+  async execute(id, data = {}) {
+    const { SUCCESS, ERROR } = this.events;
+
     // process with save advisory
-    const advisory = await this.SaveAdvisory.execute({
-      where: { id },
-      data: {
+    try {
+      data = {
         ...data,
         publishedAt: new Date().toISOString(),
         draft: false,
-      },
-    });
+      };
+      await this.SaveAdvisory.execute(id, data);
 
-    return advisory;
+      this.emit(SUCCESS, { id });
+    } catch (error) {
+      if (error.message === 'ValidationError') {
+        return this.emit(ERROR, error);
+      }
+      this.emit(ERROR, error);
+    }
   }
 }
+
+PublishAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = PublishAdvisory;
