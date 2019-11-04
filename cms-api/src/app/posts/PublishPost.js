@@ -12,8 +12,14 @@ class PublishPost extends Operation {
     });
   }
 
-  async execute(id, data) {
+  async execute(id, data = {}) {
     const { SUCCESS, ERROR } = this.events;
+
+    data.draft = false;
+    if (!('scheduledAt' in data) || !data.scheduledAt) {
+      data.publishedAt = new Date().toISOString();
+    }
+
     try {
       const post = await this.SavePost.save(id, data);
 
