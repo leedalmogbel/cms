@@ -23,7 +23,7 @@
           {
             "name": "draft",
             "in": "query",
-            "description": "draft filter by where",
+            "description": "filter post draft",
             "required": false,
               "content": {
               "application/json": {
@@ -33,7 +33,7 @@
                     "$ref": "#/components/schemas/Post"
                   },
                   "example": [{
-                    "where[draft]": true
+                    "draft": true
                   }]
                 }
               }
@@ -42,7 +42,7 @@
           {
             "name": "published",
             "in": "query",
-            "description": "post published filter by where",
+            "description": "filter post published",
             "required": false,
               "content": {
               "application/json": {
@@ -52,7 +52,7 @@
                     "$ref": "#/components/schemas/Post"
                   },
                   "example": [{
-                    "where[published]": true
+                    "published": true
                   }]
                 }
               }
@@ -61,7 +61,7 @@
           {
             "name": "scheduled",
             "in": "query",
-            "description": "post scheduled filter by where",
+            "description": "filter post scheduled",
             "required": false,
               "content": {
               "application/json": {
@@ -71,7 +71,7 @@
                     "$ref": "#/components/schemas/Post"
                   },
                   "example": [{
-                    "where[scheduled]": true
+                    "scheduled": true
                   }]
                 }
               }
@@ -80,7 +80,7 @@
           {
             "name": "location",
             "in": "query",
-            "description": "location filter by where",
+            "description": "filter location",
             "required": false,
               "content": {
               "application/json": {
@@ -90,7 +90,7 @@
                     "$ref": "#/components/schemas/Post"
                   },
                   "example": [{
-                    "where[location]": "Quezon City"
+                    "location": "Quezon City"
                   }]
                 }
               }
@@ -99,7 +99,7 @@
           {
             "name": "date",
             "in": "query",
-            "description": "post date filter by where",
+            "description": "filter post createdAt",
             "required": false,
               "content": {
               "application/json": {
@@ -109,7 +109,7 @@
                     "$ref": "#/components/schemas/Post"
                   },
                   "example": [{
-                    "where[date]": "2019-10-31 03:00:57"
+                    "date": "2019-10-31 03:00:57"
                   }]
                 }
               }
@@ -118,7 +118,7 @@
           {
             "name": "category",
             "in": "query",
-            "description": "post category filter by where",
+            "description": "filter post category",
             "required": false,
               "content": {
               "application/json": {
@@ -128,7 +128,7 @@
                     "$ref": "#/components/schemas/Post"
                   },
                   "example": [{
-                    "where[category]": "Jobs"
+                    "category": "Jobs"
                   }]
                 }
               }
@@ -352,6 +352,249 @@
           }
         }
       }
+    },
+    "/advisories": {
+      "get": {
+        "operationId": "ListAdvisories",
+        "tags": [ "Advisories" ],
+        "parameters": [
+          {
+            "name": "draft",
+            "in": "query",
+            "description": "filter advisory draft",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Advisory"
+                  },
+                  "example": [{
+                    "draft": true
+                  }]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all advisory",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Advisory"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "List of all advisories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createAdvisoryDraft",
+        "tags": [ "Advisories" ],
+        "requestBody": {
+          "description": "Creates a draft of a advisory",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvisoryDraft"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Advisory draft has started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvisoryDraft"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not created because of validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/advisories/{id}": {
+      "get": {
+        "operationId": "showAdvisory",
+        "tags": [ "Advisories" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of advisory to show",
+            "required": true,
+            "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Advisory"
+                  }
+                }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return advisory with given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Advisory"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveAdvisory",
+        "tags": [ "Advisories" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of advisory to update",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Advisory"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Advisory Draft new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Advisory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Advisoru Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Advisory"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Advisory not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/advisories/{id}/publish": {
+      "post": {
+        "operationId": "PublishAdvisory",
+        "tags": [ "Advisories" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of advisory to publish",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Advisory"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Advisory Draft new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Advisory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Advisory Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Advisory"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Advisory not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -376,6 +619,7 @@
         }
       },   
       "Post": {
+        "type": "object",
         "properties": {
           "id": {
             "type": "integer",
@@ -415,23 +659,83 @@
           },"locationDetails": {
             "type": "object"
           },"tagsOriginal": {
-            "type": "object"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },"tagsRetained": {
-            "type": "object"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },"tagsAdded": {
-            "type": "object"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },"tagsRemoved": {
-            "type": "object"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },"advisories": {
             "type": "object"
           },"attachments": {
             "type": "object"
           },"draft": {
-            "type": "object"
+            "type": "boolean"
           },"scheduledAt": {
             "type": "string"
           },"expiredAt": {
             "type": "string"
+          },"publishedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Advisory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unique Identifier representing a advisory",
+            "x-primary-key": true
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Identifier representing an author"
+          },
+          "categoryId": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "advisoryId": {  
+             "type": "string",
+            "format": "int32",
+            "description": "Unique Identifier representing a advisory",
+            "x-primary-key": true
+          },
+          "title": {
+            "type": "string"
+          },  
+          "content": {
+            "type": "string"
+          },"source": {
+            "type": "string"
+          },"locationAddress": {
+            "type": "string"
+          },"locationDetails": {
+            "type": "object"
+          },"attachments": {
+            "type": "object"
+          },"draft": {
+            "type": "boolean"
+          },"verified": {
+            "type": "boolean"
           },"publishedAt": {
             "type": "string"
           }
@@ -443,6 +747,17 @@
             "type": "integer",
             "format": "int32",
             "description": "Unique Identifier representing a draft of post",
+            "x-primary-key": true,
+            "default": 1
+          }
+        }
+      },
+      "AdvisoryDraft": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Unique Identifier representing a draft of advisory",
             "x-primary-key": true,
             "default": 1
           }
