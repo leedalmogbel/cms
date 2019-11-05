@@ -49,12 +49,13 @@ class PostRepository extends BaseRepository {
     // set date
     if ('date' in data) {
       if (data.date) {
-        const newDate = data.date.split(' ');
+        const d = data.date;
+        const newDate = d.split(' ');
         newDate[1] = '00:00:00';
         const startDate = newDate.join(' ');
         newDate[1] = '23:59:59';
         const endDate = newDate.join(' ');
-        console.log(startDate, endDate);
+
         args.where.createdAt = {
           [Op.between]: [
             startDate,
