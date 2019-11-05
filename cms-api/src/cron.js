@@ -18,11 +18,11 @@ module.exports.scheduled = async () => {
   const PostRepository = container.resolve('PostRepository');
 
   // get current timestamp
-  // and timestamp 2 hours ago
+  // and timestamp 10 minutes ago
   const utcNow = moment().format('YYYY-MM-DD HH:mm:ss UTC');
   const now = new Date(utcNow);
-  const twoHoursAgo = new Date(utcNow);
-  twoHoursAgo.setHours(twoHoursAgo.getHours() - 2);
+  const tenMinutesAgo = new Date(utcNow);
+  tenMinutesAgo.setHours(tenMinutesAgo.getMinutes() - 10);
 
   // get scheduled posts
   const posts = await PostRepository.getAll({
@@ -30,7 +30,7 @@ module.exports.scheduled = async () => {
       scheduledAt: {
         [Op.ne]: null,
         [Op.lte]: now.toISOString(),
-        [Op.gte]: twoHoursAgo.toISOString(),
+        [Op.gte]: tenMinutesAgo.toISOString(),
       },
     },
   });
