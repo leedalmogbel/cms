@@ -1,12 +1,12 @@
 const { Operation } = require('@brewery/core');
 const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
 const AWS = require('aws-sdk');
-const Post = require('src/domain/Post');
 
 class PublishPost extends Operation {
-  constructor({ SavePost }) {
+  constructor({ SavePost, httpClient }) {
     super();
     this.SavePost = SavePost;
+    this.httpClient = httpClient;
     this.firehose = new AWS.Firehose({
       apiVersion: '2015-08-04',
     });
@@ -26,12 +26,49 @@ class PublishPost extends Operation {
     try {
       const post = await this.SavePost.save(id, data);
 
+      // skip if scheduled post
+      if (post.scheduledAt) {
+        return this.emit(SUCCESS, { id });
+      }
+
       await this.firehose.putRecord({
         DeliveryStreamName: 'AddPost-cms',
         Record: {
           Data: JSON.stringify(PublistPostStreams(post.toJSON())),
         },
       }).promise();
+
+      const {
+        postId,
+        title,
+        content,
+        category,
+        subCategory,
+        source,
+        locationAddress,
+        locationDetails,
+        publishedAt,
+      } = post;
+
+      const pmsRes = await this.httpClient.post(process.env.PMS_POST_ENDPOINT, {
+        postId,
+        title,
+        content,
+        category,
+        subCategory: subCategory || 'n/a',
+        source,
+        locationAddress,
+        locationDetails,
+        publishedAt: new Date(publishedAt).toISOString(),
+      }, {
+        access_token: "$)f:23A?'0e%!GX",
+      });
+
+      if (pmsRes.hasOwnProperty('error') && pmsRes.error) {
+        throw new Error(`PMS Integration Error: ${pmsRes.message}`);
+      }
+
+      console.log(pmsRes);
 
       this.emit(SUCCESS, { id });
     } catch (error) {
