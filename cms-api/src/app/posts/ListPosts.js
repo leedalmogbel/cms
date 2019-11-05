@@ -13,7 +13,6 @@ class ListPosts extends Operation {
       const posts = await this.PostRepository.getPosts(args);
       this.emit(SUCCESS, await posts.map((post) => ({
         ...post.toJSON(),
-        tags: post.getPostTags(),
         status: (post.scheduledAt) ? 'scheduled' : 'published',
       })));
     } catch (error) {

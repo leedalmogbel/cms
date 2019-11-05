@@ -2,10 +2,9 @@ const { Operation } = require('@brewery/core');
 const Advisory = require('src/domain/Advisory');
 
 class SaveAdvisory extends Operation {
-  constructor({ AdvisoryRepository, SaveAdvisoryTags, GetLocation }) {
+  constructor({ AdvisoryRepository, GetLocation }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
-    this.SaveAdvisoryTags = SaveAdvisoryTags;
     this.GetLocation = GetLocation;
   }
 

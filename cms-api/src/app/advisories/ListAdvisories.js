@@ -16,9 +16,7 @@ class ListAdvisories extends Operation {
     try {
       const advisories = await this.AdvisoryRepository.getAdvisories(args);
 
-      // get advisory tags
       this.emit(SUCCESS, await advisories.map((advisory) => {
-        advisory.tags = advisory.getAdvisoryTags();
         // check if theres attachments
         if (advisory.attachments && advisory.attachments.length > 0) {
           const promises = [];

@@ -38,15 +38,6 @@ module.exports = {
       timestamps: true,
     });
 
-    AdvisoryModel.associate = () => {
-      AdvisoryModel.belongsToMany(datasource.models.TagModel, {
-        through: datasource.models.AdvisoryTagModel,
-        as: 'advisoryTags',
-        foreignKey: 'advisoryId',
-        otherKey: 'tagId',
-      });
-    };
-
     return AdvisoryModel;
   },
 };

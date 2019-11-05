@@ -17,9 +17,6 @@ class ShowAdvisory extends Operation {
       const advisory = await this.AdvisoryRepository.getById(id);
       let { attachments } = advisory;
 
-      // get tags for advisory
-      advisory.tags = await advisory.getAdvisoryTags();
-
       // check if theres attachments
       if (attachments && attachments.length > 0) {
         const promises = [];

@@ -2,10 +2,9 @@ const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
 
 class SavePost extends Operation {
-  constructor({ PostRepository, SavePostTags, GetLocation }) {
+  constructor({ PostRepository, GetLocation }) {
     super();
     this.PostRepository = PostRepository;
-    this.SavePostTags = SavePostTags;
     this.GetLocation = GetLocation;
   }
 
