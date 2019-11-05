@@ -18,26 +18,26 @@ module.exports.scheduled = async () => {
   const PostRepository = container.resolve('PostRepository');
 
   // get current timestamp
-  // and timestamp 10 minutes ago
-  const utcNow = moment().format('YYYY-MM-DD HH:mm:ss UTC');
-  const now = new Date(utcNow);
-  const tenMinutesAgo = new Date(utcNow);
-  tenMinutesAgo.setHours(tenMinutesAgo.getMinutes() - 10);
+  // and timestamp 30 minutes ago
+  const now = moment().format('YYYY-MM-DD HH:mm:ss');
+  const thirtyMinutes = new Date().setHours(new Date().getMinutes() - 30);
+  const ago = moment(thirtyMinutes).format('YYYY-MM-DD HH:mm:ss');
 
   // get scheduled posts
   const posts = await PostRepository.getAll({
     where: {
+      publishedAt: null,
       scheduledAt: {
         [Op.ne]: null,
-        [Op.lte]: now.toISOString(),
-        [Op.gte]: tenMinutesAgo.toISOString(),
+        [Op.lte]: now,
+        [Op.gte]: ago,
       },
     },
   });
 
   posts.forEach(async (post) => {
     const payload = new Post({
-      publishedAt: new Date(utcNow),
+      publishedAt: new Date().toISOString(),
     });
 
     await PostRepository.update(post.id, payload);
