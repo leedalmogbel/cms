@@ -14,9 +14,12 @@ class PublishPost extends Operation {
 
   async execute(id, data = {}) {
     const { SUCCESS, ERROR } = this.events;
-
     data.draft = false;
-    if (!('scheduledAt' in data) || !data.scheduledAt) {
+
+    // set published and scheduled date formats
+    if (data.hasOwnProperty('scheduledAt')) {
+      data.scheduledAt = new Date(data.scheduledAt).toISOString();
+    } else {
       data.publishedAt = new Date().toISOString();
     }
 
