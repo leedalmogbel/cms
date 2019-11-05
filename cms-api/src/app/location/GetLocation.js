@@ -63,15 +63,15 @@ class GetLocation extends Operation {
 
   static formatAddressComponents(data, locTypes) {
     const components = {
-      streetNumber: null,
-      street: null,
-      barangay: null,
-      district: null,
-      city: null,
-      province: null,
-      region: null,
-      country: null,
-      locationLevel: null,
+      streetNumber: '',
+      street: '',
+      barangay: '',
+      district: '',
+      city: '',
+      province: '',
+      region: '',
+      country: '',
+      locationLevel: '',
     };
 
     // required component types based on hierarchy
