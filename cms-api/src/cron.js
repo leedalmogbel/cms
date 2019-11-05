@@ -19,9 +19,11 @@ module.exports.scheduled = async () => {
 
   // get current timestamp
   // and timestamp 30 minutes ago
-  const now = moment().format('YYYY-MM-DD HH:mm:ss');
+  const now = moment().utcOffset('+08:00').format('YYYY-MM-DD HH:mm:ss');
   const thirtyMinutes = new Date().setHours(new Date().getMinutes() - 30);
-  const ago = moment(thirtyMinutes).format('YYYY-MM-DD HH:mm:ss');
+  const ago = moment(thirtyMinutes).utcOffset('+08:00').format('YYYY-MM-DD HH:mm:ss');
+
+  console.log('Current Datetime', now);
 
   // get scheduled posts
   const posts = await PostRepository.getAll({
