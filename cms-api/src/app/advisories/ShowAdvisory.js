@@ -10,19 +10,18 @@ class ShowAdvisory extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute({ where: { id } }) {
+  async execute(id) {
+    const { SUCCESS, NOT_FOUND } = this.events;
+
     try {
       const advisory = await this.AdvisoryRepository.getById(id);
       let { attachments } = advisory;
 
-      // get tags for advisory
-      advisory.tags = await advisory.getAdvisoryTags();
-
       // check if theres attachments
-      if (!attachments) {
+      if (attachments && attachments.length > 0) {
         const promises = [];
 
-        attachments.map(async (attachment) => {
+        attachments.forEach(async (attachment) => {
           promises.push({
             fileName: attachment.fileName,
             downloadUrl: await ShowAdvisory.getUrl(attachment.fileName),
@@ -33,9 +32,12 @@ class ShowAdvisory extends Operation {
         Promise.all(promises).then(() => { attachments = promises; });
       }
 
-      return advisory;
+      this.emit(SUCCESS, advisory);
     } catch (error) {
-      throw new Error(error.message);
+      this.emit(NOT_FOUND, {
+        type: error.message,
+        details: error.details,
+      });
     }
   }
 
@@ -53,5 +55,7 @@ class ShowAdvisory extends Operation {
     });
   }
 }
+
+ShowAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = ShowAdvisory;

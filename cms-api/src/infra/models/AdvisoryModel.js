@@ -23,10 +23,6 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: '0',
       },
-      tags: {
-        type: DataTypes.JSON,
-        allowNull: true,
-      },
       attachments: {
         type: DataTypes.JSON,
         allowNull: true,
@@ -41,15 +37,6 @@ module.exports = {
       tableName: 'advisories',
       timestamps: true,
     });
-
-    AdvisoryModel.associate = () => {
-      AdvisoryModel.belongsToMany(datasource.models.TagModel, {
-        through: datasource.models.AdvisoryTagModel,
-        as: 'advisoryTags',
-        foreignKey: 'advisoryId',
-        otherKey: 'tagId',
-      });
-    };
 
     return AdvisoryModel;
   },

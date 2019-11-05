@@ -1,75 +1,34 @@
 const { Operation } = require('@brewery/core');
-const Advisory = require('src/domain/Advisory');
-const Tag = require('src/domain/Tag');
+
 
 class PublishAdvisory extends Operation {
-  constructor({ AdvisoryRepository, TagRepository }) {
+  constructor({ SaveAdvisory }) {
     super();
-    this.AdvisoryRepository = AdvisoryRepository;
-    this.TagRepository = TagRepository;
+    this.SaveAdvisory = SaveAdvisory;
   }
 
-  async publish({ where: { id }, data }) {
-    let advisory;
+  async execute(id, data = {}) {
+    const { SUCCESS, ERROR } = this.events;
 
-    // validate advisory
+    // process with save advisory
     try {
-      advisory = await this.AdvisoryRepository.getById(id);
+      data = {
+        ...data,
+        publishedAt: new Date().toISOString(),
+        draft: false,
+      };
+      await this.SaveAdvisory.execute(id, data);
+
+      this.emit(SUCCESS, { id });
     } catch (error) {
-      throw new Error('Advisory does not exists');
-    }
-
-    // set publish timestamp and draft flag
-    data = {
-      ...data,
-      publishedAt: new Date().toISOString(),
-      draft: false,
-    };
-
-    // build advisory payloadexecute
-    const payload = new Advisory(data);
-
-    await this.AdvisoryRepository.update(id, payload);
-
-    // advisory tags exists;
-    if ('tags' in data) {
-      // remove first tags
-      // then associate tags to advisory
-      await advisory.setAdvisoryTags([]);
-      await this.addAdvisoryTags(advisory, data.tags);
-    }
-
-    // get updated advisory with associated tags
-    advisory = await this.AdvisoryRepository.getById(id);
-    advisory.tags = await advisory.getAdvisoryTags();
-
-    // return advisory
-    return advisory;
-  }
-
-  async addAdvisoryTags(advisory, tags) {
-    // add advisory tags
-    for (const tag of tags) {
-      // associate existing tag
-      const tagExists = await this.TagRepository.getTagByName(tag.name);
-      if (tagExists) {
-        await advisory.addAdvisoryTag(tagExists);
-        continue;
+      if (error.message === 'ValidationError') {
+        return this.emit(ERROR, error);
       }
-
-      // if tag does not exists
-      // create new tag
-      const payload = new Tag(tag);
-
-      try {
-        // add new advisory tag
-        const newTag = await this.TagRepository.add(payload);
-        await advisory.addAdvisoryTag(newTag);
-      } catch (error) {
-        throw new Error(error.message);
-      }
+      this.emit(ERROR, error);
     }
   }
 }
+
+PublishAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = PublishAdvisory;

@@ -4,15 +4,15 @@ const { BaseController } = require('@brewery/core');
 const Status = require('http-status');
 
 class AdvisoriesController extends BaseController {
-  
   constructor() {
     super();
     const router = Router();
-    router.get('/', this.injector('ListAdvisory'), this.index);
-    router.post('/', this.injector('CreateAdvisory'), this.create);
+
+    router.get('/', this.injector('ListAdvisories'), this.index);
     router.get('/:id', this.injector('ShowAdvisory'), this.show);
-    // router.put('/:id', this.injector('UpdateUser'), this.update);
-    // router.delete('/:id', this.injector('DeleteUser'), this.delete);
+    router.post('/', this.injector('CreateDraftAdvisory'), this.create);
+    router.put('/:id', this.injector('SaveAdvisory'), this.update);
+    router.post('/:id/publish', this.injector('PublishAdvisory'), this.update);
 
     return router;
   }
@@ -29,7 +29,7 @@ class AdvisoriesController extends BaseController {
       })
       .on(ERROR, next);
 
-    operation.execute();
+    operation.execute(req.query);
   }
 }
 

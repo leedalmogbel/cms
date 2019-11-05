@@ -20,6 +20,10 @@ module.exports = {
       source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
       locationDetails: DataTypes.JSON,
+      tagsOriginal: DataTypes.JSON,
+      tagsRetained: DataTypes.JSON,
+      tagsAdded: DataTypes.JSON,
+      tagsRemoved: DataTypes.JSON,
       comments: DataTypes.JSON,
       advisories: DataTypes.JSON,
       attachments: DataTypes.JSON,
@@ -34,18 +38,6 @@ module.exports = {
       tableName: 'posts',
       timestamps: true,
     });
-
-    /**
-     * Associate to Tag Model
-     */
-    PostModel.associate = () => {
-      PostModel.belongsToMany(datasource.models.TagModel, {
-        through: datasource.models.PostTagModel,
-        as: 'postTags',
-        foreignKey: 'postId',
-        otherKey: 'tagId',
-      });
-    };
 
     /**
      * Examples on how to associate or set relationship with other models

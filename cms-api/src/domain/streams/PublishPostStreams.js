@@ -1,4 +1,11 @@
 module.exports = (post) => {
+  const nullable = (value) => (typeof value === 'undefined' ? null : value);
+
+  post = {
+    ...post,
+    locationDetails: (typeof post.locationDetails === 'undefined' || post.locationDetails === null ? {} : post.locationDetails),
+  };
+
   const {
     locationDetails: {
       city,
@@ -10,8 +17,6 @@ module.exports = (post) => {
       locationLevel, placeId,
     },
   } = post;
-
-  const nullable = (value) => (typeof value === 'undefined' ? null : value);
 
   return {
     postId: post.postId,

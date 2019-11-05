@@ -21,6 +21,7 @@ type Post {
   publishedAt: DateTime
   createdAt: DateTime
   updatedAt: DateTime
+  status: String
 }
 
 type PostPrimary {
@@ -90,7 +91,6 @@ input PostInput {
   draft: Boolean
   scheduledAt: DateTime
   expiredAt: DateTime
-  publishedAt: DateTime
 }
 
 input PostPrimaryInput {
@@ -101,4 +101,5 @@ input PostFilter {
   scheduled: Boolean
   published: Boolean
   draft: Boolean
+  date: DateTime
 }

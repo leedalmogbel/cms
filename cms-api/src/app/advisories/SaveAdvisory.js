@@ -1,14 +1,14 @@
 const { Operation } = require('@brewery/core');
-const Post = require('src/domain/Post');
+const Advisory = require('src/domain/Advisory');
 
-class SavePost extends Operation {
-  constructor({ PostRepository, GetLocation }) {
+class SaveAdvisory extends Operation {
+  constructor({ AdvisoryRepository, GetLocation }) {
     super();
-    this.PostRepository = PostRepository;
+    this.AdvisoryRepository = AdvisoryRepository;
     this.GetLocation = GetLocation;
   }
 
-  async execute(id, data) {
+  async execute(id, data = {}) {
     const {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
@@ -42,13 +42,13 @@ class SavePost extends Operation {
       };
     }
 
-    const payload = new Post(data);
-    await this.PostRepository.update(id, payload);
+    const payload = new Advisory(data);
+    await this.AdvisoryRepository.update(id, payload);
 
-    return this.PostRepository.getById(id);
+    return this.AdvisoryRepository.getById(id);
   }
 }
 
-SavePost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+SaveAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = SavePost;
+module.exports = SaveAdvisory;

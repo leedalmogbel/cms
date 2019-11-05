@@ -7,22 +7,23 @@ class ListPosts extends Operation {
   }
 
   async execute(args) {
+    const { SUCCESS, ERROR } = this.events;
+
     try {
-      // get posts
-      let posts = await this.PostRepository.getPosts(args);
-
-      // get post tags
-      posts = posts.map((post) => ({
+      const posts = await this.PostRepository.getPosts(args);
+      this.emit(SUCCESS, await posts.map((post) => ({
         ...post.toJSON(),
-        tags: post.getPostTags(),
-      }));
-
-      // return posts
-      return posts;
+        status: (post.scheduledAt) ? 'scheduled' : 'published',
+      })));
     } catch (error) {
-      throw new Error(error);
+      if (error.message === 'ValidationError') {
+        return this.emit(ERROR, error);
+      }
+      this.emit(ERROR, error);
     }
   }
 }
+
+ListPosts.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = ListPosts;

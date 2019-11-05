@@ -9,16 +9,26 @@ class CreatePostDraft extends Operation {
   }
 
   async execute() {
-    const data = {
-      draft: true,
-      postId: Helpers.generateUID(8),
-    };
+    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
+    try {
+      const data = {
+        draft: true,
+        postId: `KAPP-CMS-${Helpers.generateUID(8)}`,
+      };
 
-    const payload = new Post(data);
-    const newPost = await this.PostRepository.add(payload);
+      const payload = new Post(data);
+      const { id } = await this.PostRepository.add(payload);
 
-    return { id: newPost.id };
+      this.emit(SUCCESS, { id });
+    } catch (error) {
+      if (error.message === 'ValidationError') {
+        return this.emit(VALIDATION_ERROR, error);
+      }
+      this.emit(ERROR, error);
+    }
   }
 }
+
+CreatePostDraft.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = CreatePostDraft;

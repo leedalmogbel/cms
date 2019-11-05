@@ -11,6 +11,7 @@ const graphqlHTTP = require('express-graphql');
 const graphqlHandler = require('../graphql');
 const loginGraphqlHandler = require('../loginGraphql');
 const Schema = require('../graphql/schema');
+
 module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler, openApiMiddleware }) => {
   const router = Router();
   router.use(containerMiddleware);
@@ -44,12 +45,17 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
    * Avoid hardcoding in this file as much. Deleting comments in this file
    * may cause errors on scaffoldings
    */
+
+  // apiRouter.use('/users', controller('controllers/UsersController'));
+
   apiRouter.use('/users', controller('controllers/UsersController.js'));
   apiRouter.use('/posts', controller('controllers/PostsController.js'));
-  apiRouter.use('/advisories', controller('controllers/AdvisoriesController'));
-  apiRouter.use('/tags', controller('controllers/TagsController.js'));
+  apiRouter.use('/advisories', controller('controllers/AdvisoriesController.js'));
   
   /* apiRoutes END */
+
+  router.use('/api', apiRouter);
+  router.use('/', static(path.join(__dirname, './public')));
 
   const graphqlRouter = Router();
   graphqlRouter.use(methodOverride('X-HTTP-Method-Override'))
@@ -68,9 +74,7 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
     graphiql: true,
   }));
 
-  router.use('/api', apiRouter);
   router.use('/', graphqlRouter);
-  router.use('/', static(path.join(__dirname, './public')));
   router.use(errorHandler);
 
   return router;

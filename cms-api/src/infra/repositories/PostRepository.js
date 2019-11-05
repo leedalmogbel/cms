@@ -1,63 +1,104 @@
 
 const { BaseRepository } = require('@brewery/core');
 const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+
+const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
   constructor({ PostModel }) {
     super(PostModel);
   }
 
-  async getPosts(data) {
+  async getPosts(data = {}) {
     // init fetch arguments
-    let args = {
+    const args = {
       where: {
-        draft: false // default draft false
-      }
+        draft: false, // default draft false
+      },
     };
 
-    // where arguments
-    if ('where' in data) {
-      // set draft
-      if ('draft' in data.where) {
-        args.where.draft = data.where.draft;
-      }
+    // set draft
+    if ('draft' in data) {
+      args.where.draft = data.draft;
+    }
 
-      // set scheduled flag
-      if ('scheduled' in data.where) {
-        if (data.where.scheduled) {
-          args.where.scheduledAt = {
-            [Op.ne]: null
-          };
-        } else {
-          where.scheduledAt = {
-            [Op.eq]: null
-          }
-        }
+    // set keyword
+    if ('keyword' in data) {
+      if (data.keyword) {
+        args.where.title = {
+          [Op.like]:
+              `%${data.title}%`,
+        };
       }
+    }
 
-      // set published flag
-      if ('published' in data) {
-        if (data.where.published) {
-          args.where.publishedAt = {
-            [Op.ne]: null
-          }
-        } else {
-          where.publishedAt = {
-            [Op.eq]: null
-          }
-        }
+    // set location
+    if ('location' in data) {
+      if (data.location) {
+        args.locationAddress = {
+          [Op.like]:
+              `%${data.locationAddress}%`,
+        };
+      }
+    }
+
+    if ('category' in data) {
+      args.category = data.category;
+    }
+
+    // set date
+    if ('date' in data) {
+      if (data.date) {
+        const d = data.date;
+        const newDate = d.split(' ');
+        newDate[1] = '00:00:00';
+        const startDate = newDate.join(' ');
+        newDate[1] = '23:59:59';
+        const endDate = newDate.join(' ');
+
+        args.where.createdAt = {
+          [Op.between]: [
+            startDate,
+            endDate,
+          ],
+        };
+      }
+    }
+
+    // set scheduled flag
+    if ('scheduled' in data) {
+      if (data.scheduled) {
+        args.where.scheduledAt = {
+          [Op.ne]: null,
+        };
+      } else {
+        args.where.scheduledAt = {
+          [Op.eq]: null,
+        };
+      }
+    }
+
+    // set published flag
+    if ('published' in data) {
+      if (data.published) {
+        args.where.publishedAt = {
+          [Op.ne]: null,
+        };
+      } else {
+        args.where.publishedAt = {
+          [Op.eq]: null,
+        };
       }
     }
 
     // offset
-    if ('offset' in args) {
-      args.offset = args.offset;
+    if ('offset' in data) {
+      args.offset = data.offset;
     }
 
     // limit
-    if ('limit' in args) {
-      args.limit = args.limit;
+    if ('limit' in data) {
+      args.limit = data.limit;
     }
 
     return this.getAll(args);
@@ -65,4 +106,3 @@ class PostRepository extends BaseRepository {
 }
 
 module.exports = PostRepository;
-
