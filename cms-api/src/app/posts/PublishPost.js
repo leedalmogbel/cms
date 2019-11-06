@@ -1,5 +1,6 @@
 const { Operation } = require('@brewery/core');
 const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
+const PmsPostStreams = require('src/domain/streams/PmsPostStreams');
 const AWS = require('aws-sdk');
 
 class PublishPost extends Operation {
@@ -31,44 +32,28 @@ class PublishPost extends Operation {
         return this.emit(SUCCESS, { id });
       }
 
-      await this.firehose.putRecord({
-        DeliveryStreamName: 'AddPost-cms',
-        Record: {
-          Data: JSON.stringify(PublistPostStreams(post.toJSON())),
+      await this.firehose
+        .putRecord({
+          DeliveryStreamName: 'AddPost-cms',
+          Record: {
+            Data: JSON.stringify(PublistPostStreams(post.toJSON())),
+          },
+        })
+        .promise();
+
+      const pmsRes = await this.httpClient.post(
+        process.env.PMS_POST_ENDPOINT,
+        PmsPostStreams(post.toJSON()),
+        {
+          access_token: process.env.PMS_POST_TOKEN,
         },
-      }).promise();
+      );
 
-      const {
-        postId,
-        title,
-        content,
-        category,
-        subCategory,
-        source,
-        locationAddress,
-        locationDetails,
-        publishedAt,
-      } = post;
-
-      const pmsRes = await this.httpClient.post(process.env.PMS_POST_ENDPOINT, {
-        postId,
-        title,
-        content,
-        category,
-        subCategory: subCategory || 'n/a',
-        source,
-        locationAddress,
-        locationDetails,
-        publishedAt: new Date(publishedAt).toISOString(),
-      }, {
-        access_token: "$)f:23A?'0e%!GX",
-      });
+      console.log('PMS response', pmsRes);
 
       if (pmsRes.hasOwnProperty('error') && pmsRes.error) {
         throw new Error(`PMS Integration Error: ${pmsRes.message}`);
       }
-
-      console.log(pmsRes);
 
       this.emit(SUCCESS, { id });
     } catch (error) {
@@ -79,7 +64,6 @@ class PublishPost extends Operation {
     }
   }
 }
-
 
 PublishPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
