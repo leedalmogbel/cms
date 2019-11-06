@@ -1,6 +1,6 @@
 const { Operation } = require('@brewery/core');
 const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
-const PmsPostStreams = require('src/domain/streams/PmsPostStreams');
+const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');
 
 class PublishPost extends Operation {
@@ -43,7 +43,7 @@ class PublishPost extends Operation {
 
       const pmsRes = await this.httpClient.post(
         process.env.PMS_POST_ENDPOINT,
-        PmsPostStreams(post.toJSON()),
+        PmsPost(post.toJSON()),
         {
           access_token: process.env.PMS_POST_TOKEN,
         },

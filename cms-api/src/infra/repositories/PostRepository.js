@@ -19,7 +19,7 @@ class PostRepository extends BaseRepository {
 
     // set draft
     if ('draft' in data) {
-      args.where.draft = data.draft;
+      args.where.draft = (data.draft === 'true') ? 1 : 0;
     }
 
     // set keyword
@@ -35,7 +35,7 @@ class PostRepository extends BaseRepository {
     // set location
     if ('location' in data) {
       if (data.location) {
-        args.locationAddress = {
+        args.where.locationAddress = {
           [Op.like]:
               `%${data.locationAddress}%`,
         };
@@ -43,7 +43,7 @@ class PostRepository extends BaseRepository {
     }
 
     if ('category' in data) {
-      args.category = data.category;
+      args.where.category = data.category;
     }
 
     // set date
