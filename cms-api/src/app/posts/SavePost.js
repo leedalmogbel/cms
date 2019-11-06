@@ -13,22 +13,23 @@ class SavePost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
+    const payload = await this.build(data);
+
     try {
-      this.save(id, data);
+      payload.validateData();
+    } catch (error) {
+      return this.emit(VALIDATION_ERROR, error);
+    }
+
+    try {
+      await this.PostRepository.update(id, payload);
       this.emit(SUCCESS, { id });
     } catch (error) {
-      switch (error.message) {
-        case 'ValidationError':
-          return this.emit(VALIDATION_ERROR, error);
-        case 'NotFoundError':
-          return this.emit(NOT_FOUND, error);
-        default:
-          this.emit(ERROR, error);
-      }
+      this.emit(ERROR, error);
     }
   }
 
-  async save(id, data) {
+  async build(data) {
     if ('placeId' in data) {
       const {
         locationDetails,
@@ -42,10 +43,11 @@ class SavePost extends Operation {
       };
     }
 
-    const payload = new Post(data);
-    await this.PostRepository.update(id, payload);
+    if (data.hasOwnProperty('scheduledAt')) {
+      data.scheduledAt = new Date(data.scheduledAt).toISOString();
+    }
 
-    return this.PostRepository.getById(id);
+    return new Post(data);
   }
 }
 

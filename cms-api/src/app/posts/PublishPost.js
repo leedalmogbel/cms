@@ -4,8 +4,9 @@ const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');
 
 class PublishPost extends Operation {
-  constructor({ SavePost, httpClient }) {
+  constructor({ PostRepository, SavePost, httpClient }) {
     super();
+    this.PostRepository = PostRepository;
     this.SavePost = SavePost;
     this.httpClient = httpClient;
     this.firehose = new AWS.Firehose({
@@ -13,19 +14,26 @@ class PublishPost extends Operation {
     });
   }
 
-  async execute(id, data = {}) {
-    const { SUCCESS, ERROR } = this.events;
-    data.draft = false;
+  async execute(id, data) {
+    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
 
-    // set published and scheduled date formats
-    if (data.hasOwnProperty('scheduledAt')) {
-      data.scheduledAt = new Date(data.scheduledAt).toISOString();
-    } else {
-      data.publishedAt = new Date().toISOString();
+    data.draft = false;
+    if (data.hasOwnProperty('publishedAt')) {
+      data.publishedAt = new Date(data.publishedAt).toISOString();
+    }
+
+    const payload = this.SavePost.build(data);
+
+    try {
+      payload.validateData();
+    } catch (error) {
+      return this.emit(VALIDATION_ERROR, error);
     }
 
     try {
-      const post = await this.SavePost.save(id, data);
+      // update post and fetch updated
+      await this.PostRepository.update(id, payload);
+      const post = this.PostRepository.getById(id);
 
       // skip if scheduled post
       if (post.scheduledAt) {
