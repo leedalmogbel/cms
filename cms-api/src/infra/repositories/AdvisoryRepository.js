@@ -19,19 +19,16 @@ class AdvisoryRepository extends BaseRepository {
 
     const order = [['createdAt', 'DESC']]; // set order by default descending
 
-    // filters
-    if ('where' in data) {
-      // fetch verified
-      if ('verified' in data.where) {
-        if (data.where.verified) {
-          args.where.verified = {
-            [Op.eq]: true,
-          };
-        } else {
-          args.where.verified = {
-            [Op.eq]: false,
-          };
-        }
+    // fetch verified
+    if ('verified' in data) {
+      if (data.verified) {
+        args.where.verified = {
+          [Op.eq]: true,
+        };
+      } else {
+        args.where.verified = {
+          [Op.eq]: false,
+        };
       }
     }
 

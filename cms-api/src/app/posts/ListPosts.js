@@ -11,10 +11,23 @@ class ListPosts extends Operation {
 
     try {
       const posts = await this.PostRepository.getPosts(args);
-      this.emit(SUCCESS, await posts.map((post) => ({
-        ...post.toJSON(),
-        status: (post.scheduledAt) ? 'scheduled' : 'published',
-      })));
+
+      this.emit(SUCCESS, posts.map((post) => {
+        post = {
+          ...post.toJSON(),
+          status: 'draft',
+        };
+
+        if (post.publishedAt) {
+          post.status = 'published';
+        }
+
+        if (post.scheduledAt) {
+          post.status = 'scheduled';
+        }
+
+        return post;
+      }));
     } catch (error) {
       if (error.message === 'ValidationError') {
         return this.emit(ERROR, error);
