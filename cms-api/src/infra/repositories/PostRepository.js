@@ -35,7 +35,7 @@ class PostRepository extends BaseRepository {
     // set location
     if ('location' in data) {
       if (data.location) {
-        args.locationAddress = {
+        args.where.locationAddress = {
           [Op.like]:
               `%${data.locationAddress}%`,
         };
@@ -43,7 +43,7 @@ class PostRepository extends BaseRepository {
     }
 
     if ('category' in data) {
-      args.category = data.category;
+      args.where.category = data.category;
     }
 
     // set date
