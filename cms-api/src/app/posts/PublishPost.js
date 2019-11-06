@@ -15,27 +15,33 @@ class PublishPost extends Operation {
   }
 
   async execute(id, data) {
-    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = this.events;
+
+    try {
+      await this.PostRepository.getById(id);
+    } catch (error) {
+      error.message = 'Post not found';
+      return this.emit(NOT_FOUND, error);
+    }
 
     data.draft = false;
     if (data.hasOwnProperty('publishedAt')) {
       data.publishedAt = new Date(data.publishedAt).toISOString();
     }
 
-    const payload = await this.SavePost.build(data);
-
     try {
-      payload.validateData();
+      data = await this.SavePost.build(data);
+      data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
     }
 
     try {
-      // update post and fetch updated
-      await this.PostRepository.update(id, payload);
-      const post = this.PostRepository.getById(id);
+      await this.PostRepository.update(id, data);
+      const post = await this.PostRepository.getById(id);
 
-      // skip if scheduled post
       if (post.scheduledAt) {
         return this.emit(SUCCESS, { id });
       }

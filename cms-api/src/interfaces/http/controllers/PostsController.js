@@ -45,7 +45,6 @@ class PostsController extends BaseController {
       })
       .on(VALIDATION_ERROR, (error) => {
         res.status(Status.BAD_REQUEST).json({
-          type: 'ValidationError',
           message: error.message,
         });
       })
@@ -68,13 +67,11 @@ class PostsController extends BaseController {
       })
       .on(VALIDATION_ERROR, (error) => {
         res.status(Status.BAD_REQUEST).json({
-          type: 'ValidationError',
           message: error.message,
         });
       })
       .on(NOT_FOUND, (error) => {
         res.status(Status.NOT_FOUND).json({
-          type: 'NotFoundError',
           message: error.message,
         });
       })

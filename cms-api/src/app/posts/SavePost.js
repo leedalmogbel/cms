@@ -13,16 +13,22 @@ class SavePost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
-    const payload = await this.build(data);
+    try {
+      await this.PostRepository.getById(id);
+    } catch (error) {
+      error.message = 'Post not found';
+      return this.emit(NOT_FOUND, error);
+    }
 
     try {
-      payload.validateData();
+      data = await this.build(data);
+      data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
     }
 
     try {
-      await this.PostRepository.update(id, payload);
+      await this.PostRepository.update(id, data);
       this.emit(SUCCESS, { id });
     } catch (error) {
       this.emit(ERROR, error);

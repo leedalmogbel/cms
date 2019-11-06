@@ -36,20 +36,20 @@ const Post = attributes({
   // }
 
   validateData() {
-    if (!this.category || !this.category.length) {
-      throw new Error('Category is required');
-    }
-
     if (!this.title || !this.title.length) {
       throw new Error('Title is required');
     }
 
-    if (!this.content || !this.content.length) {
-      throw new Error('Body is required');
+    if (!this.category || !this.category.length) {
+      throw new Error('Category is required');
     }
 
     if (!this.source || !this.source.length) {
       throw new Error('Source is required');
+    }
+
+    if (!this.locationDetails) {
+      throw new Error('Location is required');
     }
   }
 });
