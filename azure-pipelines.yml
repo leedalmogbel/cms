@@ -23,6 +23,5 @@ steps:
     inlineScript: |
       # You can write your script inline here
       cd cms-api
-      npm i -g sls
       npm i
       sls deploy -s dev
