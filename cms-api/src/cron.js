@@ -7,7 +7,7 @@ const moment = require('moment');
 const AWS = require('aws-sdk');
 const httpClient = require('./infra/http-request');
 const PublistPostStreams = require('./domain/streams/PublishPostStreams');
-const PmsPostStreams = require('./domain/streams/PmsPostStreams');
+const PmsPost = require('./domain/pms/Post');
 const Post = require('./domain/Post');
 
 const { Op } = Sequelize;
@@ -52,6 +52,8 @@ module.exports.scheduled = async () => {
     },
   });
 
+  console.log(`List of posts to be published: ${posts.length}`);
+
   posts.forEach(async (post) => {
     const payload = new Post({
       publishedAt: new Date().toISOString(),
@@ -80,7 +82,7 @@ module.exports.scheduled = async () => {
     // publish to pms
     const pmsRes = await HttpClient.post(
       process.env.PMS_POST_ENDPOINT,
-      PmsPostStreams(post.toJSON()),
+      PmsPost(post.toJSON()),
       {
         access_token: process.env.PMS_POST_TOKEN,
       },

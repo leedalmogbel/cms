@@ -7,7 +7,7 @@ plugins:
 provider:
   region: ap-southeast-1
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   memorySize: 256
   versionFunctions: false
   timeout: 30
