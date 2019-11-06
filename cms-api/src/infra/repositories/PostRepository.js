@@ -19,7 +19,7 @@ class PostRepository extends BaseRepository {
 
     // set draft
     if ('draft' in data) {
-      args.where.draft = data.draft;
+      args.where.draft = (data.draft === 'true') ? 1 : 0;
     }
 
     // set keyword
