@@ -23,5 +23,6 @@ steps:
     inlineScript: |
       # You can write your script inline here
       cd cms-api
-      npm i
-      sls deploy -s dev
+      npm i -g serverless
+      npm i 
+      serverless deploy -s dev
