@@ -16,6 +16,7 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
+    cd cms-api
     npm install
   displayName: 'npm install'
 
@@ -26,4 +27,5 @@ steps:
     scriptType: 'inline'
     inlineScript: |
       # You can write your script inline here
+      cd cms-api
       sls deploy -s dev
