@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+- develop
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -19,4 +19,11 @@ steps:
     npm install
   displayName: 'npm install'
 
-
+- task: AWSShellScript@1
+  inputs:
+    awsCredentials: 'kapp-cms-connection'
+    regionName: 'ap-southeast-1'
+    scriptType: 'inline'
+    inlineScript: |
+      # You can write your script inline here
+      sls deploy -s dev
