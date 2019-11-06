@@ -22,7 +22,7 @@ class PublishPost extends Operation {
       data.publishedAt = new Date(data.publishedAt).toISOString();
     }
 
-    const payload = this.SavePost.build(data);
+    const payload = await this.SavePost.build(data);
 
     try {
       payload.validateData();
@@ -56,8 +56,6 @@ class PublishPost extends Operation {
           access_token: process.env.PMS_POST_TOKEN,
         },
       );
-
-      console.log('PMS response', pmsRes);
 
       if (pmsRes.hasOwnProperty('error') && pmsRes.error) {
         throw new Error(`PMS Integration Error: ${pmsRes.message}`);
