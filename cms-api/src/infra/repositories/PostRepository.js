@@ -94,16 +94,16 @@ class PostRepository extends BaseRepository {
 
     // offset
     if ('offset' in data) {
-      args.offset = data.offset;
+      args.offset = Number(data.offset);
     }
 
     // limit
     if ('limit' in data) {
-      args.limit = data.limit;
+      args.limit = Number(data.limit);
     }
 
     args.order = order;
-
+    console.log(args);
     return this.getAll(args);
   }
 }
