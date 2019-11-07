@@ -23,21 +23,18 @@ const getContainer = () => new Promise((resolve) => {
   });
 });
 
-module.exports.scheduled = async () => {
+module.exports.scheduled = async (event, context, callback) => {
   const container = await getContainer();
   const PostRepository = container.resolve('PostRepository');
   const HttpClient = container.resolve('httpClient');
 
   // get current timestamp
   // and timestamp 30 minutes ago
-  const now = moment()
-    .utcOffset('+08:00')
-    .format('YYYY-MM-DD HH:mm:ss');
-  const thirtyMinutes = new Date().setHours(new Date().getMinutes() - 30);
-  const ago = moment(thirtyMinutes)
-    .utcOffset('+08:00')
-    .format('YYYY-MM-DD HH:mm:ss');
+  const now = moment().format('YYYY-MM-DD HH:mm:ss');
+  const thirtyMinutes = new Date().setMinutes(new Date().getMinutes() - 30);
+  const ago = moment(thirtyMinutes).format('YYYY-MM-DD HH:mm:ss');
 
+  console.log('Cron Started');
   console.log('Current Datetime', now);
 
   // get scheduled posts
@@ -54,41 +51,51 @@ module.exports.scheduled = async () => {
 
   console.log(`List of posts to be published: ${posts.length}`);
 
-  posts.forEach(async (post) => {
-    const payload = new Post({
-      publishedAt: new Date().toISOString(),
-    });
+  await Promise.all(
+    posts.map(async (post) => {
+      const scheduledAt = new Date(post.scheduledAt);
+      const payload = new Post({
+        publishedAt: scheduledAt.toISOString(),
+      });
 
-    // publish post and fetch updated
-    await PostRepository.update(post.id, payload);
-    post = await PostRepository.getById(post.id);
+      // publish post and fetch updated
+      await PostRepository.update(post.id, payload);
+      post = await PostRepository.getById(post.id);
 
-    // publish to firehose
-    const firehose = new AWS.Firehose({
-      apiVersion: '2015-08-04',
-    });
+      // publish to firehose
+      const firehose = new AWS.Firehose({
+        apiVersion: '2015-08-04',
+      });
 
-    const firehoseRes = await firehose
-      .putRecord({
-        DeliveryStreamName: 'AddPost-cms',
-        Record: {
-          Data: JSON.stringify(PublistPostStreams(post.toJSON())),
+      const firehoseRes = await firehose
+        .putRecord({
+          DeliveryStreamName: 'AddPost-cms',
+          Record: {
+            Data: JSON.stringify(PublistPostStreams(post.toJSON())),
+          },
+        })
+        .promise();
+
+      console.log(`Firehose response for postId: ${post.id}`, firehoseRes);
+
+      // publish to pms
+      const pmsRes = await HttpClient.post(
+        process.env.PMS_POST_ENDPOINT,
+        PmsPost(post.toJSON()),
+        {
+          access_token: process.env.PMS_POST_TOKEN,
         },
-      })
-      .promise();
+      );
 
-    console.log(`Firehose response for postId: ${post.id}`, firehoseRes);
+      console.log(`PMS response for postId: ${post.id}`, pmsRes);
+      console.log(`PostId: ${post.id} was successfully published`);
 
-    // publish to pms
-    const pmsRes = await HttpClient.post(
-      process.env.PMS_POST_ENDPOINT,
-      PmsPost(post.toJSON()),
-      {
-        access_token: process.env.PMS_POST_TOKEN,
-      },
-    );
+      return post;
+    }),
+  );
 
-    console.log(`PMS response for postId: ${post.id}`, pmsRes);
-    console.log(`PostId: ${post.id} was successfully published`);
-  });
+  console.log('Cron Ended');
+  return {
+    message: 'success',
+  };
 };
