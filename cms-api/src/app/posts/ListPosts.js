@@ -18,12 +18,13 @@ class ListPosts extends Operation {
           status: 'draft',
         };
 
-        if (post.publishedAt) {
-          post.status = 'published';
+        if (post.scheduledAt
+          && !post.publishedAt) {
+          post.status = 'scheduled';
         }
 
-        if (post.scheduledAt) {
-          post.status = 'scheduled';
+        if (post.publishedAt) {
+          post.status = 'published';
         }
 
         return post;
