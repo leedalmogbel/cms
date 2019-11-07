@@ -4,8 +4,9 @@ const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');
 
 class PublishPost extends Operation {
-  constructor({ SavePost, httpClient }) {
+  constructor({ PostRepository, SavePost, httpClient }) {
     super();
+    this.PostRepository = PostRepository;
     this.SavePost = SavePost;
     this.httpClient = httpClient;
     this.firehose = new AWS.Firehose({
@@ -13,21 +14,34 @@ class PublishPost extends Operation {
     });
   }
 
-  async execute(id, data = {}) {
-    const { SUCCESS, ERROR } = this.events;
-    data.draft = false;
+  async execute(id, data) {
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = this.events;
 
-    // set published and scheduled date formats
-    if (data.hasOwnProperty('scheduledAt')) {
-      data.scheduledAt = new Date(data.scheduledAt).toISOString();
-    } else {
-      data.publishedAt = new Date().toISOString();
+    try {
+      await this.PostRepository.getById(id);
+    } catch (error) {
+      error.message = 'Post not found';
+      return this.emit(NOT_FOUND, error);
+    }
+
+    data.draft = false;
+    if (data.hasOwnProperty('publishedAt')) {
+      data.publishedAt = new Date(data.publishedAt).toISOString();
     }
 
     try {
-      const post = await this.SavePost.save(id, data);
+      data = await this.SavePost.build(data);
+      data.validateData();
+    } catch (error) {
+      return this.emit(VALIDATION_ERROR, error);
+    }
 
-      // skip if scheduled post
+    try {
+      await this.PostRepository.update(id, data);
+      const post = await this.PostRepository.getById(id);
+
       if (post.scheduledAt) {
         return this.emit(SUCCESS, { id });
       }
@@ -48,8 +62,6 @@ class PublishPost extends Operation {
           access_token: process.env.PMS_POST_TOKEN,
         },
       );
-
-      console.log('PMS response', pmsRes);
 
       if (pmsRes.hasOwnProperty('error') && pmsRes.error) {
         throw new Error(`PMS Integration Error: ${pmsRes.message}`);

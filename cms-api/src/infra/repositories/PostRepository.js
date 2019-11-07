@@ -71,8 +71,7 @@ class PostRepository extends BaseRepository {
         args.where.scheduledAt = {
           [Op.ne]: null,
         };
-      } else {
-        args.where.scheduledAt = {
+        args.where.publishedAt = {
           [Op.eq]: null,
         };
       }
@@ -83,10 +82,6 @@ class PostRepository extends BaseRepository {
       if (data.published) {
         args.where.publishedAt = {
           [Op.ne]: null,
-        };
-      } else {
-        args.where.publishedAt = {
-          [Op.eq]: null,
         };
       }
     }

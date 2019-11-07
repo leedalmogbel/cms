@@ -2,22 +2,33 @@ const { Operation } = require('@brewery/core');
 
 
 class PublishAdvisory extends Operation {
-  constructor({ SaveAdvisory }) {
+  constructor({ AdvisoryRepository, SaveAdvisory }) {
     super();
     this.SaveAdvisory = SaveAdvisory;
+    this.AdvisoryRepository = AdvisoryRepository;
   }
 
   async execute(id, data = {}) {
-    const { SUCCESS, ERROR } = this.events;
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = this.events;
 
-    // process with save advisory
     try {
-      data = {
-        ...data,
-        publishedAt: new Date().toISOString(),
-        draft: false,
-      };
-      await this.SaveAdvisory.execute(id, data);
+      await this.AdvisoryRepository.getById(id);
+    } catch (error) {
+      error.message = 'Advisory not found';
+      return this.emit(NOT_FOUND, error);
+    }
+
+    try {
+      data = await this.SaveAdvisory.build(data);
+      data.validateData();
+    } catch (error) {
+      return this.emit(VALIDATION_ERROR, error);
+    }
+
+    try {
+      await this.AdvisoryRepository.update(id, data);
 
       this.emit(SUCCESS, { id });
     } catch (error) {
