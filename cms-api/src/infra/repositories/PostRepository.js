@@ -17,6 +17,10 @@ class PostRepository extends BaseRepository {
       },
     };
 
+    // set order by default on
+    // publisched descending and scheduled ascending
+    let order = [['scheduledAt', 'ASC'], ['publishedAt', 'DESC']];
+
     // set draft
     if ('draft' in data) {
       args.where.draft = (data.draft === 'true') ? 1 : 0;
@@ -75,6 +79,7 @@ class PostRepository extends BaseRepository {
           [Op.eq]: null,
         };
       }
+      order = [['scheduledAt', 'DESC']]; // set order by default descending
     }
 
     // set published flag
@@ -84,6 +89,7 @@ class PostRepository extends BaseRepository {
           [Op.ne]: null,
         };
       }
+      order = [['publishedAt', 'DESC']];
     }
 
     // offset
@@ -95,6 +101,8 @@ class PostRepository extends BaseRepository {
     if ('limit' in data) {
       args.limit = data.limit;
     }
+
+    args.order = order;
 
     return this.getAll(args);
   }
