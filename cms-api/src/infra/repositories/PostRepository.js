@@ -60,13 +60,27 @@ class PostRepository extends BaseRepository {
         newDate[1] = '23:59:59';
         const endDate = newDate.join(' ');
 
-        args.where.createdAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
+        args.where.publishedAt = {
+          [Op.or]: {
+            [Op.between]: [
+              startDate,
+              endDate,
+            ],
+            [Op.eq]: null,
+          },
         };
+
+        if ('scheduled' in data) {
+          args.where.scheduledAt = {
+            [Op.between]: [
+              startDate,
+              endDate,
+            ],
+          };
+        }
       }
+
+      order = [['publishedAt', 'DESC']];
     }
 
     // set scheduled flag
