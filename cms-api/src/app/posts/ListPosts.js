@@ -10,9 +10,8 @@ class ListPosts extends Operation {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      const posts = await this.PostRepository.getPosts(args);
-
-      this.emit(SUCCESS, posts.map((post) => {
+      let posts = await this.PostRepository.getPosts(args);
+      posts = posts.map((post) => {
         post = {
           ...post.toJSON(),
           status: 'draft',
@@ -27,7 +26,16 @@ class ListPosts extends Operation {
         }
 
         return post;
-      }));
+      });
+
+      const total = await this.PostRepository.count(args);
+
+      this.emit(SUCCESS, {
+        results: posts,
+        meta: {
+          total,
+        },
+      });
     } catch (error) {
       if (error.message === 'ValidationError') {
         return this.emit(ERROR, error);

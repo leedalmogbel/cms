@@ -9,7 +9,7 @@ class PostRepository extends BaseRepository {
     super(PostModel);
   }
 
-  async getPosts(data = {}) {
+  buildListArgs(data = {}) {
     // init fetch arguments
     const args = {
       where: {
@@ -26,8 +26,7 @@ class PostRepository extends BaseRepository {
     if ('keyword' in data) {
       if (data.keyword) {
         args.where.title = {
-          [Op.like]:
-              `%${data.title}%`,
+          [Op.like]: `%${data.title}%`,
         };
       }
     }
@@ -36,8 +35,7 @@ class PostRepository extends BaseRepository {
     if ('location' in data) {
       if (data.location) {
         args.where.locationAddress = {
-          [Op.like]:
-              `%${data.locationAddress}%`,
+          [Op.like]: `%${data.locationAddress}%`,
         };
       }
     }
@@ -93,15 +91,23 @@ class PostRepository extends BaseRepository {
 
     // offset
     if ('offset' in data) {
-      args.offset = data.offset;
+      args.offset = parseInt(data.offset);
     }
 
     // limit
     if ('limit' in data) {
-      args.limit = data.limit;
+      args.limit = parseInt(data.limit);
     }
 
-    return this.getAll(args);
+    return args;
+  }
+
+  getPosts(args) {
+    return this.getAll(this.buildListArgs(args));
+  }
+
+  count(args) {
+    return this.model.count(this.buildListArgs(args));
   }
 }
 
