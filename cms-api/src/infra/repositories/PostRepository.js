@@ -27,15 +27,23 @@ class PostRepository extends BaseRepository {
     }
 
     // set keyword
-    if ('keyword' in data) {
-      if (data.keyword) {
-        args.where.title = {
-          [Op.like]:
-              `%${data.title}%`,
-        };
-      }
+    if ('keyword' in data
+      && data.keyword) {
+      args.where = {
+        [Op.or]: {
+          title: {
+            [Op.like]:
+            `%${data.keyword}%`,
+          },
+          content: {
+            [Op.like]:
+            `%${data.keyword}%`,
+          },
+        },
+      };
     }
-
+    console.log(args);
+    console.log(data);
     // set location
     if ('location' in data) {
       if (data.location) {
