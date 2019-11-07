@@ -27,9 +27,7 @@ class PublishPost extends Operation {
     }
 
     data.draft = false;
-    if (data.hasOwnProperty('publishedAt')) {
-      data.publishedAt = new Date(data.publishedAt).toISOString();
-    }
+    data.publishedAt = new Date().toISOString();
 
     try {
       data = await this.SavePost.build(data);

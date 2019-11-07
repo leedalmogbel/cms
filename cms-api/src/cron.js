@@ -30,9 +30,9 @@ module.exports.scheduled = async (event, context, callback) => {
 
   // get current timestamp
   // and timestamp 30 minutes ago
-  const now = moment().format('YYYY-MM-DD HH:mm:ss');
+  const now = new Date();
   const thirtyMinutes = new Date().setMinutes(new Date().getMinutes() - 30);
-  const ago = moment(thirtyMinutes).format('YYYY-MM-DD HH:mm:ss');
+  const ago = new Date(thirtyMinutes);
 
   console.log('Cron Started');
   console.log('Current Datetime', now);
@@ -53,9 +53,8 @@ module.exports.scheduled = async (event, context, callback) => {
 
   await Promise.all(
     posts.map(async (post) => {
-      const scheduledAt = new Date(post.scheduledAt);
       const payload = new Post({
-        publishedAt: scheduledAt.toISOString(),
+        publishedAt: new Date().toISOString(),
       });
 
       // publish post and fetch updated
