@@ -20,6 +20,23 @@ const Advisory = attributes({
   createdAt: Date,
   updatedAt: Date,
 })(class Advisory {
+  validateData() {
+    if (!this.category || !this.category.length) {
+      throw new Error('Category is required');
+    }
+
+    if (!this.title || !this.title.length) {
+      throw new Error('Title is required');
+    }
+
+    if (!this.locationDetails) {
+      throw new Error('Location is required');
+    }
+
+    if (!this.source || !this.source.length) {
+      throw new Error('Source is required');
+    }
+  }
 });
 
 module.exports = Advisory;

@@ -13,22 +13,30 @@ class SaveAdvisory extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
+    const payload = await this.build(data);
+
     try {
-      this.save(id, data);
+      await this.AdvisoryRepository.getById(id);
+    } catch (error) {
+      error.message = 'Advisory not found';
+      return this.emit(NOT_FOUND, error);
+    }
+
+    try {
+      payload.validateData();
+    } catch (error) {
+      return this.emit(VALIDATION_ERROR, error);
+    }
+
+    try {
+      await this.AdvisoryRepository.update(id, payload);
       this.emit(SUCCESS, { id });
     } catch (error) {
-      switch (error.message) {
-        case 'ValidationError':
-          return this.emit(VALIDATION_ERROR, error);
-        case 'NotFoundError':
-          return this.emit(NOT_FOUND, error);
-        default:
-          this.emit(ERROR, error);
-      }
+      this.emit(ERROR, error);
     }
   }
 
-  async save(id, data) {
+  async build(data) {
     if ('placeId' in data) {
       const {
         locationDetails,
@@ -42,10 +50,7 @@ class SaveAdvisory extends Operation {
       };
     }
 
-    const payload = new Advisory(data);
-    await this.AdvisoryRepository.update(id, payload);
-
-    return this.AdvisoryRepository.getById(id);
+    return new Advisory(data);
   }
 }
 
