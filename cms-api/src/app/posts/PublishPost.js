@@ -55,17 +55,13 @@ class PublishPost extends Operation {
         })
         .promise();
 
-      const pmsRes = await this.httpClient.post(
+      await this.httpClient.post(
         process.env.PMS_POST_ENDPOINT,
         PmsPost(post.toJSON()),
         {
           access_token: process.env.PMS_POST_TOKEN,
         },
       );
-
-      if (pmsRes.hasOwnProperty('error') && pmsRes.error) {
-        throw new Error(`PMS Integration Error: ${pmsRes.message}`);
-      }
 
       this.emit(SUCCESS, { id });
     } catch (error) {
