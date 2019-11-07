@@ -10,7 +10,11 @@ class ShowPost extends Operation {
     const { SUCCESS, NOT_FOUND } = this.events;
     try {
       const post = await this.PostRepository.getById(id);
-      this.emit(SUCCESS, post);
+      this.emit(SUCCESS, {
+        error: null,
+        results: post,
+        meta: {},
+      });
     } catch (error) {
       this.emit(NOT_FOUND, {
         type: error.message,

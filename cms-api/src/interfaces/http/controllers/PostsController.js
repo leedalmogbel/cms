@@ -45,7 +45,7 @@ class PostsController extends BaseController {
       })
       .on(VALIDATION_ERROR, (error) => {
         res.status(Status.BAD_REQUEST).json({
-          message: error.message,
+          error: error.message,
         });
       })
       .on(ERROR, next);
@@ -67,12 +67,12 @@ class PostsController extends BaseController {
       })
       .on(VALIDATION_ERROR, (error) => {
         res.status(Status.BAD_REQUEST).json({
-          message: error.message,
+          error: error.message,
         });
       })
       .on(NOT_FOUND, (error) => {
         res.status(Status.NOT_FOUND).json({
-          message: error.message,
+          error: error.message,
         });
       })
       .on(ERROR, next);

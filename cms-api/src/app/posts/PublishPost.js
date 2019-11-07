@@ -43,7 +43,11 @@ class PublishPost extends Operation {
       const post = await this.PostRepository.getById(id);
 
       if (post.scheduledAt) {
-        return this.emit(SUCCESS, { id });
+        return this.emit(SUCCESS, {
+          error: null,
+          results: { id },
+          meta: {},
+        });
       }
 
       await this.firehose
@@ -67,7 +71,11 @@ class PublishPost extends Operation {
         throw new Error(`PMS Integration Error: ${pmsRes.message}`);
       }
 
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        error: null,
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
       if (error.message === 'ValidationError') {
         return this.emit(ERROR, error);

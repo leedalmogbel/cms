@@ -31,6 +31,7 @@ class ListPosts extends Operation {
       const total = await this.PostRepository.count(args);
 
       this.emit(SUCCESS, {
+        error: null,
         results: posts,
         meta: {
           total,
