@@ -69,9 +69,6 @@ class PublishPost extends Operation {
 
       this.emit(SUCCESS, { id });
     } catch (error) {
-      if (error.message === 'ValidationError') {
-        return this.emit(ERROR, error);
-      }
       this.emit(ERROR, error);
     }
   }
