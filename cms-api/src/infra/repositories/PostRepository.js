@@ -42,8 +42,7 @@ class PostRepository extends BaseRepository {
         },
       };
     }
-    console.log(args);
-    console.log(data);
+
     // set location
     if ('location' in data) {
       if (data.location) {
