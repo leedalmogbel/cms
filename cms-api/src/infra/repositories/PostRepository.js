@@ -41,13 +41,36 @@ class PostRepository extends BaseRepository {
       if (data.location) {
         args.where.locationAddress = {
           [Op.like]:
-              `%${data.locationAddress}%`,
+              `%${data.location}%`,
         };
       }
     }
 
     if ('category' in data) {
       args.where.category = data.category;
+    }
+
+    // set published flag
+    if ('published' in data) {
+      if (data.published) {
+        args.where.publishedAt = {
+          [Op.ne]: null,
+        };
+      }
+      order = [['publishedAt', 'DESC']];
+    }
+
+    // set scheduled flag
+    if ('scheduled' in data) {
+      if (data.scheduled) {
+        args.where.scheduledAt = {
+          [Op.ne]: null,
+        };
+        args.where.publishedAt = {
+          [Op.eq]: null,
+        };
+      }
+      order = [['scheduledAt', 'DESC']]; // set order by default descending
     }
 
     // set date
@@ -83,29 +106,6 @@ class PostRepository extends BaseRepository {
       order = [['publishedAt', 'DESC']];
     }
 
-    // set scheduled flag
-    if ('scheduled' in data) {
-      if (data.scheduled) {
-        args.where.scheduledAt = {
-          [Op.ne]: null,
-        };
-        args.where.publishedAt = {
-          [Op.eq]: null,
-        };
-      }
-      order = [['scheduledAt', 'DESC']]; // set order by default descending
-    }
-
-    // set published flag
-    if ('published' in data) {
-      if (data.published) {
-        args.where.publishedAt = {
-          [Op.ne]: null,
-        };
-      }
-      order = [['publishedAt', 'DESC']];
-    }
-
     // offset
     if ('offset' in data) {
       args.offset = Number(data.offset);
@@ -117,7 +117,7 @@ class PostRepository extends BaseRepository {
     }
 
     args.order = order;
-    console.log(args);
+
     return this.getAll(args);
   }
 }
