@@ -55,15 +55,16 @@ class PublishPost extends Operation {
         })
         .promise();
 
-      const fres = await this.httpClient.post(
+      const pmsPayload = PmsPost(post.toJSON());
+      const pres = await this.httpClient.post(
         process.env.PMS_POST_ENDPOINT,
-        PmsPost(post.toJSON()),
+        pmsPayload,
         {
           access_token: process.env.PMS_POST_TOKEN,
         },
       );
 
-      console.log('PMS response', fres);
+      console.log(`PMS response for id: ${post.postId}`, pres, pmsPayload);
 
       this.emit(SUCCESS, { id });
     } catch (error) {
