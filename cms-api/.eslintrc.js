@@ -17,6 +17,7 @@ module.exports = {
   },
   rules: {
     "no-param-reassign": 0,
-    "consistent-return":"off"
+    "consistent-return":"off",
+    "class-methods-use-this":0
   },
 };

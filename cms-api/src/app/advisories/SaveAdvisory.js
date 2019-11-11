@@ -30,7 +30,10 @@ class SaveAdvisory extends Operation {
 
     try {
       await this.AdvisoryRepository.update(id, payload);
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
       this.emit(ERROR, error);
     }

@@ -9,7 +9,7 @@ class PostRepository extends BaseRepository {
     super(PostModel);
   }
 
-  async getPosts(data = {}) {
+  buildListArgs(data = {}) {
     // init fetch arguments
     const args = {
       where: {
@@ -123,9 +123,15 @@ class PostRepository extends BaseRepository {
       args.limit = Number(data.limit);
     }
 
-    args.order = order;
+    return args;
+  }
 
-    return this.getAll(args);
+  getPosts(args) {
+    return this.getAll(this.buildListArgs(args));
+  }
+
+  count(args) {
+    return this.model.count(this.buildListArgs(args));
   }
 }
 

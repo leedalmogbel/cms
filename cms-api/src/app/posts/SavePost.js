@@ -29,7 +29,10 @@ class SavePost extends Operation {
 
     try {
       await this.PostRepository.update(id, data);
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
       this.emit(ERROR, error);
     }

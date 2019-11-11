@@ -20,11 +20,11 @@ class CreatePostDraft extends Operation {
       const payload = new Post(data);
       const { id } = await this.PostRepository.add(payload);
 
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
-      if (error.message === 'ValidationError') {
-        return this.emit(VALIDATION_ERROR, error);
-      }
       this.emit(ERROR, error);
     }
   }
