@@ -44,7 +44,6 @@ class PublishPost extends Operation {
 
       if (post.scheduledAt) {
         return this.emit(SUCCESS, {
-          error: null,
           results: { id },
           meta: {},
         });
