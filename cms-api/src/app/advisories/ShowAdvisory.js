@@ -32,7 +32,10 @@ class ShowAdvisory extends Operation {
         Promise.all(promises).then(() => { attachments = promises; });
       }
 
-      this.emit(SUCCESS, advisory);
+      this.emit(SUCCESS, {
+        results: advisory,
+        meta: {},
+      });
     } catch (error) {
       this.emit(NOT_FOUND, {
         type: error.message,

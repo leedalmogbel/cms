@@ -31,7 +31,10 @@ class PublishAdvisory extends Operation {
     try {
       await this.AdvisoryRepository.update(id, data);
 
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
       if (error.message === 'ValidationError') {
         return this.emit(ERROR, error);

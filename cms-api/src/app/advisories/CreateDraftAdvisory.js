@@ -18,7 +18,10 @@ class CreateDraftAdvisory extends Operation {
 
       const { id } = await this.AdvisoryRepository.add(advisory);
 
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
       if (error.message === 'ValidationError') {
         return this.emit(VALIDATION_ERROR, error);
