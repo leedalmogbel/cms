@@ -37,10 +37,8 @@ class ShowAdvisory extends Operation {
         meta: {},
       });
     } catch (error) {
-      this.emit(NOT_FOUND, {
-        type: error.message,
-        details: error.details,
-      });
+      error.message = 'Advisory not found';
+      this.emit(NOT_FOUND, error);
     }
   }
 
