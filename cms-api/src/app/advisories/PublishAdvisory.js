@@ -21,6 +21,7 @@ class PublishAdvisory extends Operation {
     }
 
     try {
+      data.draft = false;
       data = await this.SaveAdvisory.build(data);
       data.validateData();
     } catch (error) {
