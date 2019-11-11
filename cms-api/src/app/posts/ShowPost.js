@@ -11,7 +11,6 @@ class ShowPost extends Operation {
     try {
       const post = await this.PostRepository.getById(id);
       this.emit(SUCCESS, {
-        error: null,
         results: post,
         meta: {},
       });

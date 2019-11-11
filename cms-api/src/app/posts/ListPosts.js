@@ -17,12 +17,13 @@ class ListPosts extends Operation {
           status: 'draft',
         };
 
-        if (post.publishedAt) {
-          post.status = 'published';
+        if (post.scheduledAt
+          && !post.publishedAt) {
+          post.status = 'scheduled';
         }
 
-        if (post.scheduledAt) {
-          post.status = 'scheduled';
+        if (post.publishedAt) {
+          post.status = 'published';
         }
 
         return post;
@@ -31,16 +32,12 @@ class ListPosts extends Operation {
       const total = await this.PostRepository.count(args);
 
       this.emit(SUCCESS, {
-        error: null,
         results: posts,
         meta: {
           total,
         },
       });
     } catch (error) {
-      if (error.message === 'ValidationError') {
-        return this.emit(ERROR, error);
-      }
       this.emit(ERROR, error);
     }
   }

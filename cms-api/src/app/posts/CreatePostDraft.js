@@ -1,6 +1,6 @@
 const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
-const Helpers = require('src/interfaces/http/utils/helpers');
+const uuidv1 = require('uuid/v1');
 
 class CreatePostDraft extends Operation {
   constructor({ PostRepository }) {
@@ -10,10 +10,11 @@ class CreatePostDraft extends Operation {
 
   async execute() {
     const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
+
     try {
       const data = {
         draft: true,
-        postId: `KAPP-CMS-${Helpers.generateUID(8)}`,
+        postId: `kapp-cms-${uuidv1()}`,
       };
 
       const payload = new Post(data);
@@ -21,13 +22,9 @@ class CreatePostDraft extends Operation {
 
       this.emit(SUCCESS, {
         results: { id },
-        error: null,
         meta: {},
       });
     } catch (error) {
-      if (error.message === 'ValidationError') {
-        return this.emit(VALIDATION_ERROR, error);
-      }
       this.emit(ERROR, error);
     }
   }

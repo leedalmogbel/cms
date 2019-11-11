@@ -27,8 +27,8 @@ class PublishPost extends Operation {
     }
 
     data.draft = false;
-    if (data.hasOwnProperty('publishedAt')) {
-      data.publishedAt = new Date(data.publishedAt).toISOString();
+    if (!data.hasOwnProperty('scheduledAt')) {
+      data.publishedAt = new Date().toISOString();
     }
 
     try {
@@ -59,27 +59,22 @@ class PublishPost extends Operation {
         })
         .promise();
 
-      const pmsRes = await this.httpClient.post(
+      const pmsPayload = PmsPost(post.toJSON());
+      const pres = await this.httpClient.post(
         process.env.PMS_POST_ENDPOINT,
-        PmsPost(post.toJSON()),
+        pmsPayload,
         {
           access_token: process.env.PMS_POST_TOKEN,
         },
       );
 
-      if (pmsRes.hasOwnProperty('error') && pmsRes.error) {
-        throw new Error(`PMS Integration Error: ${pmsRes.message}`);
-      }
+      console.log(`PMS response for id: ${post.postId}`, pres, pmsPayload);
 
       this.emit(SUCCESS, {
-        error: null,
         results: { id },
         meta: {},
       });
     } catch (error) {
-      if (error.message === 'ValidationError') {
-        return this.emit(ERROR, error);
-      }
       this.emit(ERROR, error);
     }
   }
