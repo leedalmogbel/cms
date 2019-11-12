@@ -21,7 +21,12 @@ class PublishAdvisory extends Operation {
     }
 
     try {
-      data = await this.SaveAdvisory.build(data);
+      data = await this.SaveAdvisory.build({
+        ...data,
+        draft: false,
+        publishedAt: new Date().toISOString(),
+      });
+
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
