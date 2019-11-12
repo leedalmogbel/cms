@@ -17,19 +17,30 @@ class PostRepository extends BaseRepository {
       },
     };
 
+    // set order by default on
+    // publisched descending and scheduled ascending
+    let order = [['scheduledAt', 'ASC'], ['publishedAt', 'DESC']];
+
     // set draft
     if ('draft' in data) {
       args.where.draft = (data.draft === 'true') ? 1 : 0;
     }
 
     // set keyword
-    if ('keyword' in data) {
-      if (data.keyword) {
-        args.where.title = {
-          [Op.like]:
-              `%${data.title}%`,
-        };
-      }
+    if ('keyword' in data
+      && data.keyword) {
+      args.where = {
+        [Op.or]: {
+          title: {
+            [Op.like]:
+            `%${data.keyword}%`,
+          },
+          content: {
+            [Op.like]:
+            `%${data.keyword}%`,
+          },
+        },
+      };
     }
 
     // set location
@@ -37,7 +48,7 @@ class PostRepository extends BaseRepository {
       if (data.location) {
         args.where.locationAddress = {
           [Op.like]:
-              `%${data.locationAddress}%`,
+              `%${data.location}%`,
         };
       }
     }
@@ -46,23 +57,14 @@ class PostRepository extends BaseRepository {
       args.where.category = data.category;
     }
 
-    // set date
-    if ('date' in data) {
-      if (data.date) {
-        const d = data.date;
-        const newDate = d.split(' ');
-        newDate[1] = '00:00:00';
-        const startDate = newDate.join(' ');
-        newDate[1] = '23:59:59';
-        const endDate = newDate.join(' ');
-
-        args.where.createdAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
+    // set published flag
+    if ('published' in data) {
+      if (data.published) {
+        args.where.publishedAt = {
+          [Op.ne]: null,
         };
       }
+      order = [['publishedAt', 'DESC']];
     }
 
     // set scheduled flag
@@ -75,26 +77,53 @@ class PostRepository extends BaseRepository {
           [Op.eq]: null,
         };
       }
+      order = [['scheduledAt', 'DESC']]; // set order by default descending
     }
 
-    // set published flag
-    if ('published' in data) {
-      if (data.published) {
-        args.where.publishedAt = {
-          [Op.ne]: null,
-        };
+    // set date
+    if ('date' in data) {
+      if (data.date) {
+        const d = data.date;
+        const newDate = d.split(' ');
+        newDate[1] = '00:00:00';
+        const startDate = newDate.join(' ');
+        newDate[1] = '23:59:59';
+        const endDate = newDate.join(' ');
+
+        if ('scheduled' in data) {
+          args.where.scheduledAt = {
+            [Op.between]: [
+              startDate,
+              endDate,
+            ],
+          };
+        } else {
+          args.where.publishedAt = {
+            [Op.or]: {
+              [Op.between]: [
+                startDate,
+                endDate,
+              ],
+              // [Op.eq]: null,
+            },
+          };
+        }
       }
+
+      order = [['publishedAt', 'DESC']];
     }
 
     // offset
     if ('offset' in data) {
-      args.offset = data.offset;
+      args.offset = Number(data.offset);
     }
 
     // limit
     if ('limit' in data) {
-      args.limit = data.limit;
+      args.limit = Number(data.limit);
     }
+
+    args.order = order;
 
     return this.getAll(args);
   }
