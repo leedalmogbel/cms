@@ -2,7 +2,7 @@
  * Generates a unique random id
  * consisting of uppercase letters
  * and numbers
- * 
+ *
  * @param {Int} length
  */
 const generateUID = (length) => {
@@ -14,9 +14,9 @@ const generateUID = (length) => {
   }
 
   return result;
-}
+};
 
 // export helper functions
 module.exports = {
-  generateUID
+  generateUID,
 };
