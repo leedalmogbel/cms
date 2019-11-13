@@ -22,7 +22,10 @@ module.exports = (post) => {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
-    postKeywords: post.tagsOriginal,
+    postKeywords: [
+      ...post.tagsRetained,
+      ...post.tagsAdded,
+    ],
     postAcceptedKeywords: post.tagsRetained,
     postRejectedKeywords: post.tagsRemoved,
     postAddedKeywords: post.tagsAdded,

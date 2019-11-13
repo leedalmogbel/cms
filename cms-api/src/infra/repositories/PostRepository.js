@@ -19,7 +19,7 @@ class PostRepository extends BaseRepository {
 
     // set order by default on
     // publisched descending and scheduled ascending
-    let order = [['scheduledAt', 'ASC'], ['publishedAt', 'DESC']];
+    let order = [['publishedAt', 'DESC'], ['scheduledAt', 'ASC']];
 
     // set draft
     if ('draft' in data) {
