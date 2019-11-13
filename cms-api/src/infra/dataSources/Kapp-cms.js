@@ -8,12 +8,13 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     dialect: process.env.DB_DIALECT,
-    isSync: 'false',
+    isSync: true,
     pool: {
       max: 4,
       min: 0,
       idle: 2,
     },
+    logging: false,
     timezone: '+08:00',
     dialectOptions: {
       dateStrings: true,
