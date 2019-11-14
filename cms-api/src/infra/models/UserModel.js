@@ -33,6 +33,13 @@ module.exports = {
      * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
      */
 
+    UserModel.associate = function () {
+      UserModel.belongsTo(datasource.models.RoleModel, {
+        foreignKey: 'roleId',
+        as: 'role',
+      });
+    };
+
     return UserModel;
   },
 };

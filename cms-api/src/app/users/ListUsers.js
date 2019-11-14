@@ -6,13 +6,19 @@ class ListUsers extends Operation {
     this.UserRepository = UserRepository;
   }
 
-  async execute() {
+  async execute(data) {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      const users = await this.UserRepository.getAll({});
+      const users = await this.UserRepository.getUsers(data);
+      const total = await this.UserRepository.count(data);
 
-      this.emit(SUCCESS, users);
+      this.emit(SUCCESS, {
+        results: users,
+        meta: {
+          total,
+        },
+      });
     } catch (error) {
       this.emit(ERROR, error);
     }
