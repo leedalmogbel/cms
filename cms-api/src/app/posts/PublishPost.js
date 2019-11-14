@@ -29,10 +29,6 @@ class PublishPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    if (data.hasOwnProperty('dataValues')) {
-      data = data.dataValues;
-    }
-
     const status = await this.getStatus(data);
 
     switch (status) {
@@ -97,29 +93,23 @@ class PublishPost extends Operation {
 
   async getStatus(data) {
     const { NOT_FOUND } = this.events;
-    let user = {};
 
     try {
-      user = await this.UserRepository.getById(data.userId);
+      const user = await this.UserRepository.getById(data.userId);
+
+      if (data.scheduledAt && !data.publishedAt) {
+        return 'scheduled';
+      }
+
+      if (user.roleId === 1 && data.publishedAt) {
+        return 'published';
+      }
+
+      return 'for approval';
     } catch (error) {
       error.message = 'User not found';
-      return this.emit(NOT_FOUND, error);
+      this.emit(NOT_FOUND, error);
     }
-
-    if (user.hasOwnProperty('dataValues')) {
-      user = user.dataValues;
-    }
-
-    if (data.scheduledAt
-        && !data.publishedAt) {
-      return 'scheduled';
-    }
-    console.log(data);
-    if (user.roleId === 1
-      && data.publishedAt) {
-      return 'published';
-    }
-    return 'for approval';
   }
 }
 
