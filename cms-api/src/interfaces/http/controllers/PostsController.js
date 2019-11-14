@@ -14,6 +14,7 @@ class PostsController extends BaseController {
     router.post('/', this.injector('CreatePostDraft'), this.create);
     router.put('/:id', this.injector('SavePost'), this.update);
     router.post('/:id/publish', this.injector('PublishPost'), this.update);
+    router.post('/:id/approve', this.injector('ApprovePost'), this.update);
 
     return router;
   }

@@ -27,6 +27,8 @@ module.exports = {
       comments: DataTypes.JSON,
       advisories: DataTypes.JSON,
       attachments: DataTypes.JSON,
+      assignedUserId: DataTypes.INTEGER,
+      status: DataTypes.STRING,
       draft: {
         type: DataTypes.BOOLEAN,
         defaultValue: '0',

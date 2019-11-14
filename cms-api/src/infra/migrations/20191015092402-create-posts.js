@@ -24,6 +24,7 @@ module.exports = {
     comments: Sequelize.JSON,
     advisories: Sequelize.JSON,
     attachments: Sequelize.JSON,
+    assignedUserId: Sequelize.INTEGER,
     draft: {
       type: Sequelize.BOOLEAN,
       defaultValue: '0',

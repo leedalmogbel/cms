@@ -52,10 +52,6 @@ class SavePost extends Operation {
       };
     }
 
-    if (data.hasOwnProperty('scheduledAt')) {
-      data.scheduledAt = new Date(data.scheduledAt).toISOString();
-    }
-
     return new Post(data);
   }
 }
