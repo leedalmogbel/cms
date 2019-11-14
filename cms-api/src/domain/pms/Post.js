@@ -1,5 +1,3 @@
-const striptags = require('striptags');
-
 module.exports = (post) => {
   const {
     postId,
