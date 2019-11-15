@@ -31,14 +31,12 @@ class PublishPost extends Operation {
 
     const status = await this.getStatus(data);
 
-    switch (status) {
-      case 'scheduled':
-        data.scheduledAt = new Date().toISOString();
-        break;
-      case 'published':
-        data.publishedAt = new Date().toISOString();
-        break;
-      default:
+    if (status === 'published') {
+      data.publishedAt = new Date().toISOString();
+    }
+
+    if ('scheduledAt' in data) {
+      data.scheduledAt = new Date().toISOString();
     }
 
     try {
@@ -95,14 +93,15 @@ class PublishPost extends Operation {
     const { NOT_FOUND } = this.events;
 
     try {
-      const user = await this.UserRepository.getById(data.userId);
+      let user = await this.UserRepository.getById(data.userId);
+      user = user.toJSON();
 
-      if (data.scheduledAt && !data.publishedAt) {
-        return 'scheduled';
+      if (user.roleId === 1) {
+        return 'published';
       }
 
-      if (user.roleId === 1 && data.publishedAt) {
-        return 'published';
+      if (data.scheduledAt && !data.publishedAt && user.roleId === 1) {
+        return 'scheduled';
       }
 
       return 'for approval';

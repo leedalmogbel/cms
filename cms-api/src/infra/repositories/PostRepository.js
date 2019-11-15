@@ -98,7 +98,7 @@ class PostRepository extends BaseRepository {
               endDate,
             ],
           };
-        } else {
+        } else if ('published' in data) {
           args.where.publishedAt = {
             [Op.or]: {
               [Op.between]: [
@@ -106,6 +106,23 @@ class PostRepository extends BaseRepository {
                 endDate,
               ],
               // [Op.eq]: null,
+            },
+          };
+        } else if ('all' in data) {
+          args.where = {
+            [Op.or]: {
+              scheduledAt: {
+                [Op.between]: [
+                  startDate,
+                  endDate,
+                ],
+              },
+              publishedAt: {
+                [Op.between]: [
+                  startDate,
+                  endDate,
+                ],
+              },
             },
           };
         }
