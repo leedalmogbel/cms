@@ -43,7 +43,10 @@ class PublishPost extends Operation {
       const post = await this.PostRepository.getById(id);
 
       if (post.scheduledAt) {
-        return this.emit(SUCCESS, { id });
+        return this.emit(SUCCESS, {
+          results: { id },
+          meta: {},
+        });
       }
 
       await this.firehose
@@ -66,7 +69,10 @@ class PublishPost extends Operation {
 
       console.log(`PMS response for id: ${post.postId}`, pres, pmsPayload);
 
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
       this.emit(ERROR, error);
     }

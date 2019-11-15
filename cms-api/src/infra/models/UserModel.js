@@ -9,15 +9,12 @@ module.exports = {
         autoIncrement: true,
         type: DataTypes.INTEGER,
       },
-      username: {
-        type: DataTypes.STRING,
-      },
-      lastName: {
-        type: DataTypes.STRING,
-      },
-      firstName: {
-        type: DataTypes.STRING,
-      },
+      roleId: DataTypes.INTEGER,
+      username: DataTypes.STRING,
+      email: DataTypes.STRING,
+      password: DataTypes.STRING,
+      firstName: DataTypes.STRING,
+      lastName: DataTypes.STRING,
     }, {
       tableName: 'users',
       timestamps: true,
@@ -35,6 +32,13 @@ module.exports = {
      *
      * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
      */
+
+    UserModel.associate = function () {
+      UserModel.belongsTo(datasource.models.RoleModel, {
+        foreignKey: 'roleId',
+        as: 'role',
+      });
+    };
 
     return UserModel;
   },

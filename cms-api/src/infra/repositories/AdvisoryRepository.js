@@ -9,7 +9,7 @@ class AdvisoryRepository extends BaseRepository {
     super(AdvisoryModel);
   }
 
-  async getAdvisories(data) {
+  buildListArgs(data) {
     // init fetch arguments
     const args = {
       where: {
@@ -45,7 +45,15 @@ class AdvisoryRepository extends BaseRepository {
     // order
     args.order = order;
 
-    return this.getAll(args);
+    return args;
+  }
+
+  getAdvisories(args) {
+    return this.getAll(this.buildListArgs(args));
+  }
+
+  count(args) {
+    return this.model.count(this.buildListArgs(args));
   }
 }
 
