@@ -1,14 +1,13 @@
 const { Operation } = require('@brewery/core');
-const Post = require('src/domain/Post');
 
 class ApprovePost extends Operation {
   constructor({
-    PostRepository, PublishPost, UserRepository,
+    PostRepository, UserRepository, NotificationRepository,
   }) {
     super();
     this.PostRepository = PostRepository;
-    this.PublishPost = PublishPost;
     this.UserRepository = UserRepository;
+    this.NotificationRepository = NotificationRepository;
   }
 
   async execute(id, data = {}) {
@@ -24,9 +23,16 @@ class ApprovePost extends Operation {
     }
 
     try {
-      await this.PostRepository.update(id, {
+      const post = await this.PostRepository.update(id, {
         publishedAt: new Date().toISOString(),
         status: 'published',
+      });
+
+      await this.NotificationRepository.add({
+        userId: post.userId,
+        message: 'Your Post has been approved.',
+        meta: {},
+        active: 1,
       });
 
       this.emit(SUCCESS, {

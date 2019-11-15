@@ -1,10 +1,10 @@
 
 const { BaseRepository } = require('@brewery/core');
 
-class UserRepository extends BaseRepository {
-  constructor({ UserModel }) {
-    super(UserModel);
+class NotificationRepository extends BaseRepository {
+  constructor({ NotificationModel }) {
+    super(NotificationModel);
   }
 }
 
-module.exports = UserRepository;
+module.exports = NotificationRepository;
