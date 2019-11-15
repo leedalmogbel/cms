@@ -84,13 +84,13 @@ class PostRepository extends BaseRepository {
         } else if ('all' in data) {
           args.where = {
             [Op.or]: {
-              scheduledAt: {
+              publishedAt: {
                 [Op.between]: [
                   startDate,
                   endDate,
                 ],
               },
-              publishedAt: {
+              scheduledAt: {
                 [Op.between]: [
                   startDate,
                   endDate,
