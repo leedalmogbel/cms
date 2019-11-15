@@ -20,6 +20,22 @@ module.exports = {
       timestamps: true,
     });
 
+    UserModel.associate = function () {
+      UserModel.belongsTo(datasource.models.RoleModel, {
+        foreignKey: 'roleId',
+        as: 'role',
+      });
+    };
+
+    UserModel.associate = () => {
+      UserModel.belongsToMany(datasource.models.NotificationModel, {
+        through: datasource.models.UserNotificationModel,
+        as: 'notifications',
+        foreignKey: 'userId',
+        otherKey: 'notificationdId',
+      });
+    };
+
     /**
      * Examples on how to associate or set relationship with other models
      *
@@ -32,13 +48,6 @@ module.exports = {
      *
      * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
      */
-
-    UserModel.associate = function () {
-      UserModel.belongsTo(datasource.models.RoleModel, {
-        foreignKey: 'roleId',
-        as: 'role',
-      });
-    };
 
     return UserModel;
   },

@@ -13,7 +13,9 @@ class PostRepository extends BaseRepository {
     // init fetch arguments
     const args = {
       where: {
-        draft: false, // default draft false
+        status: {
+          [Op.ne]: 'draft',
+        },
       },
     };
 
@@ -21,9 +23,8 @@ class PostRepository extends BaseRepository {
     // publisched descending and scheduled ascending
     let order = [['publishedAt', 'DESC'], ['scheduledAt', 'ASC']];
 
-    // set draft
-    if ('draft' in data) {
-      args.where.draft = (data.draft === 'true') ? 1 : 0;
+    if ('status' in data) {
+      args.where.status = data.status;
     }
 
     // set keyword
@@ -48,7 +49,7 @@ class PostRepository extends BaseRepository {
       if (data.location) {
         args.where.locationAddress = {
           [Op.like]:
-              `%${data.location}%`,
+            `%${data.location}%`,
         };
       }
     }
@@ -112,6 +113,8 @@ class PostRepository extends BaseRepository {
 
       order = [['publishedAt', 'DESC']];
     }
+
+    args.order = order;
 
     // offset
     if ('offset' in data) {

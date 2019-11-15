@@ -4,7 +4,9 @@ const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');
 
 class PublishPost extends Operation {
-  constructor({ PostRepository, SavePost, httpClient }) {
+  constructor({
+    PostRepository, SavePost, httpClient, UserRepository,
+  }) {
     super();
     this.PostRepository = PostRepository;
     this.SavePost = SavePost;
@@ -12,6 +14,7 @@ class PublishPost extends Operation {
     this.firehose = new AWS.Firehose({
       apiVersion: '2015-08-04',
     });
+    this.UserRepository = UserRepository;
   }
 
   async execute(id, data) {
@@ -26,13 +29,23 @@ class PublishPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    data.draft = false;
-    if (!data.hasOwnProperty('scheduledAt')) {
-      data.publishedAt = new Date().toISOString();
+    const status = await this.getStatus(data);
+
+    switch (status) {
+      case 'scheduled':
+        data.scheduledAt = new Date().toISOString();
+        break;
+      case 'published':
+        data.publishedAt = new Date().toISOString();
+        break;
+      default:
     }
 
     try {
-      data = await this.SavePost.build(data);
+      data = await this.SavePost.build({
+        ...data,
+        status,
+      });
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -75,6 +88,27 @@ class PublishPost extends Operation {
       });
     } catch (error) {
       this.emit(ERROR, error);
+    }
+  }
+
+  async getStatus(data) {
+    const { NOT_FOUND } = this.events;
+
+    try {
+      const user = await this.UserRepository.getById(data.userId);
+
+      if (data.scheduledAt && !data.publishedAt) {
+        return 'scheduled';
+      }
+
+      if (user.roleId === 1 && data.publishedAt) {
+        return 'published';
+      }
+
+      return 'for approval';
+    } catch (error) {
+      error.message = 'User not found';
+      this.emit(NOT_FOUND, error);
     }
   }
 }

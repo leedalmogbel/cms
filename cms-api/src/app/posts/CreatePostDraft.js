@@ -13,7 +13,7 @@ class CreatePostDraft extends Operation {
 
     try {
       const data = {
-        draft: true,
+        status: 'draft',
         postId: `kapp-cms-${uuidv1()}`,
       };
 

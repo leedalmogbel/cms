@@ -14,17 +14,7 @@ class ListPosts extends Operation {
       posts = posts.map((post) => {
         post = {
           ...post.toJSON(),
-          status: 'draft',
         };
-
-        if (post.scheduledAt
-          && !post.publishedAt) {
-          post.status = 'scheduled';
-        }
-
-        if (post.publishedAt) {
-          post.status = 'published';
-        }
 
         return post;
       });
