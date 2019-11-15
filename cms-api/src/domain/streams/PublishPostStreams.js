@@ -18,11 +18,17 @@ module.exports = (post) => {
     },
   } = post;
 
+  const tagsRetained = post.tagsRetained || [];
+  const tagsAdded = post.tagsAdded || [];
+
   return {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
-    postKeywords: post.tagsOriginal,
+    postKeywords: [
+      ...tagsRetained,
+      ...tagsAdded,
+    ],
     postAcceptedKeywords: post.tagsRetained,
     postRejectedKeywords: post.tagsRemoved,
     postAddedKeywords: post.tagsAdded,
