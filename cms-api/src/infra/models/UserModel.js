@@ -20,6 +20,15 @@ module.exports = {
       timestamps: true,
     });
 
+    UserModel.associate = () => {
+      UserModel.belongsToMany(datasource.models.NotificationModel, {
+        through: datasource.models.UserNotificationModel,
+        as: 'notifications',
+        foreignKey: 'userId',
+        otherKey: 'notificationdId',
+      });
+    };
+
     /**
      * Examples on how to associate or set relationship with other models
      *
@@ -32,6 +41,7 @@ module.exports = {
      *
      * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
      */
+
 
     return UserModel;
   },
