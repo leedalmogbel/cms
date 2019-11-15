@@ -108,7 +108,7 @@ class PostRepository extends BaseRepository {
               // [Op.eq]: null,
             },
           };
-        } else {
+        } else if ('all' in data) {
           args.where = {
             [Op.or]: {
               scheduledAt: {
