@@ -3,16 +3,16 @@ const { Router } = require('express');
 const { BaseController } = require('@brewery/core');
 const Status = require('http-status');
 
-class UsersController extends BaseController {
+class NotificationsController extends BaseController {
   constructor() {
     super();
     const router = Router();
 
-    router.get('/', this.injector('ListUsers'), this.index);
-    router.post('/', this.injector('CreateUser'), this.create);
-    router.get('/:id', this.injector('ShowUser'), this.show);
-    router.put('/:id', this.injector('UpdateUser'), this.update);
-    router.delete('/:id', this.injector('DeleteUser'), this.delete);
+    router.get('/', this.injector('ListNotifications'), this.index);
+    router.post('/', this.injector('CreateNotification'), this.create);
+    router.get('/:id', this.injector('ShowNotification'), this.show);
+    router.put('/:id', this.injector('UpdateNotification'), this.update);
+    router.delete('/:id', this.injector('DeleteNotification'), this.delete);
 
     return router;
   }
@@ -33,4 +33,4 @@ class UsersController extends BaseController {
   }
 }
 
-module.exports = UsersController;
+module.exports = NotificationsController;

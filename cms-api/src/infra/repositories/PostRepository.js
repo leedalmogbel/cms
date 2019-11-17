@@ -9,41 +9,49 @@ class PostRepository extends BaseRepository {
     super(PostModel);
   }
 
-  async getPosts(data = {}) {
+  buildListArgs(data = {}) {
     // init fetch arguments
     const args = {
       where: {
-        draft: false, // default draft false
+        status: {
+          [Op.ne]: 'draft',
+        },
       },
     };
 
-    // set draft
-    if ('draft' in data) {
-      args.where.draft = data.draft;
-    }
+    // set order by default on
+    // publisched descending and scheduled ascending
+    let order = [['publishedAt', 'DESC'], ['scheduledAt', 'ASC']];
 
     // set keyword
-    if ('keyword' in data) {
-      if (data.keyword) {
-        args.where.title = {
-          [Op.like]:
-              `%${data.title}%`,
-        };
-      }
+    if ('keyword' in data
+      && data.keyword) {
+      args.where = {
+        [Op.or]: {
+          title: {
+            [Op.like]:
+            `%${data.keyword}%`,
+          },
+          content: {
+            [Op.like]:
+            `%${data.keyword}%`,
+          },
+        },
+      };
     }
 
     // set location
     if ('location' in data) {
       if (data.location) {
-        args.locationAddress = {
+        args.where.locationAddress = {
           [Op.like]:
-              `%${data.locationAddress}%`,
+            `%${data.location}%`,
         };
       }
     }
 
     if ('category' in data) {
-      args.category = data.category;
+      args.where.category = data.category;
     }
 
     // set date
@@ -56,52 +64,79 @@ class PostRepository extends BaseRepository {
         newDate[1] = '23:59:59';
         const endDate = newDate.join(' ');
 
-        args.where.createdAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
+        if ('scheduled' in data) {
+          args.where.scheduledAt = {
+            [Op.between]: [
+              startDate,
+              endDate,
+            ],
+          };
+        } else if ('published' in data) {
+          args.where.publishedAt = {
+            [Op.or]: {
+              [Op.between]: [
+                startDate,
+                endDate,
+              ],
+              // [Op.eq]: null,
+            },
+          };
+        } else if ('all' in data) {
+          args.where = {
+            [Op.or]: {
+              publishedAt: {
+                [Op.between]: [
+                  startDate,
+                  endDate,
+                ],
+              },
+              scheduledAt: {
+                [Op.between]: [
+                  startDate,
+                  endDate,
+                ],
+              },
+            },
+          };
+        }
+      }
+
+      order = [['publishedAt', 'DESC']];
+    }
+
+    if ('status' in data) {
+      args.where.status = data.status;
+
+      if (data.status === 'published') {
+        order = [['publishedAt', 'DESC']];
+      }
+
+      if (data.status === 'scheduled') {
+        order = [['scheduledAt', 'ASC']];
       }
     }
 
-    // set scheduled flag
-    if ('scheduled' in data) {
-      if (data.scheduled) {
-        args.where.scheduledAt = {
-          [Op.ne]: null,
-        };
-      } else {
-        args.where.scheduledAt = {
-          [Op.eq]: null,
-        };
-      }
-    }
-
-    // set published flag
-    if ('published' in data) {
-      if (data.published) {
-        args.where.publishedAt = {
-          [Op.ne]: null,
-        };
-      } else {
-        args.where.publishedAt = {
-          [Op.eq]: null,
-        };
-      }
-    }
+    args.order = order;
 
     // offset
     if ('offset' in data) {
-      args.offset = data.offset;
+      args.offset = Number(data.offset);
     }
 
     // limit
     if ('limit' in data) {
-      args.limit = data.limit;
+      args.limit = Number(data.limit);
     }
 
-    return this.getAll(args);
+    return args;
+  }
+
+  getPosts(args) {
+    return this.getAll(this.buildListArgs(args));
+  }
+
+  count(args) {
+    return this.model.count(this.buildListArgs(args));
   }
 }
 

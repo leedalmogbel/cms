@@ -18,16 +18,20 @@ module.exports = (post) => {
     },
   } = post;
 
+  const tagsRetained = post.tagsRetained || [];
+  const tagsAdded = post.tagsAdded || [];
+
   return {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
-    postTechnicalTags: null,
-    postOperationalTags: null,
-    postKeywords: [],
-    postAcceptedKeywords: [],
-    postRejectedKeywords: [],
-    postAddedKeywords: [],
+    postKeywords: [
+      ...tagsRetained,
+      ...tagsAdded,
+    ],
+    postAcceptedKeywords: post.tagsRetained,
+    postRejectedKeywords: post.tagsRemoved,
+    postAddedKeywords: post.tagsAdded,
     postLocation: {
       locationAddress: post.locationAddress,
       lat: post.locationDetails.lat,

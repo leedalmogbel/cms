@@ -10,28 +10,24 @@ class ListPosts extends Operation {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      const posts = await this.PostRepository.getPosts(args);
-
-      this.emit(SUCCESS, posts.map((post) => {
+      let posts = await this.PostRepository.getPosts(args);
+      posts = posts.map((post) => {
         post = {
           ...post.toJSON(),
-          status: 'draft',
         };
 
-        if (post.publishedAt) {
-          post.status = 'published';
-        }
-
-        if (post.scheduledAt) {
-          post.status = 'scheduled';
-        }
-
         return post;
-      }));
+      });
+
+      const total = await this.PostRepository.count(args);
+
+      this.emit(SUCCESS, {
+        results: posts,
+        meta: {
+          total,
+        },
+      });
     } catch (error) {
-      if (error.message === 'ValidationError') {
-        return this.emit(ERROR, error);
-      }
       this.emit(ERROR, error);
     }
   }

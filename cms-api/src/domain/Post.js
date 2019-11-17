@@ -21,6 +21,8 @@ const Post = attributes({
   comments: Array,
   advisories: Array,
   attachments: Array,
+  assignedUserId: Number,
+  status: String,
   draft: Boolean,
   scheduledAt: Date,
   expiredAt: Date,
@@ -34,6 +36,24 @@ const Post = attributes({
   // isLegal() {
   //   return this.age >= User.MIN_LEGAL_AGE;
   // }
+
+  validateData() {
+    if (!this.title || !this.title.length) {
+      throw new Error('Title is required');
+    }
+
+    if (!this.category || !this.category.length) {
+      throw new Error('Category is required');
+    }
+
+    if (!this.source || !this.source.length) {
+      throw new Error('Source is required');
+    }
+
+    if (!this.locationDetails) {
+      throw new Error('Location is required');
+    }
+  }
 });
 
 // Add constants below

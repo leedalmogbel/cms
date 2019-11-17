@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+- develop
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -15,8 +15,14 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- script: |
-    npm install
-  displayName: 'npm install'
-
-
+- task: AWSShellScript@1
+  inputs:
+    awsCredentials: 'kapp-cms-connection'
+    regionName: 'ap-southeast-1'
+    scriptType: 'inline'
+    inlineScript: |
+      # You can write your script inline here
+      cd cms-api
+      npm i -g serverless
+      npm i 
+      serverless deploy -s dev

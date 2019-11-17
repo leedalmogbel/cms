@@ -8,22 +8,17 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     dialect: process.env.DB_DIALECT,
-    isSync: 'false',
+    isSync: true,
     pool: {
-      max: 50,
+      max: 4,
       min: 0,
-      idle: 10,
+      idle: 2,
     },
-    timezone: 'Asia/Manila',
+    logging: false,
+    timezone: '+08:00',
     dialectOptions: {
-      useUTC: false,
       dateStrings: true,
-      typeCast(field, next) {
-        if (field.type === 'DATETIME') {
-          return field.string();
-        }
-        return next();
-      },
+      typeCast: true,
     },
   },
 };

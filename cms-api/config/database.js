@@ -1,23 +1,35 @@
+const yaml = require('js-yaml');
+const fs = require('fs');
+
+const env = yaml.safeLoad(fs.readFileSync('env.yml', 'utf8'));
+
 module.exports = {
-  "development": {
-    "username": "postgres",
-    "password": "root",
-    "database": "kapp",
-    "host": "127.0.0.1",
-    "dialect": "postgres"
+  local: {
+    username: env.local.DB_USERNAME,
+    password: env.local.DB_PASSWORD,
+    database: env.local.DB_NAME,
+    host: env.local.DB_HOST,
+    dialect: env.local.DB_DIALECT,
   },
-  "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+  dev: {
+    username: env.dev.DB_USERNAME,
+    password: env.dev.DB_PASSWORD,
+    database: env.dev.DB_NAME,
+    host: env.dev.DB_HOST,
+    dialect: env.dev.DB_DIALECT,
   },
-  "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  }
+  uat: {
+    username: env.uat.DB_USERNAME,
+    password: env.uat.DB_PASSWORD,
+    database: env.uat.DB_NAME,
+    host: env.uat.DB_HOST,
+    dialect: env.uat.DB_DIALECT,
+  },
+  prod: {
+    username: env.prod.DB_USERNAME,
+    password: env.prod.DB_PASSWORD,
+    database: env.prod.DB_NAME,
+    host: env.prod.DB_HOST,
+    dialect: env.prod.DB_DIALECT,
+  },
 };

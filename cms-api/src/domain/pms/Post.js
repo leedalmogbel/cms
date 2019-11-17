@@ -1,8 +1,9 @@
+const striptags = require('striptags');
+
 module.exports = (post) => {
   const {
     postId,
     title,
-    content,
     category,
     subCategory,
     source,
@@ -10,6 +11,14 @@ module.exports = (post) => {
     locationDetails,
     publishedAt,
   } = post;
+
+  let {
+    content
+  } = post;
+
+  // remove html tags
+  content = striptags(content, ['br']);
+  content = content.replace(/(<(br[^>]*)>)/ig, '\n');
 
   return {
     postId,
