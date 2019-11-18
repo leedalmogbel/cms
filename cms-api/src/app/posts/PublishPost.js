@@ -36,7 +36,7 @@ class PublishPost extends Operation {
     }
 
     if ('scheduledAt' in data) {
-      data.scheduledAt = new Date().toISOString();
+      data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
     try {
@@ -96,19 +96,19 @@ class PublishPost extends Operation {
       let user = await this.UserRepository.getById(data.userId);
       user = user.toJSON();
 
-      // if (user.roleId === 1) {
-      //   return 'published';
-      // }
+      if (user.roleId === 1) {
+        return 'published';
+      }
+
+      if (data.scheduledAt && !data.publishedAt && user.roleId === 1) {
+        return 'scheduled';
+      }
+
+      return 'for approval';
     } catch (error) {
       error.message = 'User not found';
-      // this.emit(NOT_FOUND, error);
+      this.emit(NOT_FOUND, error);
     }
-
-    if (data.scheduledAt && !data.publishedAt) {
-      return 'scheduled';
-    }
-
-    return 'for approval';
   }
 }
 

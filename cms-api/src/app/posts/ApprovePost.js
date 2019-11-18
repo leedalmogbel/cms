@@ -10,7 +10,7 @@ class ApprovePost extends Operation {
     this.NotificationRepository = NotificationRepository;
   }
 
-  async execute(id, data = {}) {
+  async execute(id, data) {
     const {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
@@ -22,11 +22,14 @@ class ApprovePost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
+    data = {
+      ...data,
+      publishedAt: new Date().toISOString(),
+      status: 'published',
+    };
+
     try {
-      const post = await this.PostRepository.update(id, {
-        publishedAt: new Date().toISOString(),
-        status: 'published',
-      });
+      const post = await this.PostRepository.update(id, data);
 
       await this.NotificationRepository.add({
         userId: post.userId,

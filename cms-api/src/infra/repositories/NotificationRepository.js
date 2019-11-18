@@ -11,7 +11,7 @@ class NotificationRepository extends BaseRepository {
     const args = {};
 
     if ('userId' in data) {
-      args.where.verified = data.userId;
+      args.where.userId = data.userId;
     }
 
     args.order = [['createdAt', 'DESC']];
