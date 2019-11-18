@@ -52,6 +52,10 @@ class UserRepository extends BaseRepository {
       where: {
         email,
       },
+      include: [{
+        model: this.RoleModel,
+        as: 'role',
+      }],
     });
   }
 }

@@ -1,7 +1,7 @@
 const { Operation } = require('@brewery/core');
 
-class Login extends Operation {
-  constructor({ UserRepository, httpClient}) {
+class Access extends Operation {
+  constructor({ UserRepository, httpClient }) {
     super();
     this.UserRepository = UserRepository;
     this.httpClient = httpClient;
@@ -16,19 +16,17 @@ class Login extends Operation {
       return response;
     };
 
-    const isKappUser = async () =>{
+    const isKappUser = async () => {
       const users = await this.UserRepository.getAll({});
-      if(users.length > 0){
+      if (users.length > 0) {
         return true;
       }
       throw new Error('user not found.');
-    }; 
-      
+    };
+
     const { results } = await retrieveAccessToken();
     return results;
-    
-
   }
 }
 
-module.exports = Login;
+module.exports = Access;
