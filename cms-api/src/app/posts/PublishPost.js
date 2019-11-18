@@ -36,7 +36,7 @@ class PublishPost extends Operation {
     }
 
     if ('scheduledAt' in data) {
-      data.scheduledAt = new Date().toISOString();
+      data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
     try {
