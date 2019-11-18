@@ -4,7 +4,7 @@ module.exports = {
   /**
    * The name of the application
    */
-  name: 'amber-framework',
+  name: 'kapp-cms',
   /**
    * The default environment
    */

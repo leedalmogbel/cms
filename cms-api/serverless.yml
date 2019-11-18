@@ -12,6 +12,7 @@ provider:
   versionFunctions: false
   timeout: 30
   environment: ${file(env.yml):${self:custom.stage}}
+  websocketApiRouteSelectionExpression: $request.body.action
   vpc:
     securityGroupIds:
       - ${file(env.yml):${self:custom.stage}.VPC_SECURITY_GROUP}
@@ -19,6 +20,7 @@ provider:
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_1}
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_2}
   stackTags:
+
     ProjectCode: "CMS"
     SupportContact: "Stratpoint"
 
@@ -26,22 +28,40 @@ custom:
   stage: ${opt:stage, self:provider.stage}
 
 functions:
+  notificationConnectionHandler:
+    handler: src/notifications.connectionHandler
+    events:
+      - websocket:
+          route: $connect
+      - websocket:
+          route: $disconnect
+  defaultHandler:
+    handler: src/notifications.default
+    events:
+      - websocket:
+          route: $default
+  notify:
+    handler: src/notifications.notify
+    events:
+      - websocket:
+          route: notify 
+          
+  updateClient:
+    handler: src/notifications.updateClient
+    events:
+      - http:
+          path: /update-client
+          method: post
+          cors: true
   app:
     handler: src/app-serverless.handler
     events:
-      - http: 
-          path: /{proxy+}
-          method: any
-          cors: true
-          # authorizer:
-          #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
-  login:
-    handler: src/app-serverless.handler
-    events:
-      - http:
-          path: /login
-          method: any
-          cors: true
+        - http: 
+            path: /{proxy+}
+            method: any
+            cors: true
+            # authorizer:
+            #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
   autocomplete:
     handler: src/handler.location
     events:
