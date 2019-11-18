@@ -46,6 +46,14 @@ class UserRepository extends BaseRepository {
   count(args) {
     return this.model.count(this.buildListArgs(args));
   }
+
+  getByEmail(email) {
+    return this.model.findOne({
+      where: {
+        email,
+      },
+    });
+  }
 }
 
 module.exports = UserRepository;
