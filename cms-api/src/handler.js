@@ -157,6 +157,38 @@ module.exports.userSeeds = async (event, context, callback) => {
       firstName: 'Ken',
       lastName: 'Caacbay',
     },
+    {
+      role: 'editor',
+      username: 'baclaro',
+      email: 'baclaro@stratpoint.com',
+      password: '',
+      firstName: 'Beth',
+      lastName: 'Aclaro',
+    },
+    {
+      role: 'editor',
+      username: 'jmacariola',
+      email: 'jmacariola@stratpoint.com',
+      password: '',
+      firstName: 'Jose Carlo',
+      lastName: 'Macariola',
+    },
+    {
+      role: 'editor',
+      username: 'mraagas',
+      email: 'mraagas@stratpoint.com',
+      password: '',
+      firstName: 'Michael Jhon',
+      lastName: 'Raagas',
+    },
+    {
+      role: 'editor',
+      username: 'walmogbel',
+      email: 'walmogbel@stratpoint.com',
+      password: '',
+      firstName: 'Waleed',
+      lastName: 'Almogbel',
+    },
   ];
 
   await Promise.all(
