@@ -41,6 +41,13 @@ module.exports = {
       timestamps: true,
     });
 
+    PostModel.associate = function () {
+      PostModel.belongsTo(datasource.models.UserModel, {
+        foreignKey: 'userId',
+        as: 'user',
+      });
+    };
+
     /**
      * Examples on how to associate or set relationship with other models
      *

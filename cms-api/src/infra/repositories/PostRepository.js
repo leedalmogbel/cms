@@ -5,8 +5,10 @@ const Sequelize = require('sequelize');
 const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
-  constructor({ PostModel }) {
+  constructor({ PostModel, UserModel }) {
     super(PostModel);
+
+    this.UserModel = UserModel;
   }
 
   buildListArgs(data = {}) {
@@ -132,7 +134,15 @@ class PostRepository extends BaseRepository {
   }
 
   getPosts(args) {
-    return this.getAll(this.buildListArgs(args));
+    return this.getAll({
+      ...this.buildListArgs(args),
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+        },
+      ],
+    });
   }
 
   count(args) {
