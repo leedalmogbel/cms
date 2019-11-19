@@ -160,7 +160,7 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'editor',
       username: 'baclaro',
-      email: 'baclaro@stratpoint.com',
+      email: 'BNAclaro@abs-cbn.com',
       password: '',
       firstName: 'Beth',
       lastName: 'Aclaro',
@@ -168,7 +168,7 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'editor',
       username: 'jmacariola',
-      email: 'jmacariola@stratpoint.com',
+      email: 'JVMacariola@abs-cbn.com',
       password: '',
       firstName: 'Jose Carlo',
       lastName: 'Macariola',
@@ -176,7 +176,7 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'editor',
       username: 'mraagas',
-      email: 'mraagas@stratpoint.com',
+      email: 'REMichael@abs-cbn.com',
       password: '',
       firstName: 'Michael Jhon',
       lastName: 'Raagas',
@@ -184,10 +184,34 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'editor',
       username: 'walmogbel',
-      email: 'walmogbel@stratpoint.com',
+      email: 'WTAlmogbel@abs-cbn.com',
       password: '',
       firstName: 'Waleed',
       lastName: 'Almogbel',
+    },
+    {
+      role: 'editor',
+      username: 'jmatic',
+      email: 'JBMatic@abs-cbn.com',
+      password: '',
+      firstName: 'Judith',
+      lastName: 'Matic',
+    },
+    {
+      role: 'writer',
+      username: 'jrazon',
+      email: 'JRRazon@abs-cbn.com',
+      password: '',
+      firstName: 'Jimuel',
+      lastName: 'Razon',
+    },
+    {
+      role: 'writer',
+      username: 'wtauro',
+      email: 'WATauro@abs-cbn.com',
+      password: '',
+      firstName: 'Willfred',
+      lastName: 'Tauro',
     },
   ];
 
