@@ -4,7 +4,7 @@ const Post = attributes({
   // Add atttributes here
   id: Number,
   userId: Number,
-  categoryId: Number,
+  contributors: Object,
   category: String,
   subCategory: String,
   postId: String,
