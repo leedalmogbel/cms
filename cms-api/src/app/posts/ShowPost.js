@@ -10,7 +10,7 @@ class ShowPost extends Operation {
     const { SUCCESS, NOT_FOUND } = this.events;
 
     try {
-      const post = await this.PostRepository.getById(id);
+      const post = await this.PostRepository.getPostById(id);
       this.emit(SUCCESS, {
         results: post,
         meta: {},
