@@ -47,11 +47,35 @@ class UserRepository extends BaseRepository {
     return this.model.count(this.buildListArgs(args));
   }
 
+  getUserById(id) {
+    return this.model.findOne({
+      where: {
+        id,
+        active: 1,
+      },
+      attributes: {
+        exclude: ['password'],
+      },
+      include: [{
+        model: this.RoleModel,
+        as: 'role',
+      }],
+    });
+  }
+
   getByEmail(email) {
     return this.model.findOne({
       where: {
         email,
+        active: 1,
       },
+      attributes: {
+        exclude: ['password'],
+      },
+      include: [{
+        model: this.RoleModel,
+        as: 'role',
+      }],
     });
   }
 }

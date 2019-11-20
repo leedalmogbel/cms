@@ -5,8 +5,10 @@ const Sequelize = require('sequelize');
 const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
-  constructor({ PostModel }) {
+  constructor({ PostModel, UserModel }) {
     super(PostModel);
+
+    this.UserModel = UserModel;
   }
 
   buildListArgs(data = {}) {
@@ -21,7 +23,7 @@ class PostRepository extends BaseRepository {
 
     // set order by default on
     // publisched descending and scheduled ascending
-    let order = [['publishedAt', 'DESC'], ['scheduledAt', 'ASC']];
+    let order = [['publishedAt', 'DESC'], ['createdAt', 'DESC'], ['scheduledAt', 'ASC']];
 
     // set keyword
     if ('keyword' in data
@@ -132,7 +134,35 @@ class PostRepository extends BaseRepository {
   }
 
   getPosts(args) {
-    return this.getAll(this.buildListArgs(args));
+    return this.getAll({
+      ...this.buildListArgs(args),
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
+    });
+  }
+
+  getPostById(id) {
+    return this.model.findOne({
+      where: {
+        id,
+      },
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
+    });
   }
 
   count(args) {

@@ -9,6 +9,7 @@ const User = attributes({
   password: String,
   firstName: String,
   lastName: String,
+  active: Boolean,
   createdAt: Date,
   updatedAt: Date,
 })(class User {

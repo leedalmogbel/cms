@@ -9,10 +9,6 @@ class NotificationsController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('ListNotifications'), this.index);
-    router.post('/', this.injector('CreateNotification'), this.create);
-    router.get('/:id', this.injector('ShowNotification'), this.show);
-    router.put('/:id', this.injector('UpdateNotification'), this.update);
-    router.delete('/:id', this.injector('DeleteNotification'), this.delete);
 
     return router;
   }
