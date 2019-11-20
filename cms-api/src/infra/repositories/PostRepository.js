@@ -140,6 +140,9 @@ class PostRepository extends BaseRepository {
         {
           model: this.UserModel,
           as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
         },
       ],
     });
@@ -154,6 +157,9 @@ class PostRepository extends BaseRepository {
         {
           model: this.UserModel,
           as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
         },
       ],
     });
