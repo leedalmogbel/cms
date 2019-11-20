@@ -51,6 +51,10 @@ class UserRepository extends BaseRepository {
     return this.model.findOne({
       where: {
         id,
+        active: 1,
+      },
+      attributes: {
+        exclude: ['password'],
       },
       include: [{
         model: this.RoleModel,
@@ -63,6 +67,10 @@ class UserRepository extends BaseRepository {
     return this.model.findOne({
       where: {
         email,
+        active: 1,
+      },
+      attributes: {
+        exclude: ['password'],
       },
       include: [{
         model: this.RoleModel,
