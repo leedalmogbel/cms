@@ -1,16 +1,16 @@
 const { Operation } = require('@brewery/core');
 
-class ListPosts extends Operation {
-  constructor({ PostRepository }) {
+class ListNotifications extends Operation {
+  constructor({ NotificationRepository }) {
     super();
-    this.PostRepository = PostRepository;
+    this.NotificationRepository = NotificationRepository;
   }
 
   async execute(args) {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      let posts = await this.PostRepository.getPosts(args);
+      let posts = await this.NotificationRepository.getNotifications(args);
       posts = posts.map((post) => {
         post = {
           ...post.toJSON(),
@@ -33,6 +33,6 @@ class ListPosts extends Operation {
   }
 }
 
-ListPosts.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+ListNotifications.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = ListPosts;
+module.exports = ListNotifications;

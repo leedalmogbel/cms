@@ -5,26 +5,25 @@ const Sequelize = require('sequelize');
 const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
-  constructor({ PostModel }) {
+  constructor({ PostModel, UserModel }) {
     super(PostModel);
+
+    this.UserModel = UserModel;
   }
 
-  async getPosts(data = {}) {
+  buildListArgs(data = {}) {
     // init fetch arguments
     const args = {
       where: {
-        draft: false, // default draft false
+        status: {
+          [Op.ne]: 'draft',
+        },
       },
     };
 
     // set order by default on
     // publisched descending and scheduled ascending
-    let order = [['publishedAt', 'DESC'], ['scheduledAt', 'ASC']];
-
-    // set draft
-    if ('draft' in data) {
-      args.where.draft = (data.draft === 'true') ? 1 : 0;
-    }
+    let order = [['publishedAt', 'DESC'], ['createdAt', 'DESC'], ['scheduledAt', 'ASC']];
 
     // set keyword
     if ('keyword' in data
@@ -48,36 +47,13 @@ class PostRepository extends BaseRepository {
       if (data.location) {
         args.where.locationAddress = {
           [Op.like]:
-              `%${data.location}%`,
+            `%${data.location}%`,
         };
       }
     }
 
     if ('category' in data) {
       args.where.category = data.category;
-    }
-
-    // set published flag
-    if ('published' in data) {
-      if (data.published) {
-        args.where.publishedAt = {
-          [Op.ne]: null,
-        };
-      }
-      order = [['publishedAt', 'DESC']];
-    }
-
-    // set scheduled flag
-    if ('scheduled' in data) {
-      if (data.scheduled) {
-        args.where.scheduledAt = {
-          [Op.ne]: null,
-        };
-        args.where.publishedAt = {
-          [Op.eq]: null,
-        };
-      }
-      order = [['scheduledAt', 'DESC']]; // set order by default descending
     }
 
     // set date
@@ -97,7 +73,7 @@ class PostRepository extends BaseRepository {
               endDate,
             ],
           };
-        } else {
+        } else if ('published' in data) {
           args.where.publishedAt = {
             [Op.or]: {
               [Op.between]: [
@@ -107,11 +83,42 @@ class PostRepository extends BaseRepository {
               // [Op.eq]: null,
             },
           };
+        } else if ('all' in data) {
+          args.where = {
+            [Op.or]: {
+              publishedAt: {
+                [Op.between]: [
+                  startDate,
+                  endDate,
+                ],
+              },
+              scheduledAt: {
+                [Op.between]: [
+                  startDate,
+                  endDate,
+                ],
+              },
+            },
+          };
         }
       }
 
       order = [['publishedAt', 'DESC']];
     }
+
+    if ('status' in data) {
+      args.where.status = data.status;
+
+      if (data.status === 'published') {
+        order = [['publishedAt', 'DESC']];
+      }
+
+      if (data.status === 'scheduled') {
+        order = [['scheduledAt', 'ASC']];
+      }
+    }
+
+    args.order = order;
 
     // offset
     if ('offset' in data) {
@@ -123,9 +130,43 @@ class PostRepository extends BaseRepository {
       args.limit = Number(data.limit);
     }
 
-    args.order = order;
+    return args;
+  }
 
-    return this.getAll(args);
+  getPosts(args) {
+    return this.getAll({
+      ...this.buildListArgs(args),
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
+    });
+  }
+
+  getPostById(id) {
+    return this.model.findOne({
+      where: {
+        id,
+      },
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
+    });
+  }
+
+  count(args) {
+    return this.model.count(this.buildListArgs(args));
   }
 }
 

@@ -10,13 +10,13 @@ class CreateUser extends Operation {
   async execute(data) {
     const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
     const user = new User(data);
-    
+
     try {
       const newUser = await this.UserRepository.add(user.toJSON());
 
       this.emit(SUCCESS, newUser);
-    } catch(error) {
-      if(error.message === 'ValidationError') {
+    } catch (error) {
+      if (error.message === 'ValidationError') {
         return this.emit(VALIDATION_ERROR, error);
       }
 

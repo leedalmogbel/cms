@@ -4,7 +4,9 @@ const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');
 
 class PublishPost extends Operation {
-  constructor({ PostRepository, SavePost, httpClient }) {
+  constructor({
+    PostRepository, SavePost, httpClient, UserRepository,
+  }) {
     super();
     this.PostRepository = PostRepository;
     this.SavePost = SavePost;
@@ -12,6 +14,7 @@ class PublishPost extends Operation {
     this.firehose = new AWS.Firehose({
       apiVersion: '2015-08-04',
     });
+    this.UserRepository = UserRepository;
   }
 
   async execute(id, data) {
@@ -26,13 +29,21 @@ class PublishPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    data.draft = false;
-    if (!data.hasOwnProperty('scheduledAt')) {
+    const status = await this.getStatus(data);
+
+    if (status === 'published') {
       data.publishedAt = new Date().toISOString();
     }
 
+    if ('scheduledAt' in data) {
+      data.scheduledAt = new Date(data.scheduledAt).toISOString();
+    }
+
     try {
-      data = await this.SavePost.build(data);
+      data = await this.SavePost.build({
+        ...data,
+        status,
+      });
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -43,7 +54,10 @@ class PublishPost extends Operation {
       const post = await this.PostRepository.getById(id);
 
       if (post.scheduledAt) {
-        return this.emit(SUCCESS, { id });
+        return this.emit(SUCCESS, {
+          results: { id },
+          meta: {},
+        });
       }
 
       await this.firehose
@@ -66,9 +80,34 @@ class PublishPost extends Operation {
 
       console.log(`PMS response for id: ${post.postId}`, pres, pmsPayload);
 
-      this.emit(SUCCESS, { id });
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
       this.emit(ERROR, error);
+    }
+  }
+
+  async getStatus(data) {
+    const { NOT_FOUND } = this.events;
+
+    try {
+      let user = await this.UserRepository.getUserById(data.userId);
+      user = user.toJSON();
+
+      if (data.scheduledAt && !data.publishedAt && user.role.title === 'editor') {
+        return 'scheduled';
+      }
+
+      if (user.role.title === 'editor') {
+        return 'published';
+      }
+
+      return 'for approval';
+    } catch (error) {
+      error.message = 'User not found';
+      this.emit(NOT_FOUND, error);
     }
   }
 }

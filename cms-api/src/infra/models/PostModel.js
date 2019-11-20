@@ -10,7 +10,7 @@ module.exports = {
         type: DataTypes.INTEGER,
       },
       userId: DataTypes.INTEGER,
-      categoryId: DataTypes.INTEGER,
+      contributors: DataTypes.JSON,
       category: DataTypes.STRING,
       subCategory: DataTypes.STRING,
       postId: DataTypes.STRING,
@@ -27,6 +27,8 @@ module.exports = {
       comments: DataTypes.JSON,
       advisories: DataTypes.JSON,
       attachments: DataTypes.JSON,
+      assignedUserId: DataTypes.INTEGER,
+      status: DataTypes.STRING,
       draft: {
         type: DataTypes.BOOLEAN,
         defaultValue: '0',
@@ -38,6 +40,13 @@ module.exports = {
       tableName: 'posts',
       timestamps: true,
     });
+
+    PostModel.associate = function () {
+      PostModel.belongsTo(datasource.models.UserModel, {
+        foreignKey: 'userId',
+        as: 'user',
+      });
+    };
 
     /**
      * Examples on how to associate or set relationship with other models

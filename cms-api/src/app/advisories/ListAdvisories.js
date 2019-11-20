@@ -15,30 +15,33 @@ class ListAdvisories extends Operation {
 
     try {
       const advisories = await this.AdvisoryRepository.getAdvisories(args);
+      const total = await this.AdvisoryRepository.count(args);
 
-      this.emit(SUCCESS, await advisories.map((advisory) => {
-        // check if theres attachments
-        if (advisory.attachments && advisory.attachments.length > 0) {
-          const promises = [];
-          const { attachments } = advisory.attachments || [];
+      this.emit(SUCCESS, {
+        results: await advisories.map((advisory) => {
+          // check if theres attachments
+          if (advisory.attachments && advisory.attachments.length > 0) {
+            const promises = [];
+            const { attachments } = advisory.attachments || [];
 
-          attachments.map(async (attachment) => {
-            promises.push({
-              fileName: attachment.fileName,
-              downloadUrl: await ListAdvisories.getUrl(attachment.fileName),
-              uploadUrl: '',
+            attachments.map(async (attachment) => {
+              promises.push({
+                fileName: attachment.fileName,
+                downloadUrl: await ListAdvisories.getUrl(attachment.fileName),
+                uploadUrl: '',
+              });
+
+              Promise.all(promises).then(() => { attachment = promises; });
             });
+          }
 
-            Promise.all(promises).then(() => { attachment = promises; });
-          });
-        }
-
-        return advisory.toJSON();
-      }));
+          return advisory.toJSON();
+        }),
+        meta: {
+          total,
+        },
+      });
     } catch (error) {
-      if (error.message === 'ValidationError') {
-        return this.emit(ERROR, error);
-      }
       this.emit(ERROR, error);
     }
   }

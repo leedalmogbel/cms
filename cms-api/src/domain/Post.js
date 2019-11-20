@@ -4,7 +4,7 @@ const Post = attributes({
   // Add atttributes here
   id: Number,
   userId: Number,
-  categoryId: Number,
+  contributors: Object,
   category: String,
   subCategory: String,
   postId: String,
@@ -21,6 +21,8 @@ const Post = attributes({
   comments: Array,
   advisories: Array,
   attachments: Array,
+  assignedUserId: Number,
+  status: String,
   draft: Boolean,
   scheduledAt: Date,
   expiredAt: Date,

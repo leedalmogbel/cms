@@ -12,10 +12,10 @@ class ShowUser extends Operation {
     try {
       const user = await this.UserRepository.getById(id);
       this.emit(SUCCESS, user);
-    } catch(error) {
+    } catch (error) {
       this.emit(NOT_FOUND, {
         type: error.message,
-        details: error.details
+        details: error.details,
       });
     }
   }
@@ -24,4 +24,3 @@ class ShowUser extends Operation {
 ShowUser.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = ShowUser;
-    

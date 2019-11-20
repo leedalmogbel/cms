@@ -8,18 +8,20 @@ class ShowPost extends Operation {
 
   async execute(id) {
     const { SUCCESS, NOT_FOUND } = this.events;
+
     try {
-      const post = await this.PostRepository.getById(id);
-      this.emit(SUCCESS, post);
-    } catch (error) {
-      this.emit(NOT_FOUND, {
-        type: error.message,
-        details: error.details,
+      const post = await this.PostRepository.getPostById(id);
+      this.emit(SUCCESS, {
+        results: post,
+        meta: {},
       });
+    } catch (error) {
+      error.message = 'Post not found';
+      this.emit(NOT_FOUND, error);
     }
   }
 }
 
-ShowPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+ShowPost.setEvents(['SUCCESS', 'ERROR', 'NOT_FOUND']);
 
 module.exports = ShowPost;

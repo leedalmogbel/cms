@@ -9,19 +9,34 @@ module.exports = {
         autoIncrement: true,
         type: DataTypes.INTEGER,
       },
-      username: {
-        type: DataTypes.STRING,
-      },
-      lastName: {
-        type: DataTypes.STRING,
-      },
-      firstName: {
-        type: DataTypes.STRING,
+      roleId: DataTypes.INTEGER,
+      username: DataTypes.STRING,
+      email: DataTypes.STRING,
+      password: DataTypes.STRING,
+      firstName: DataTypes.STRING,
+      lastName: DataTypes.STRING,
+      active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: '1',
       },
     }, {
       tableName: 'users',
       timestamps: true,
     });
+
+    UserModel.associate = function () {
+      UserModel.belongsTo(datasource.models.RoleModel, {
+        foreignKey: 'roleId',
+        as: 'role',
+      });
+
+      UserModel.belongsToMany(datasource.models.NotificationModel, {
+        through: datasource.models.UserNotificationModel,
+        as: 'notifications',
+        foreignKey: 'userId',
+        otherKey: 'notificationdId',
+      });
+    };
 
     /**
      * Examples on how to associate or set relationship with other models
