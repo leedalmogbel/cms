@@ -100,6 +100,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Karen',
       lastName: 'Puno',
+      active: 1,
     },
     {
       role: 'editor',
@@ -108,6 +109,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Ivy Jean',
       lastName: 'Vibar',
+      active: 1,
     },
     {
       role: 'editor',
@@ -116,6 +118,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Patrick Rowell',
       lastName: 'Quintos',
+      active: 1,
     },
     {
       role: 'editor',
@@ -124,6 +127,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Noreen Ann Rowena',
       lastName: 'Arzadon',
+      active: 1,
     },
     {
       role: 'editor',
@@ -132,6 +136,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Charity Jayne',
       lastName: 'Temple',
+      active: 1,
     },
     {
       role: 'editor',
@@ -140,6 +145,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Pamela',
       lastName: 'Munji',
+      active: 1,
     },
     {
       role: 'writer',
@@ -148,6 +154,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Gloria',
       lastName: 'Wong',
+      active: 0,
     },
     {
       role: 'writer',
@@ -156,6 +163,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Ken',
       lastName: 'Caacbay',
+      active: 1,
     },
     {
       role: 'editor',
@@ -164,6 +172,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Beth',
       lastName: 'Aclaro',
+      active: 1,
     },
     {
       role: 'editor',
@@ -172,6 +181,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Jose Carlo',
       lastName: 'Macariola',
+      active: 1,
     },
     {
       role: 'editor',
@@ -188,6 +198,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Waleed',
       lastName: 'Almogbel',
+      active: 1,
     },
     {
       role: 'editor',
@@ -196,6 +207,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Judith',
       lastName: 'Matic',
+      active: 1,
     },
     {
       role: 'writer',
@@ -204,6 +216,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Jimuel',
       lastName: 'Razon',
+      active: 1,
     },
     {
       role: 'writer',
@@ -212,6 +225,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Willfred',
       lastName: 'Tauro',
+      active: 1,
     },
   ];
 

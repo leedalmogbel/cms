@@ -15,6 +15,10 @@ module.exports = {
       password: DataTypes.STRING,
       firstName: DataTypes.STRING,
       lastName: DataTypes.STRING,
+      active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: '1',
+      },
     }, {
       tableName: 'users',
       timestamps: true,
