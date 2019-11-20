@@ -93,15 +93,15 @@ class PublishPost extends Operation {
     const { NOT_FOUND } = this.events;
 
     try {
-      let user = await this.UserRepository.getById(data.userId);
+      let user = await this.UserRepository.getUserById(data.userId);
       user = user.toJSON();
 
-      if (user.roleId === 1) {
-        return 'published';
+      if (data.scheduledAt && !data.publishedAt && user.role.title === 'editor') {
+        return 'scheduled';
       }
 
-      if (data.scheduledAt && !data.publishedAt && user.roleId === 1) {
-        return 'scheduled';
+      if (user.role.title === 'editor') {
+        return 'published';
       }
 
       return 'for approval';

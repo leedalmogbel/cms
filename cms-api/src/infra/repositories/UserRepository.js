@@ -47,6 +47,18 @@ class UserRepository extends BaseRepository {
     return this.model.count(this.buildListArgs(args));
   }
 
+  getUserById(id) {
+    return this.model.findOne({
+      where: {
+        id,
+      },
+      include: [{
+        model: this.RoleModel,
+        as: 'role',
+      }],
+    });
+  }
+
   getByEmail(email) {
     return this.model.findOne({
       where: {

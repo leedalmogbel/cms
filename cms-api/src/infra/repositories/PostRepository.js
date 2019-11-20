@@ -23,7 +23,7 @@ class PostRepository extends BaseRepository {
 
     // set order by default on
     // publisched descending and scheduled ascending
-    let order = [['publishedAt', 'DESC'], ['scheduledAt', 'ASC']];
+    let order = [['publishedAt', 'DESC'], ['createdAt', 'DESC'], ['scheduledAt', 'ASC']];
 
     // set keyword
     if ('keyword' in data
