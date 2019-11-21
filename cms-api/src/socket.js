@@ -4,10 +4,6 @@ const config = require('config');
 
 const success = {
   statusCode: 200,
-  headers: {
-    'Content-Type': 'text/plain',
-    'Access-Control-Allow-Origin': '*',
-  },
 };
 
 const getContainer = () => new Promise((resolve) => {
@@ -18,23 +14,17 @@ const getContainer = () => new Promise((resolve) => {
 
 module.exports.connect = async (event, context) => {
   const Container = await getContainer();
-
-  return Container
-    .resolve('RegisterSocket')
-    .execute(event);
+  return Container.resolve('RegisterSocket').execute(event);
 };
 
 module.exports.disconnect = async (event, context) => {
   const Container = await getContainer();
-
-  return Container
-    .resolve('RemoveSocket')
-    .execute(event);
+  return Container.resolve('RemoveSocket').execute(event);
 };
 
 module.exports.default = async (event, context, callback) => {
-  console.log(event);
-  return success;
+  const Container = await getContainer();
+  return Container.resolve('DefaultSocket').execute(event);
 };
 
 module.exports.notify = async (event, context, callback) => {
