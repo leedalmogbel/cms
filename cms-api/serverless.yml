@@ -28,40 +28,15 @@ custom:
   stage: ${opt:stage, self:provider.stage}
 
 functions:
-  notificationConnectionHandler:
-    handler: src/notifications.connectionHandler
-    events:
-      - websocket:
-          route: $connect
-      - websocket:
-          route: $disconnect
-  defaultHandler:
-    handler: src/notifications.default
-    events:
-      - websocket:
-          route: $default
-  notify:
-    handler: src/notifications.notify
-    events:
-      - websocket:
-          route: notify 
-          
-  updateClient:
-    handler: src/notifications.updateClient
-    events:
-      - http:
-          path: /update-client
-          method: post
-          cors: true
   app:
     handler: src/app-serverless.handler
     events:
-        - http: 
-            path: /{proxy+}
-            method: any
-            cors: true
-            # authorizer:
-            #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
+      - http: 
+          path: /{proxy+}
+          method: any
+          cors: true
+        # authorizer:
+        #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
   autocomplete:
     handler: src/handler.location
     events:
@@ -81,9 +56,53 @@ functions:
   cron: 
     handler: src/cron.scheduled
     events:
-      # - http:
-      #     path: /scheduled/posts
-      #     method: get
       - schedule: 
           rate: cron(0/10 * * * ? *)
           enabled: true
+
+  socketConnect:
+    handler: src/socket.connect
+    events:
+      - websocket:
+          route: $connect
+  socketDisconnect:
+    handler: src/socket.disconnect
+    events:
+      - websocket:
+          route: $disconnect
+  socketDefault:
+    handler: src/socket.default
+    events:
+      - websocket:
+          route: $default
+  socketNotify:
+    handler: src/socket.notify
+    events:
+      - websocket:
+          route: NOTIFY
+
+  # notificationConnectionHandler:
+  #   handler: src/notifications.connectionHandler
+  #   events:
+  #     - websocket:
+  #         route: $connect
+  #     - websocket:
+  #         route: $disconnect
+  # defaultHandler:
+  #   handler: src/notifications.default
+  #   events:
+  #     - websocket:
+  #         route: $default
+  # notify:
+  #   handler: src/notifications.notify
+  #   events:
+  #     - websocket:
+  #         route: notify 
+          
+  # updateClient:
+  #   handler: src/notifications.updateClient
+  #   events:
+  #     - http:
+  #         path: /update-client
+  #         method: post
+  #         cors: true

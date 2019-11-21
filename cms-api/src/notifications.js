@@ -18,7 +18,7 @@ const getContainer = () => new Promise((resolve) => {
 });
 
 module.exports.connectionHandler = async (event, context, callback) => {
-  console.log(event);
+  console.log('test 123123', context);
   return success;
 };
 
@@ -36,6 +36,7 @@ module.exports.updateClient = async (event, context, callback) => {
   console.log(event);
   const {
     id,
+    protocol,
     domain,
     stage,
     message,
@@ -61,7 +62,7 @@ module.exports.updateClient = async (event, context, callback) => {
     );
   });
 
-  const callbackUrlForAWS = util.format(util.format('https://%s/%s', domain, stage)); // construct the needed url
+  const callbackUrlForAWS = util.format(util.format('%s://%s/%s', protocol, domain, stage)); // construct the needed url
   await sendMessageToClient(
     callbackUrlForAWS,
     id,
