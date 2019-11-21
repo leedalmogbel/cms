@@ -1,7 +1,7 @@
 const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
 
-class SaveDraftPost extends Operation {
+class RevisePost extends Operation {
   constructor({ PostRepository, GetLocation, SavePost }) {
     super();
     this.PostRepository = PostRepository;
@@ -24,7 +24,7 @@ class SaveDraftPost extends Operation {
     try {
       data = await this.SavePost.build(data = {
         ...data,
-        status: 'draft',
+        status: 'for-revision',
       });
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -42,6 +42,6 @@ class SaveDraftPost extends Operation {
   }
 }
 
-SaveDraftPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+RevisePost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = SaveDraftPost;
+module.exports = RevisePost;

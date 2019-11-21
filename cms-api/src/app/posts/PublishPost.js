@@ -106,7 +106,7 @@ class PublishPost extends Operation {
         return 'published';
       }
 
-      return 'for approval';
+      return 'for-approval';
     } catch (error) {
       error.message = 'User not found';
       this.emit(NOT_FOUND, error);
