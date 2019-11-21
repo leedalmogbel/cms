@@ -4,6 +4,7 @@ module.exports = (post) => {
   post = {
     ...post,
     locationDetails: (typeof post.locationDetails === 'undefined' || post.locationDetails === null ? {} : post.locationDetails),
+    user: (typeof post.user === 'undefined' || post.user === null ? {} : post.user),
   };
 
   const {
@@ -16,10 +17,15 @@ module.exports = (post) => {
       barangay,
       locationLevel, placeId,
     },
+    user: {
+      firstName,
+      lastName,
+    },
   } = post;
 
   const tagsRetained = post.tagsRetained || [];
   const tagsAdded = post.tagsAdded || [];
+  const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
 
   return {
     postId: post.postId,
@@ -62,8 +68,9 @@ module.exports = (post) => {
     sponsorName: null,
     sponsorType: null,
     postType: 'Text',
-    postSourceType: 'Writer/Editor',
-    postSource: 'Juan Dela Cruz',
+    postSourceType: 'CMS',
+    postSource: post.source,
+    postAuthor: nullable(author),
     postAgeRestriction: null,
     postGenderRestriction: null,
     postTarget: null,

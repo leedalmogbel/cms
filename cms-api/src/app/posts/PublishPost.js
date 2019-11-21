@@ -51,7 +51,7 @@ class PublishPost extends Operation {
 
     try {
       await this.PostRepository.update(id, data);
-      const post = await this.PostRepository.getById(id);
+      const post = await this.PostRepository.getPostById(id);
 
       if (post.scheduledAt) {
         return this.emit(SUCCESS, {
@@ -60,11 +60,12 @@ class PublishPost extends Operation {
         });
       }
 
-      await this.firehose
+      const firehosePayload = PublistPostStreams(post.toJSON());
+      const fres = await this.firehose
         .putRecord({
           DeliveryStreamName: 'AddPost-cms',
           Record: {
-            Data: JSON.stringify(PublistPostStreams(post.toJSON())),
+            Data: JSON.stringify(firehosePayload),
           },
         })
         .promise();
@@ -78,6 +79,7 @@ class PublishPost extends Operation {
         },
       );
 
+      console.log(`Firehose response for id: ${post.postId}`, fres, firehosePayload);
       console.log(`PMS response for id: ${post.postId}`, pres, pmsPayload);
 
       this.emit(SUCCESS, {
