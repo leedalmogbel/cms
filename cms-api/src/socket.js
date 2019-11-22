@@ -28,6 +28,6 @@ module.exports.default = async (event, context, callback) => {
 };
 
 module.exports.notify = async (event, context, callback) => {
-  console.log(event);
-  return success;
+  const Container = await getContainer();
+  return Container.resolve('NotifySocket').execute(event);
 };
