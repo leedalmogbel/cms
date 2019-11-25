@@ -18,9 +18,7 @@ class PublishPost extends Operation {
   }
 
   async execute(id, data) {
-    const {
-      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
-    } = this.events;
+    const { NOT_FOUND } = this.events;
 
     try {
       await this.PostRepository.getById(id);
@@ -29,9 +27,38 @@ class PublishPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    const status = await this.getStatus(data);
+    data.status = await this.getStatus(data);
+    await this.publish(id, data);
+  }
 
-    if (status === 'published') {
+  async getStatus(data) {
+    const { NOT_FOUND } = this.events;
+
+    try {
+      let user = await this.UserRepository.getUserById(data.userId);
+      user = user.toJSON();
+
+      if (user.role.title === 'writer') {
+        return 'for-approval';
+      }
+
+      if (data.scheduledAt && !data.publishedAt) {
+        return 'scheduled';
+      }
+
+      return 'published';
+    } catch (error) {
+      error.message = 'User not found';
+      this.emit(NOT_FOUND, error);
+    }
+  }
+
+  async publish(id, data) {
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR,
+    } = this.events;
+
+    if (data.status === 'published') {
       data.publishedAt = new Date().toISOString();
     }
 
@@ -40,10 +67,7 @@ class PublishPost extends Operation {
     }
 
     try {
-      data = await this.SavePost.build({
-        ...data,
-        status,
-      });
+      data = await this.SavePost.build(data);
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -88,28 +112,6 @@ class PublishPost extends Operation {
       });
     } catch (error) {
       this.emit(ERROR, error);
-    }
-  }
-
-  async getStatus(data) {
-    const { NOT_FOUND } = this.events;
-
-    try {
-      let user = await this.UserRepository.getUserById(data.userId);
-      user = user.toJSON();
-
-      if (data.scheduledAt && !data.publishedAt && user.role.title === 'editor') {
-        return 'scheduled';
-      }
-
-      if (user.role.title === 'editor') {
-        return 'published';
-      }
-
-      return 'for approval';
-    } catch (error) {
-      error.message = 'User not found';
-      this.emit(NOT_FOUND, error);
     }
   }
 }
