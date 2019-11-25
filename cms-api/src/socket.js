@@ -2,10 +2,6 @@ require('module').Module._initPaths();
 const { brew } = require('@brewery/core');
 const config = require('config');
 
-const success = {
-  statusCode: 200,
-};
-
 const getContainer = () => new Promise((resolve) => {
   brew(config, async (brewed) => {
     resolve(brewed.container);
@@ -29,5 +25,5 @@ module.exports.default = async (event, context, callback) => {
 
 module.exports.notify = async (event, context, callback) => {
   const Container = await getContainer();
-  return Container.resolve('NotifySocket').execute(event);
+  return Container.resolve('NotificationSocket').execute(event);
 };

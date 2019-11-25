@@ -1,7 +1,7 @@
 const { Operation } = require('@brewery/core');
 const AWS = require('aws-sdk');
 
-class NotifySocket extends Operation {
+class NotificationSocket extends Operation {
   constructor({ SocketRepository }) {
     super();
 
@@ -29,16 +29,14 @@ class NotifySocket extends Operation {
         },
       });
 
-      await Promise.all(
-        sockets.map(async (socket) => {
-          // skip same connectionId to prevent sending to self
-          if (socket.connectionId === connectionId) {
-            return;
-          }
+      sockets.map(async (socket) => {
+        // skip same connectionId to prevent sending to self
+        if (socket.connectionId === connectionId) {
+          return;
+        }
 
-          await this.notify(socket.connectionId, data);
-        }),
-      );
+        await this.notify(socket.connectionId, data);
+      });
 
       return {
         statusCode: 200,
@@ -72,4 +70,4 @@ class NotifySocket extends Operation {
     }
   }
 }
-module.exports = NotifySocket;
+module.exports = NotificationSocket;
