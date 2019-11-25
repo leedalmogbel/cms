@@ -18,7 +18,9 @@ class PublishPost extends Operation {
   }
 
   async execute(id, data) {
-    const { NOT_FOUND } = this.events;
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = this.events;
 
     try {
       await this.PostRepository.getById(id);
@@ -28,36 +30,6 @@ class PublishPost extends Operation {
     }
 
     data.status = await this.getStatus(data);
-    await this.publish(id, data);
-  }
-
-  async getStatus(data) {
-    const { NOT_FOUND } = this.events;
-
-    try {
-      let user = await this.UserRepository.getUserById(data.userId);
-      user = user.toJSON();
-
-      if (user.role.title === 'writer') {
-        return 'for-approval';
-      }
-
-      if (data.scheduledAt && !data.publishedAt) {
-        return 'scheduled';
-      }
-
-      return 'published';
-    } catch (error) {
-      error.message = 'User not found';
-      this.emit(NOT_FOUND, error);
-    }
-  }
-
-  async publish(id, data) {
-    const {
-      SUCCESS, ERROR, VALIDATION_ERROR,
-    } = this.events;
-
     if (data.status === 'published') {
       data.publishedAt = new Date().toISOString();
     }
@@ -84,27 +56,8 @@ class PublishPost extends Operation {
         });
       }
 
-      const firehosePayload = PublistPostStreams(post.toJSON());
-      const fres = await this.firehose
-        .putRecord({
-          DeliveryStreamName: 'AddPost-cms',
-          Record: {
-            Data: JSON.stringify(firehosePayload),
-          },
-        })
-        .promise();
-
-      const pmsPayload = PmsPost(post.toJSON());
-      const pres = await this.httpClient.post(
-        process.env.PMS_POST_ENDPOINT,
-        pmsPayload,
-        {
-          access_token: process.env.PMS_POST_TOKEN,
-        },
-      );
-
-      console.log(`Firehose response for id: ${post.postId}`, fres, firehosePayload);
-      console.log(`PMS response for id: ${post.postId}`, pres, pmsPayload);
+      await this.firehoseIntegrate(post.toJSON());
+      await this.pmsIntegrate(post.toJSON());
 
       this.emit(SUCCESS, {
         results: { id },
@@ -112,6 +65,53 @@ class PublishPost extends Operation {
       });
     } catch (error) {
       this.emit(ERROR, error);
+    }
+  }
+
+  async firehoseIntegrate(data) {
+    const firehosePayload = PublistPostStreams(data);
+    const fres = await this.firehose.putRecord({
+      DeliveryStreamName: 'AddPost-cms',
+      Record: {
+        Data: JSON.stringify(firehosePayload),
+      },
+    }).promise();
+
+    console.log(`Firehose response for id: ${data.postId}`, fres, firehosePayload);
+  }
+
+  async pmsIntegrate(data) {
+    const pmsPayload = PmsPost(data);
+    const pres = await this.httpClient.post(
+      process.env.PMS_POST_ENDPOINT,
+      pmsPayload,
+      {
+        access_token: process.env.PMS_POST_TOKEN,
+      },
+    );
+
+    console.log(`PMS response for id: ${data.postId}`, pres, pmsPayload);
+  }
+
+  async getStatus(data) {
+    const { NOT_FOUND } = this.events;
+
+    try {
+      let user = await this.UserRepository.getUserById(data.userId);
+      user = user.toJSON();
+
+      if (user.role.title === 'writer') {
+        return 'for-approval';
+      }
+
+      if (data.scheduledAt && !data.publishedAt) {
+        return 'scheduled';
+      }
+
+      return 'published';
+    } catch (error) {
+      error.message = 'User not found';
+      this.emit(NOT_FOUND, error);
     }
   }
 }
