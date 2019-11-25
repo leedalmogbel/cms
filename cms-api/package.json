@@ -47,7 +47,6 @@
     "mysql2": "^1.7.0",
     "serverless-http": "^2.3.0",
     "serverless-mocha-plugin": "^1.11.0",
-    "striptags": "^3.1.1",
     "structure": "^1.5.0",
     "swagger-ui-express": "^2.0.14",
     "uuid": "^3.3.3"
