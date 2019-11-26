@@ -29,10 +29,6 @@ module.exports = {
       attachments: DataTypes.JSON,
       assignedUserId: DataTypes.INTEGER,
       status: DataTypes.STRING,
-      draft: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: '0',
-      },
       scheduledAt: DataTypes.DATE,
       expiredAt: DataTypes.DATE,
       publishedAt: DataTypes.DATE,

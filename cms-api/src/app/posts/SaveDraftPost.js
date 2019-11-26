@@ -1,11 +1,9 @@
 const { Operation } = require('@brewery/core');
-const Post = require('src/domain/Post');
 
 class SaveDraftPost extends Operation {
-  constructor({ PostRepository, GetLocation, SavePost }) {
+  constructor({ PostRepository, SavePost }) {
     super();
     this.PostRepository = PostRepository;
-    this.GetLocation = GetLocation;
     this.SavePost = SavePost;
   }
 
@@ -21,14 +19,10 @@ class SaveDraftPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    try {
-      data = await this.SavePost.build(data = {
-        ...data,
-        status: 'draft',
-      });
-    } catch (error) {
-      return this.emit(VALIDATION_ERROR, error);
-    }
+    data = await this.SavePost.build(data = {
+      ...data,
+      status: 'draft',
+    });
 
     try {
       await this.PostRepository.update(id, data);

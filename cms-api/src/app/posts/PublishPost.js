@@ -29,9 +29,8 @@ class PublishPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    const status = await this.getStatus(data);
-
-    if (status === 'published') {
+    data.status = await this.getStatus(data);
+    if (data.status === 'published') {
       data.publishedAt = new Date().toISOString();
     }
 
@@ -40,10 +39,7 @@ class PublishPost extends Operation {
     }
 
     try {
-      data = await this.SavePost.build({
-        ...data,
-        status,
-      });
+      data = await this.SavePost.build(data);
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -60,27 +56,8 @@ class PublishPost extends Operation {
         });
       }
 
-      const firehosePayload = PublistPostStreams(post.toJSON());
-      const fres = await this.firehose
-        .putRecord({
-          DeliveryStreamName: 'AddPost-cms',
-          Record: {
-            Data: JSON.stringify(firehosePayload),
-          },
-        })
-        .promise();
-
-      const pmsPayload = PmsPost(post.toJSON());
-      const pres = await this.httpClient.post(
-        process.env.PMS_POST_ENDPOINT,
-        pmsPayload,
-        {
-          access_token: process.env.PMS_POST_TOKEN,
-        },
-      );
-
-      console.log(`Firehose response for id: ${post.postId}`, fres, firehosePayload);
-      console.log(`PMS response for id: ${post.postId}`, pres, pmsPayload);
+      await this.firehoseIntegrate(post.toJSON());
+      await this.pmsIntegrate(post.toJSON());
 
       this.emit(SUCCESS, {
         results: { id },
@@ -91,6 +68,31 @@ class PublishPost extends Operation {
     }
   }
 
+  async firehoseIntegrate(data) {
+    const firehosePayload = PublistPostStreams(data);
+    const fres = await this.firehose.putRecord({
+      DeliveryStreamName: 'AddPost-cms',
+      Record: {
+        Data: JSON.stringify(firehosePayload),
+      },
+    }).promise();
+
+    console.log(`Firehose response for id: ${data.postId}`, fres, firehosePayload);
+  }
+
+  async pmsIntegrate(data) {
+    const pmsPayload = PmsPost(data);
+    const pres = await this.httpClient.post(
+      process.env.PMS_POST_ENDPOINT,
+      pmsPayload,
+      {
+        access_token: process.env.PMS_POST_TOKEN,
+      },
+    );
+
+    console.log(`PMS response for id: ${data.postId}`, pres, pmsPayload);
+  }
+
   async getStatus(data) {
     const { NOT_FOUND } = this.events;
 
@@ -98,15 +100,15 @@ class PublishPost extends Operation {
       let user = await this.UserRepository.getUserById(data.userId);
       user = user.toJSON();
 
-      if (data.scheduledAt && !data.publishedAt && user.role.title === 'editor') {
+      if (user.role.title === 'writer') {
+        return 'for-approval';
+      }
+
+      if (data.scheduledAt && !data.publishedAt) {
         return 'scheduled';
       }
 
-      if (user.role.title === 'editor') {
-        return 'published';
-      }
-
-      return 'for-approval';
+      return 'published';
     } catch (error) {
       error.message = 'User not found';
       this.emit(NOT_FOUND, error);

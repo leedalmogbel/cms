@@ -2,10 +2,9 @@ const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
 
 class RevisePost extends Operation {
-  constructor({ PostRepository, GetLocation, SavePost }) {
+  constructor({ PostRepository, SavePost }) {
     super();
     this.PostRepository = PostRepository;
-    this.GetLocation = GetLocation;
     this.SavePost = SavePost;
   }
 
@@ -26,6 +25,7 @@ class RevisePost extends Operation {
         ...data,
         status: 'for-revision',
       });
+      data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
     }

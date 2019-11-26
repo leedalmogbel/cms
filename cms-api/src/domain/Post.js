@@ -23,7 +23,6 @@ const Post = attributes({
   attachments: Array,
   assignedUserId: Number,
   status: String,
-  draft: Boolean,
   scheduledAt: Date,
   expiredAt: Date,
   publishedAt: Date,
