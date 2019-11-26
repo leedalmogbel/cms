@@ -16,8 +16,10 @@ class PostRepository extends BaseRepository {
     const args = {
       where: {
         status: {
-          [Op.ne]: 'draft',
-          [Op.ne]: 'initial',
+          [Op.and]: [
+            { [Op.ne]: 'draft' },
+            { [Op.ne]: 'initial' },
+          ],
         },
       },
     };

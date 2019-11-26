@@ -21,9 +21,9 @@
         "tags": [ "Posts" ],
         "parameters": [
           {
-            "name": "draft",
+            "name": "status",
             "in": "query",
-            "description": "filter post draft",
+            "description": "filter post status",
             "required": false,
               "content": {
               "application/json": {
@@ -33,45 +33,19 @@
                     "$ref": "#/components/schemas/Post"
                   },
                   "example": [{
-                    "draft": true
-                  }]
-                }
-              }
-            }
-          },
-          {
-            "name": "published",
-            "in": "query",
-            "description": "filter post published",
-            "required": false,
-              "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Post"
+                    "status": "for-approval"
                   },
-                  "example": [{
-                    "published": true
-                  }]
-                }
-              }
-            }
-          },
-          {
-            "name": "scheduled",
-            "in": "query",
-            "description": "filter post scheduled",
-            "required": false,
-              "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Post"
+                  {
+                    "status": "for-revision"
                   },
-                  "example": [{
-                    "scheduled": true
+                  {
+                    "status": "published"
+                  },
+                  {
+                    "status": "scheduled"
+                  },
+                  {
+                    "status": "draft"
                   }]
                 }
               }
@@ -99,7 +73,7 @@
           {
             "name": "date",
             "in": "query",
-            "description": "filter post createdAt",
+            "description": "filter post based filtered tab",
             "required": false,
               "content": {
               "application/json": {
@@ -162,26 +136,26 @@
         }
       },
       "post": {
-        "operationId": "createPostDraft",
+        "operationId": "createInitialPost",
         "tags": [ "Posts" ],
         "requestBody": {
-          "description": "Creates a draft of a post",
+          "description": "Creates an initial post",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PostDraft"
+                "$ref": "#/components/schemas/PostInitial"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Post draft has started",
+            "description": "Initial post has started",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PostDraft"
+                  "$ref": "#/components/schemas/PostInitial"
                 }
               }
             }
@@ -248,6 +222,120 @@
             "name": "id",
             "in": "path",
             "description": "Id of post to update",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Post Draft new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Post Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}/draft": {
+      "post": {
+        "operationId": "SaveDraftPost",
+        "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of draft post",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Post Draft new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Post Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}/revise": {
+      "post": {
+        "operationId": "RevisePost",
+        "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of post to revise",
             "required": true,
               "content": {
               "application/json": {
@@ -682,14 +770,18 @@
             "type": "object"
           },"attachments": {
             "type": "object"
-          },"draft": {
-            "type": "boolean"
+          },"assignedUserId": {
+            "type": "integer"
+          },"status": {
+            "type": "string"
           },"scheduledAt": {
             "type": "string"
           },"expiredAt": {
             "type": "string"
           },"publishedAt": {
             "type": "string"
+          }, "user": {
+            "type": "object"
           }
         }
       },
@@ -741,7 +833,7 @@
           }
         }
       },
-      "PostDraft": {
+      "PostInitial": {
         "properties": {
           "id": {
             "type": "integer",
