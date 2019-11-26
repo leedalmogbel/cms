@@ -2,7 +2,7 @@ const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
 const uuidv1 = require('uuid/v1');
 
-class CreatePostDraft extends Operation {
+class CreateInitialPost extends Operation {
   constructor({ PostRepository }) {
     super();
     this.PostRepository = PostRepository;
@@ -13,7 +13,7 @@ class CreatePostDraft extends Operation {
 
     try {
       const data = {
-        status: 'draft',
+        status: 'initial',
         postId: `kapp-cms-${uuidv1()}`,
       };
 
@@ -30,6 +30,6 @@ class CreatePostDraft extends Operation {
   }
 }
 
-CreatePostDraft.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+CreateInitialPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = CreatePostDraft;
+module.exports = CreateInitialPost;

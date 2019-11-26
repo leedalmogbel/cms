@@ -23,7 +23,6 @@ const Post = attributes({
   attachments: Array,
   assignedUserId: Number,
   status: String,
-  draft: Boolean,
   scheduledAt: Date,
   expiredAt: Date,
   publishedAt: Date,
@@ -38,20 +37,22 @@ const Post = attributes({
   // }
 
   validateData() {
-    if (!this.title || !this.title.length) {
-      throw new Error('Title is required');
-    }
+    if (this.status !== 'draft') {
+      if (!this.title || !this.title.length) {
+        throw new Error('Title is required');
+      }
 
-    if (!this.category || !this.category.length) {
-      throw new Error('Category is required');
-    }
+      if (!this.category || !this.category.length) {
+        throw new Error('Category is required');
+      }
 
-    if (!this.source || !this.source.length) {
-      throw new Error('Source is required');
-    }
+      if (!this.source || !this.source.length) {
+        throw new Error('Source is required');
+      }
 
-    if (!this.locationDetails) {
-      throw new Error('Location is required');
+      if (!this.locationDetails) {
+        throw new Error('Location is required');
+      }
     }
   }
 });

@@ -3,7 +3,7 @@ const { Router } = require('express');
 const { BaseController } = require('@brewery/core');
 const Status = require('http-status');
 
-class UsersController extends BaseController {
+class AuthController extends BaseController {
   constructor() {
     super();
     const router = Router();
@@ -41,4 +41,4 @@ class UsersController extends BaseController {
   }
 }
 
-module.exports = UsersController;
+module.exports = AuthController;

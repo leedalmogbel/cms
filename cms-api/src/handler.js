@@ -228,6 +228,15 @@ module.exports.userSeeds = async (event, context, callback) => {
       lastName: 'Tauro',
       active: 1,
     },
+    {
+      role: 'editor',
+      username: 'jppascual',
+      email: 'JPPascual@abs-cbn.com',
+      password: '',
+      firstName: 'John',
+      lastName: 'Pascual',
+      active: 1,
+    },
   ];
 
   await Promise.all(
