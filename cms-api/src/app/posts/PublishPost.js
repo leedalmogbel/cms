@@ -112,7 +112,7 @@ class PublishPost extends Operation {
     let prevWriter;
 
     // send notification to newly assigned editor
-    if ('editor' in contributors && contributors.editor) {
+    if (contributors && 'editor' in contributors && contributors.editor) {
       editor = contributors.editor.id;
       this.NotificationSocket.notifyUser(editor, {
         message: util.format(ASSIGN_USER, 'editor', updated.title),
@@ -120,7 +120,7 @@ class PublishPost extends Operation {
     }
 
     // send notification to removed editor
-    if (prev && 'editor' in prevContributors && prevContributors.editor) {
+    if (prevContributors && 'editor' in prevContributors && prevContributors.editor) {
       prevEditor = prevContributors.editor.id;
 
       if (prevEditor !== editor) {
@@ -131,7 +131,7 @@ class PublishPost extends Operation {
     }
 
     // send notification to newly assigned writer
-    if ('writers' in contributors && contributors.writers.length) {
+    if (contributors && 'writers' in contributors && contributors.writers.length) {
       writer = contributors.writers[0].id;
       this.NotificationSocket.notifyUser(writer, {
         message: util.format(ASSIGN_USER, 'writer', updated.title),
@@ -139,7 +139,7 @@ class PublishPost extends Operation {
     }
 
     // send notification to removed writer
-    if (prev && 'writers' in prevContributors && prevContributors.writers.length) {
+    if (prevContributors && 'writers' in prevContributors && prevContributors.writers.length) {
       prevWriter = prevContributors.writers[0].id;
 
       if (prevWriter !== writer) {
