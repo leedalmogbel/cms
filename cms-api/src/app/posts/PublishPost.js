@@ -103,8 +103,8 @@ class PublishPost extends Operation {
     const { contributors } = updated;
     const { contributors: prevContributors } = prev;
 
-    const ASSIGN_USER = 'You are assigned as an %s for Post: %s';
-    const REMOVE_USER = 'You are removed as an %s for Post: %s';
+    const ASSIGN_USER = 'You are assigned as %s for Post: %s';
+    const REMOVE_USER = 'You are removed as %s for Post: %s';
 
     let editor;
     let writer;

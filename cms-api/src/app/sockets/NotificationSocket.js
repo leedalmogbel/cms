@@ -73,12 +73,14 @@ class NotificationSocket extends Operation {
   async notifyUser(userId, data) {
     const socket = await this.SocketRepository.model.findOne({
       where: {
+        type: 'notification',
         userId,
       },
     });
 
     if (!socket) return;
-    await this.notify(socket.connectionId, data);
+    const res = await this.notify(socket.connectionId, data);
+    console.log('Notif Response', res);
   }
 }
 module.exports = NotificationSocket;
