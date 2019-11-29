@@ -22,6 +22,7 @@ provider:
   stackTags:
     ProjectCode: "CMS"
     SupportContact: "Stratpoint"
+    Name: CMS-Lambda-CF-${file(env.yml):${self:custom.stage}}
   role:  ${file(env.yml):${self:custom.stage}.ROLE_ARN}
 
 custom:
@@ -35,8 +36,8 @@ functions:
           path: /{proxy+}
           method: any
           cors: true
-        authorizer:
-          arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
+          authorizer:
+            arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
   autocomplete:
     handler: src/handler.location
     events:
