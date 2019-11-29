@@ -33,6 +33,7 @@ class ScheduledPost extends Operation {
           [Op.lte]: now,
           [Op.gte]: ago,
         },
+        status: 'scheduled',
       },
     });
 
