@@ -44,6 +44,13 @@ class ApprovePost extends Operation {
       await this.PostRepository.update(id, data);
       const post = await this.PostRepository.getPostById(id);
 
+      await this.NotificationRepository.add({
+        userId: post.userId,
+        message: 'Your Post has been approved.',
+        meta: {},
+        active: 1,
+      });
+
       if (post.scheduledAt) {
         return this.emit(SUCCESS, {
           results: { id },

@@ -19,6 +19,7 @@ class PostRepository extends BaseRepository {
           [Op.and]: [
             { [Op.ne]: 'draft' },
             { [Op.ne]: 'initial' },
+            { [Op.ne]: 'for-revision' },
           ],
         },
       },
