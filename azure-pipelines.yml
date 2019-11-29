@@ -17,7 +17,7 @@ steps:
 
 - task: AWSShellScript@1
   inputs:
-    awsCredentials: 'kapp-cms-connection'
+    awsCredentials: 'kapp-cms-connection-dev'
     regionName: 'ap-southeast-1'
     scriptType: 'inline'
     inlineScript: |
