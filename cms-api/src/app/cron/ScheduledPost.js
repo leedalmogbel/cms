@@ -42,6 +42,7 @@ class ScheduledPost extends Operation {
       posts.map(async (post) => {
         const payload = {
           publishedAt: new Date().toISOString(),
+          status: 'published',
         };
 
         // publish post and fetch updated
