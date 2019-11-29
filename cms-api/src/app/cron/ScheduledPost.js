@@ -40,9 +40,9 @@ class ScheduledPost extends Operation {
 
     await Promise.all(
       posts.map(async (post) => {
-        const payload = new Post({
+        const payload = {
           publishedAt: new Date().toISOString(),
-        });
+        };
 
         // publish post and fetch updated
         await this.PostRepository.update(post.id, payload);
