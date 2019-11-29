@@ -39,7 +39,7 @@ class SavePost extends Operation {
   }
 
   async build(data) {
-    if ('placeId' in data) {
+    if ('placeId' in data && data.placeId) {
       const {
         locationDetails,
         locationAddress,

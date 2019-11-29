@@ -19,7 +19,7 @@ class SaveDraftPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    data = await this.SavePost.build(data = {
+    data = await this.SavePost.build({
       ...data,
       status: 'draft',
     });
