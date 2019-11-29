@@ -18,7 +18,7 @@ class ScheduledPost extends Operation {
     // get current timestamp
     // and timestamp 30 minutes ago
     const now = new Date();
-    const thirtyMinutes = new Date().setMinutes(new Date().getMinutes() - 30);
+    const thirtyMinutes = new Date().setMinutes(new Date().getMinutes() - 60);
     const ago = new Date(thirtyMinutes);
 
     console.log('Cron Started');
