@@ -71,6 +71,9 @@ class PublishPost extends Operation {
   }
 
   async firehoseIntegrate(data) {
+    // skip if not yet published
+    if (data.status !== 'published') return;
+
     const firehose = new AWS.Firehose({
       apiVersion: '2015-08-04',
     });
@@ -87,6 +90,9 @@ class PublishPost extends Operation {
   }
 
   async pmsIntegrate(data) {
+    // skip if not yet published
+    if (data.status !== 'published') return;
+
     const payload = PmsPost(data);
     const pres = await this.httpClient.post(
       process.env.PMS_POST_ENDPOINT,

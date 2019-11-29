@@ -28,12 +28,12 @@ class ScheduledPost extends Operation {
     const posts = await this.PostRepository.getAll({
       where: {
         publishedAt: null,
+        status: 'scheduled',
         scheduledAt: {
           [Op.ne]: null,
           [Op.lte]: now,
           [Op.gte]: ago,
         },
-        status: 'scheduled',
       },
     });
 
