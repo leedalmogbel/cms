@@ -20,9 +20,9 @@ provider:
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_1}
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_2}
   stackTags:
-
     ProjectCode: "CMS"
     SupportContact: "Stratpoint"
+  role:  ${file(env.yml):${self:custom.stage}.ROLE_ARN}
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -35,8 +35,8 @@ functions:
           path: /{proxy+}
           method: any
           cors: true
-        # authorizer:
-        #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
+        authorizer:
+          arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
   autocomplete:
     handler: src/handler.location
     events:
