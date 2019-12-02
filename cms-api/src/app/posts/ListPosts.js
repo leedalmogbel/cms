@@ -11,12 +11,11 @@ class ListPosts extends Operation {
 
     try {
       let posts = await this.PostRepository.getPosts(args);
-      const fixDate = new Date(0);
       posts = posts.map((post) => {
         post = {
           ...post.toJSON(),
         };
-        post.expiredAt != fixDate ? post.expiredAt : null;
+        post.expiredAt = post.expiredAt !== '1970-01-01 08:00:00' ? post.expiredAt : null;
 
         return post;
       });

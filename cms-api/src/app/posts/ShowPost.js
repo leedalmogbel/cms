@@ -11,6 +11,8 @@ class ShowPost extends Operation {
 
     try {
       const post = await this.PostRepository.getPostById(id);
+      post.expiredAt = post.expiredAt !== '1970-01-01 08:00:00' ? post.expiredAt : null;
+
       this.emit(SUCCESS, {
         results: post,
         meta: {},
