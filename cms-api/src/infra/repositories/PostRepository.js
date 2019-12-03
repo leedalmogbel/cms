@@ -17,7 +17,6 @@ class PostRepository extends BaseRepository {
       where: {
         status: {
           [Op.and]: [
-            { [Op.ne]: 'draft' },
             { [Op.ne]: 'initial' },
             { [Op.ne]: 'for-revision' },
           ],
