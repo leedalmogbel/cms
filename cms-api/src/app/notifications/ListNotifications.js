@@ -10,19 +10,19 @@ class ListNotifications extends Operation {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      let posts = await this.NotificationRepository.getNotifications(args);
-      posts = posts.map((post) => {
-        post = {
-          ...post.toJSON(),
+      let notifs = await this.NotificationRepository.getNotifications(args);
+      notifs = notifs.map((notif) => {
+        notif = {
+          ...notif.toJSON(),
         };
 
-        return post;
+        return notif;
       });
 
-      const total = await this.PostRepository.count(args);
+      const total = await this.NotificationRepository.count(args);
 
       this.emit(SUCCESS, {
-        results: posts,
+        results: notifs,
         meta: {
           total,
         },

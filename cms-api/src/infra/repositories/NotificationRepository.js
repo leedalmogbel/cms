@@ -22,6 +22,10 @@ class NotificationRepository extends BaseRepository {
   getNotifications(args) {
     return this.getAll(this.buildListArgs(args));
   }
+
+  count(args) {
+    return this.model.count(this.buildListArgs(args));
+  }
 }
 
 module.exports = NotificationRepository;
