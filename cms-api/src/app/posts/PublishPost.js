@@ -6,12 +6,18 @@ const util = require('util');
 
 class PublishPost extends Operation {
   constructor({
-    PostRepository, SavePost, httpClient, UserRepository, NotificationSocket,
+    SavePost,
+    httpClient,
+    PostRepository,
+    UserRepository,
+    NotificationRepository,
+    NotificationSocket,
   }) {
     super();
 
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
+    this.NotificationRepository = NotificationRepository;
     this.SavePost = SavePost;
     this.httpClient = httpClient;
     this.NotificationSocket = NotificationSocket;
@@ -105,55 +111,99 @@ class PublishPost extends Operation {
     console.log(`PMS response for id: ${data.postId}`, pres, payload);
   }
 
-  async postNotifications(prev, updated) {
-    const { contributors } = updated;
-    const { contributors: prevContributors } = prev;
+  async postNotifications(prevPost, updatedPost) {
+    let { contributors: prevContributors } = prevPost;
+    let { contributors } = updatedPost;
 
-    const ASSIGN_USER = 'You are assigned as %s for Post: %s';
-    const REMOVE_USER = 'You are removed as %s for Post: %s';
+    const { id, postId } = updatedPost;
+    const meta = {
+      id,
+      postId,
+    };
 
-    let editor;
-    let writer;
-    let prevEditor;
-    let prevWriter;
+    contributors = contributors || {};
+    prevContributors = prevContributors || {};
 
-    // send notification to newly assigned editor
-    if (contributors && 'editor' in contributors && contributors.editor) {
-      editor = contributors.editor.id;
-      this.NotificationSocket.notifyUser(editor, {
-        message: util.format(ASSIGN_USER, 'editor', updated.title),
-      });
-    }
+    let author = await this.UserRepository.getUserById(updatedPost.userId);
+    author = author.toJSON();
 
-    // send notification to removed editor
-    if (prevContributors && 'editor' in prevContributors && prevContributors.editor) {
-      prevEditor = prevContributors.editor.id;
+    if ('editor' in contributors && contributors.editor) {
+      const editorId = contributors.editor.id;
 
-      if (prevEditor !== editor) {
-        this.NotificationSocket.notifyUser(prevEditor, {
-          message: util.format(REMOVE_USER, 'editor', updated.title),
+      // send notification to removed editor
+      let prevEditorId;
+      if ('editor' in prevContributors && prevContributors.editor) {
+        prevEditorId = prevContributors.editor.id;
+
+        if (prevEditorId !== editorId) {
+          await this.saveNotification({
+            userId: prevEditorId,
+            message: `You are removed as an editor for Post "${updatedPost.title}"`,
+            meta,
+          });
+        }
+      }
+
+      // notify editor only if the editor is not
+      // the previous editor
+      if (editorId !== prevEditorId) {
+        // if author role is writer notification
+        // message is for approval
+        let message = `You are assigned as an editor for Post "${updatedPost.title}"`;
+        if (author.role.title === 'writer') {
+          message = `Post "${updatedPost.title}" is assigned to you for approval.`;
+        }
+
+        await this.saveNotification({
+          userId: editorId,
+          message,
+          meta,
         });
       }
     }
 
-    // send notification to newly assigned writer
-    if (contributors && 'writers' in contributors && contributors.writers.length) {
-      writer = contributors.writers[0].id;
-      this.NotificationSocket.notifyUser(writer, {
-        message: util.format(ASSIGN_USER, 'writer', updated.title),
-      });
-    }
+    if ('writers' in contributors && contributors.writers.length) {
+      const writerId = contributors.writers[0].id;
 
-    // send notification to removed writer
-    if (prevContributors && 'writers' in prevContributors && prevContributors.writers.length) {
-      prevWriter = prevContributors.writers[0].id;
+      // send notification to removed writer
+      let prevWriterId;
+      if ('writers' in prevContributors && prevContributors.writers.length) {
+        prevWriterId = prevContributors.writers[0].id;
 
-      if (prevWriter !== writer) {
-        this.NotificationSocket.notifyUser(prevWriter, {
-          message: util.format(REMOVE_USER, 'writer', updated.title),
+        if (prevWriterId !== writerId) {
+          this.saveNotification({
+            userId: prevWriterId,
+            message: `You are removed as an editor for Post "${updatedPost.title}"`,
+            meta,
+          });
+        }
+      }
+
+      // notify writer only if the writer is not
+      // the previous writer
+      if (writerId !== prevWriterId) {
+        await this.saveNotification({
+          userId: writerId,
+          message: `You are assigned as a writer for Post "${updatedPost.title}"`,
+          meta,
         });
       }
     }
+  }
+
+  async saveNotification({ userId, message, meta = {} }) {
+    await this.NotificationSocket
+      .notifyUser(userId, {
+        message,
+        meta,
+      });
+
+    await this.NotificationRepository.add({
+      userId,
+      message,
+      meta: {},
+      active: 1,
+    });
   }
 
   async getStatus(data) {

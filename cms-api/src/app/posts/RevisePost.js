@@ -1,11 +1,13 @@
 const { Operation } = require('@brewery/core');
 
 class RevisePost extends Operation {
-  constructor({ PostRepository, SavePost, NotificationRepository }) {
+  constructor({
+    PostRepository, SavePost, PublishPost,
+  }) {
     super();
     this.PostRepository = PostRepository;
     this.SavePost = SavePost;
-    this.NotificationRepository = NotificationRepository;
+    this.PublishPost = PublishPost;
   }
 
   async execute(id, data) {
@@ -33,13 +35,18 @@ class RevisePost extends Operation {
     try {
       await this.PostRepository.update(id, data);
       const post = await this.PostRepository.getPostById(id);
+      const { postId, contributors } = post;
 
-      await this.NotificationRepository.add({
-        userId: post.userId,
-        message: 'Your Post has been rejected.',
-        meta: {},
-        active: 1,
-      });
+      if ('writers' in contributors && contributors.writers.length) {
+        const writerId = contributors.writers[0].id;
+
+        this.PublishPost.saveNotification({
+          userId: writerId,
+          message: `Your Post "${post.title}" has been rejected.`,
+          meta: { id, postId },
+        });
+      }
+
       this.emit(SUCCESS, {
         results: { id },
         meta: {},

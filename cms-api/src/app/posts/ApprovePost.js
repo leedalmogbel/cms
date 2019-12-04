@@ -2,11 +2,10 @@ const { Operation } = require('@brewery/core');
 
 class ApprovePost extends Operation {
   constructor({
-    PostRepository, NotificationRepository, PublishPost, SavePost,
+    PostRepository, PublishPost, SavePost,
   }) {
     super();
     this.PostRepository = PostRepository;
-    this.NotificationRepository = NotificationRepository;
     this.PublishPost = PublishPost;
     this.SavePost = SavePost;
   }
@@ -43,13 +42,17 @@ class ApprovePost extends Operation {
     try {
       await this.PostRepository.update(id, data);
       const post = await this.PostRepository.getPostById(id);
+      const { postId, contributors } = post;
 
-      await this.NotificationRepository.add({
-        userId: post.userId,
-        message: 'Your Post has been approved.',
-        meta: {},
-        active: 1,
-      });
+      if ('writers' in contributors && contributors.writers.length) {
+        const writerId = contributors.writers[0].id;
+
+        this.PublishPost.saveNotification({
+          userId: writerId,
+          message: `Your Post "${post.title}" has been approved.`,
+          meta: { id, postId },
+        });
+      }
 
       if (post.scheduledAt) {
         return this.emit(SUCCESS, {
