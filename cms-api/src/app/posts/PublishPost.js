@@ -48,8 +48,8 @@ class PublishPost extends Operation {
         });
       }
 
-      // await this.PostUtils.firehoseIntegrate(post.toJSON());
-      // await this.PostUtils.pmsIntegrate(post.toJSON());
+      await this.PostUtils.firehoseIntegrate(post.toJSON());
+      await this.PostUtils.pmsIntegrate(post.toJSON());
       await this.PostUtils.postNotifications(prevPost, post);
 
       this.emit(SUCCESS, {
