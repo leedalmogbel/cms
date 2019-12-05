@@ -29,13 +29,6 @@ module.exports = {
         foreignKey: 'roleId',
         as: 'role',
       });
-
-      UserModel.belongsToMany(datasource.models.NotificationModel, {
-        through: datasource.models.UserNotificationModel,
-        as: 'notifications',
-        foreignKey: 'userId',
-        otherKey: 'notificationdId',
-      });
     };
 
     /**
