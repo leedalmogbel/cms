@@ -112,9 +112,6 @@ class PostUtils extends Operation {
       postId,
     };
 
-    console.log('writers', writers);
-    console.log('editor', editor);
-
     let author = await this.UserRepository.getUserById(updatedPost.userId);
     author = author.toJSON();
     author.name = `${author.firstName} ${author.lastName}`;
@@ -156,12 +153,8 @@ class PostUtils extends Operation {
       }
     }
 
-    console.log('test', writers);
-
     if (writers && writers.length) {
       const writer = writers[0];
-
-      console.log('test');
 
       // skip notification if writer is the author
       if (author.id === writer.id) return;
