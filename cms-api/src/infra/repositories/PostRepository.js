@@ -18,7 +18,6 @@ class PostRepository extends BaseRepository {
         status: {
           [Op.and]: [
             { [Op.ne]: 'initial' },
-            { [Op.ne]: 'for-revision' },
           ],
         },
       },
