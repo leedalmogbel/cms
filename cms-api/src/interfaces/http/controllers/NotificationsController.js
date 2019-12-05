@@ -9,6 +9,7 @@ class NotificationsController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('ListNotifications'), this.index);
+    router.put('/:id', this.injector('UpdateNotification'), this.update);
 
     return router;
   }

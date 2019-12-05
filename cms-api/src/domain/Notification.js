@@ -6,6 +6,7 @@ const Notification = attributes({
   userId: Number,
   message: String,
   meta: Object,
+  isRead: Number,
   active: Number,
   createdAt: Date,
   updatedAt: Date,
