@@ -1,13 +1,10 @@
 const { Operation } = require('@brewery/core');
 
 class ApprovePost extends Operation {
-  constructor({
-    PostRepository, PublishPost, SavePost,
-  }) {
+  constructor({ PostRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
-    this.PublishPost = PublishPost;
-    this.SavePost = SavePost;
+    this.PostUtils = PostUtils;
   }
 
   async execute(id, data) {
@@ -33,7 +30,7 @@ class ApprovePost extends Operation {
     }
 
     try {
-      data = await this.SavePost.build(data);
+      data = await this.PostUtils.build(data);
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -42,17 +39,6 @@ class ApprovePost extends Operation {
     try {
       await this.PostRepository.update(id, data);
       const post = await this.PostRepository.getPostById(id);
-      const { postId, contributors } = post;
-
-      if ('writers' in contributors && contributors.writers.length) {
-        const writerId = contributors.writers[0].id;
-
-        this.PublishPost.saveNotification({
-          userId: writerId,
-          message: `Your Post "${post.title}" has been approved.`,
-          meta: { id, postId },
-        });
-      }
 
       if (post.scheduledAt) {
         return this.emit(SUCCESS, {
@@ -61,8 +47,19 @@ class ApprovePost extends Operation {
         });
       }
 
-      await this.PublishPost.firehoseIntegrate(post.toJSON());
-      await this.PublishPost.pmsIntegrate(post.toJSON());
+      const { postId, contributors } = post;
+      if ('writers' in contributors && contributors.writers.length) {
+        const writerId = contributors.writers[0].id;
+
+        this.PostUtils.saveNotification({
+          userId: writerId,
+          message: `Your Post "${post.title}" has been approved.`,
+          meta: { id, postId },
+        });
+      }
+
+      await this.PostUtils.firehoseIntegrate(post.toJSON());
+      await this.PostUtils.pmsIntegrate(post.toJSON());
 
       this.emit(SUCCESS, {
         results: { id },

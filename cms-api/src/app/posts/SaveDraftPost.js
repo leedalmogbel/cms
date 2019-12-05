@@ -1,11 +1,10 @@
 const { Operation } = require('@brewery/core');
 
 class SaveDraftPost extends Operation {
-  constructor({ PostRepository, PublishPost, SavePost }) {
+  constructor({ PostRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
-    this.SavePost = SavePost;
-    this.PublishPost = PublishPost;
+    this.PostUtils = PostUtils;
   }
 
   async execute(id, data) {
@@ -21,7 +20,7 @@ class SaveDraftPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    data = await this.SavePost.build({
+    data = await this.PostUtils.build({
       ...data,
       status: 'draft',
     });
@@ -30,7 +29,7 @@ class SaveDraftPost extends Operation {
       await this.PostRepository.update(id, data);
       const post = await this.PostRepository.getPostById(id);
 
-      await this.PublishPost
+      await this.PostUtils
         .postNotifications(prevPost, post);
 
       this.emit(SUCCESS, {
