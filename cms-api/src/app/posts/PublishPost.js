@@ -1,20 +1,11 @@
 const { Operation } = require('@brewery/core');
-const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
-const PmsPost = require('src/domain/pms/Post');
-const AWS = require('aws-sdk');
-const util = require('util');
 
 class PublishPost extends Operation {
-  constructor({
-    PostRepository, SavePost, httpClient, UserRepository, NotificationSocket,
-  }) {
+  constructor({ PostRepository, UserRepository, PostUtils }) {
     super();
-
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
-    this.SavePost = SavePost;
-    this.httpClient = httpClient;
-    this.NotificationSocket = NotificationSocket;
+    this.PostUtils = PostUtils;
   }
 
   async execute(id, data) {
@@ -40,7 +31,7 @@ class PublishPost extends Operation {
     }
 
     try {
-      data = await this.SavePost.build(data);
+      data = await this.PostUtils.build(data);
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -57,9 +48,9 @@ class PublishPost extends Operation {
         });
       }
 
-      await this.firehoseIntegrate(post.toJSON());
-      await this.pmsIntegrate(post.toJSON());
-      await this.postNotifications(prevPost, post);
+      // await this.PostUtils.firehoseIntegrate(post.toJSON());
+      // await this.PostUtils.pmsIntegrate(post.toJSON());
+      await this.PostUtils.postNotifications(prevPost, post);
 
       this.emit(SUCCESS, {
         results: { id },
@@ -67,92 +58,6 @@ class PublishPost extends Operation {
       });
     } catch (error) {
       this.emit(ERROR, error);
-    }
-  }
-
-  async firehoseIntegrate(data) {
-    // skip if not yet published
-    if (data.status !== 'published') return;
-
-    const firehose = new AWS.Firehose({
-      apiVersion: '2015-08-04',
-    });
-
-    const payload = PublistPostStreams(data);
-    const fres = await firehose.putRecord({
-      DeliveryStreamName: 'AddPost-cms',
-      Record: {
-        Data: JSON.stringify(payload),
-      },
-    }).promise();
-
-    console.log(`Firehose response for id: ${data.postId}`, fres, payload);
-  }
-
-  async pmsIntegrate(data) {
-    // skip if not yet published
-    if (data.status !== 'published') return;
-
-    const payload = PmsPost(data);
-    const pres = await this.httpClient.post(
-      process.env.PMS_POST_ENDPOINT,
-      payload,
-      {
-        access_token: process.env.PMS_POST_TOKEN,
-      },
-    );
-
-    console.log(`PMS response for id: ${data.postId}`, pres, payload);
-  }
-
-  async postNotifications(prev, updated) {
-    const { contributors } = updated;
-    const { contributors: prevContributors } = prev;
-
-    const ASSIGN_USER = 'You are assigned as %s for Post: %s';
-    const REMOVE_USER = 'You are removed as %s for Post: %s';
-
-    let editor;
-    let writer;
-    let prevEditor;
-    let prevWriter;
-
-    // send notification to newly assigned editor
-    if (contributors && 'editor' in contributors && contributors.editor) {
-      editor = contributors.editor.id;
-      this.NotificationSocket.notifyUser(editor, {
-        message: util.format(ASSIGN_USER, 'editor', updated.title),
-      });
-    }
-
-    // send notification to removed editor
-    if (prevContributors && 'editor' in prevContributors && prevContributors.editor) {
-      prevEditor = prevContributors.editor.id;
-
-      if (prevEditor !== editor) {
-        this.NotificationSocket.notifyUser(prevEditor, {
-          message: util.format(REMOVE_USER, 'editor', updated.title),
-        });
-      }
-    }
-
-    // send notification to newly assigned writer
-    if (contributors && 'writers' in contributors && contributors.writers.length) {
-      writer = contributors.writers[0].id;
-      this.NotificationSocket.notifyUser(writer, {
-        message: util.format(ASSIGN_USER, 'writer', updated.title),
-      });
-    }
-
-    // send notification to removed writer
-    if (prevContributors && 'writers' in prevContributors && prevContributors.writers.length) {
-      prevWriter = prevContributors.writers[0].id;
-
-      if (prevWriter !== writer) {
-        this.NotificationSocket.notifyUser(prevWriter, {
-          message: util.format(REMOVE_USER, 'writer', updated.title),
-        });
-      }
     }
   }
 
