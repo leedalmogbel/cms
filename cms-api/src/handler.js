@@ -190,7 +190,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       password: '',
       firstName: 'Michael Jhon',
       lastName: 'Raagas',
-      active: 0,
+      active: 1,
     },
     {
       role: 'writer',
@@ -229,7 +229,7 @@ module.exports.userSeeds = async (event, context, callback) => {
       active: 1,
     },
     {
-      role: 'editor',
+      role: 'writer',
       username: 'jppascual',
       email: 'JPPascual@abs-cbn.com',
       password: '',
