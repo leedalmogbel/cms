@@ -17,6 +17,7 @@ class PostsController extends BaseController {
     router.post('/:id/approve', this.injector('ApprovePost'), this.update);
     router.post('/:id/revise', this.injector('RevisePost'), this.update);
     router.post('/:id/publish', this.injector('PublishPost'), this.update);
+    router.post('/:id/comment', this.injector('AddPostComment'), this.update);
 
     return router;
   }
