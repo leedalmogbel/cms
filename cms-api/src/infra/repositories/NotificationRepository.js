@@ -8,14 +8,15 @@ class NotificationRepository extends BaseRepository {
 
   buildListArgs(data = {}) {
     // init fetch arguments
-    const args = {};
+    const args = {
+      where: {},
+    };
 
     if ('userId' in data) {
       args.where.userId = data.userId;
     }
 
     args.order = [['createdAt', 'DESC']];
-
     return args;
   }
 

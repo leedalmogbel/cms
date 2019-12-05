@@ -10,15 +10,7 @@ class ListNotifications extends Operation {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      let notifs = await this.NotificationRepository.getNotifications(args);
-      notifs = notifs.map((notif) => {
-        notif = {
-          ...notif.toJSON(),
-        };
-
-        return notif;
-      });
-
+      const notifs = await this.NotificationRepository.getNotifications(args);
       const total = await this.NotificationRepository.count(args);
 
       this.emit(SUCCESS, {
@@ -33,6 +25,6 @@ class ListNotifications extends Operation {
   }
 }
 
-ListNotifications.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+ListNotifications.setEvents(['SUCCESS', 'ERROR']);
 
 module.exports = ListNotifications;

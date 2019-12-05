@@ -2,10 +2,11 @@ const { Operation } = require('@brewery/core');
 const Post = require('src/domain/Post');
 
 class SavePost extends Operation {
-  constructor({ PostRepository, GetLocation }) {
+  constructor({ PostRepository, GetLocation, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
     this.GetLocation = GetLocation;
+    this.PostUtils = PostUtils;
   }
 
   async execute(id, data) {
@@ -13,15 +14,16 @@ class SavePost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
+    let prevPost;
     try {
-      await this.PostRepository.getById(id);
+      prevPost = await this.PostRepository.getById(id);
     } catch (error) {
       error.message = 'Post not found';
       return this.emit(NOT_FOUND, error);
     }
 
     try {
-      data = await this.build(data);
+      data = await this.PostUtils.build(data);
       data.validateData();
     } catch (error) {
       return this.emit(VALIDATION_ERROR, error);
@@ -29,6 +31,11 @@ class SavePost extends Operation {
 
     try {
       await this.PostRepository.update(id, data);
+      const post = await this.PostRepository.getPostById(id);
+
+      await this.PostUtils
+        .postNotifications(prevPost, post);
+
       this.emit(SUCCESS, {
         results: { id },
         meta: {},
@@ -36,23 +43,6 @@ class SavePost extends Operation {
     } catch (error) {
       this.emit(ERROR, error);
     }
-  }
-
-  async build(data) {
-    if ('placeId' in data && data.placeId) {
-      const {
-        locationDetails,
-        locationAddress,
-      } = await this.GetLocation.execute(data.placeId);
-
-      data = {
-        ...data,
-        locationDetails,
-        locationAddress,
-      };
-    }
-
-    return new Post(data);
   }
 }
 
