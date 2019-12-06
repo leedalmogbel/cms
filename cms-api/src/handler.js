@@ -167,6 +167,15 @@ module.exports.userSeeds = async (event, context, callback) => {
     },
     {
       role: 'editor',
+      username: 'mrquirapas',
+      email: 'mrquirapas@abs-cbn.com',
+      password: '',
+      firstName: 'Marden',
+      lastName: 'Quirapas',
+      active: 1,
+    },
+    {
+      role: 'editor',
       username: 'baclaro',
       email: 'BNAclaro@abs-cbn.com',
       password: '',
