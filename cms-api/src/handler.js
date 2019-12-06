@@ -159,7 +159,7 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'writer',
       username: 'kcaacbay',
-      email: 'jzcaacbay@up.edu.ph',
+      email: 'jzcaacbay@abs-cbn.com',
       password: '',
       firstName: 'Ken',
       lastName: 'Caacbay',
