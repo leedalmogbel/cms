@@ -29,8 +29,8 @@ class SaveDraftPost extends Operation {
       await this.PostRepository.update(id, data);
       const post = await this.PostRepository.getPostById(id);
 
-      await this.PostUtils
-        .postNotifications(prevPost, post);
+      // NOTE: Disable for now
+      // await this.PostUtils.postNotifications(prevPost, post);
 
       this.emit(SUCCESS, {
         results: { id },
