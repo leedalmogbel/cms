@@ -96,7 +96,7 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'editor',
       username: 'kpuno',
-      email: 'Karen_Puno@abs-cbn.com',
+      email: 'karenmp@abs-cbn.com',
       password: '',
       firstName: 'Karen',
       lastName: 'Puno',
@@ -141,7 +141,7 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'editor',
       username: 'pmunji',
-      email: 'Pamela_Ranillo-Munji@abs-cbn.com',
+      email: 'pamgr@abs-cbn.com',
       password: '',
       firstName: 'Pamela',
       lastName: 'Munji',
@@ -168,7 +168,7 @@ module.exports.userSeeds = async (event, context, callback) => {
     {
       role: 'editor',
       username: 'mrquirapas',
-      email: 'mrquirapas@abs-cbn.com',
+      email: 'MRQuirapas@abs-cbn.com',
       password: '',
       firstName: 'Marden',
       lastName: 'Quirapas',
