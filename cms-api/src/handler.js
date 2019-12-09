@@ -50,7 +50,7 @@ module.exports.location = async (event, context, callback) => {
 
 module.exports.smartTags = async (event, context, callback) => {
   const res = await httpPost(
-    'https://gp1g9sn1x9.execute-api.ap-southeast-1.amazonaws.com/hle-staging/api/v1/smart-tags',
+    process.env.SMART_TAGS_ENDPOINT,
     event.body,
   );
 
