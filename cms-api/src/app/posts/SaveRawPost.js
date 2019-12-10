@@ -1,6 +1,6 @@
 const { Operation } = require('@brewery/core');
 
-class SaveDraftPost extends Operation {
+class SaveRawPost extends Operation {
   constructor({ PostRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
@@ -20,10 +20,7 @@ class SaveDraftPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    data = await this.PostUtils.build({
-      ...data,
-      status: 'draft',
-    });
+    data = await this.PostUtils.build(data);
 
     try {
       await this.PostRepository.update(id, data);
@@ -42,6 +39,6 @@ class SaveDraftPost extends Operation {
   }
 }
 
-SaveDraftPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+SaveRawPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = SaveDraftPost;
+module.exports = SaveRawPost;
