@@ -77,6 +77,7 @@ class PostUtils extends Operation {
 
     await this.NotificationSocket
       .notifyUser(userId, {
+        type: 'notification',
         message,
         meta: {
           ...meta,

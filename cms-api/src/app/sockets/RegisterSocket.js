@@ -15,12 +15,11 @@ class RegisterSocket extends Operation {
 
     try {
       const { connectionId } = event.requestContext;
-      const { type, userId } = event.queryStringParameters;
+      const { userId } = event.queryStringParameters;
 
       const payload = new Socket({
         userId,
         connectionId,
-        type,
       });
 
       await this.SocketRepository.add(payload);
