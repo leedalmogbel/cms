@@ -10,8 +10,8 @@ module.exports = {
     dialect: process.env.DB_DIALECT,
     isSync: true,
     pool: {
-      max: 2,
-      min: 0,
+      max: 5,
+      min: 1,
       idle: 2,
     },
     logging: false,

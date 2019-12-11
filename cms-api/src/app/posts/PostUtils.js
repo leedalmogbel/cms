@@ -1,8 +1,8 @@
-const { Operation } = require('@brewery/core');
 const AWS = require('aws-sdk');
 const Post = require('src/domain/Post');
 const PmsPost = require('src/domain/pms/Post');
 const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
+const { Operation } = require('../../infra/core/core');
 
 class PostUtils extends Operation {
   constructor({

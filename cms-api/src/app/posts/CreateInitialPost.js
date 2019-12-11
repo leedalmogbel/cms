@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 const Post = require('src/domain/Post');
 const uuidv1 = require('uuid/v1');
 

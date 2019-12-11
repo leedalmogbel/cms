@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 
 class GetLocation extends Operation {
   constructor({ httpClient }) {

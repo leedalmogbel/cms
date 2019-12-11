@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 const AWS = require('aws-sdk');
 
 class NotificationSocket extends Operation {

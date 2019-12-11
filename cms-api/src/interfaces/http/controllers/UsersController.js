@@ -1,7 +1,7 @@
 
 const { Router } = require('express');
-const { BaseController } = require('@brewery/core');
 const Status = require('http-status');
+const { BaseController } = require('../../../infra/core/core');
 
 class UsersController extends BaseController {
   constructor() {

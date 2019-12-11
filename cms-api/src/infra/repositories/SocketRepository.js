@@ -1,5 +1,5 @@
 
-const { BaseRepository } = require('@brewery/core');
+const { BaseRepository } = require('../../infra/core/core');
 
 class SocketRepository extends BaseRepository {
   constructor({ SocketModel }) {
