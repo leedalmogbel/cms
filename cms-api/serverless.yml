@@ -3,6 +3,10 @@ service: kapp-cms-api
 plugins:
   - serverless-offline
   - serverless-mocha-plugin
+  - serverless-plugin-optimize
+
+package:
+  individually: true
 
 provider:
   region: ap-southeast-1
