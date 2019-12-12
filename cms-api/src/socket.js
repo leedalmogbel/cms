@@ -1,6 +1,6 @@
 require('module').Module._initPaths();
-const { brew } = require('../../infra/core/core');
 const config = require('config');
+const { brew } = require('../src/infra/core/core');
 
 const getContainer = () => new Promise((resolve) => {
   brew(config, async (brewed) => {
