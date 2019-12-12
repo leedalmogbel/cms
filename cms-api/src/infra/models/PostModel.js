@@ -32,6 +32,10 @@ module.exports = {
       scheduledAt: DataTypes.DATE,
       expiredAt: DataTypes.DATE,
       publishedAt: DataTypes.DATE,
+      isActive: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
+      },
     }, {
       tableName: 'posts',
       timestamps: true,

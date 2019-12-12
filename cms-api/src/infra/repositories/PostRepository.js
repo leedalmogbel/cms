@@ -1,6 +1,6 @@
 
-const { BaseRepository } = require('../../infra/core/core');
 const Sequelize = require('sequelize');
+const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
@@ -20,6 +20,7 @@ class PostRepository extends BaseRepository {
             { [Op.ne]: 'initial' },
           ],
         },
+        isActive: 1,
       },
     };
 

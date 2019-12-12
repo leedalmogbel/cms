@@ -28,6 +28,7 @@ const Post = attributes({
   publishedAt: Date,
   createdAt: Date,
   updatedAt: Date,
+  isActive: Number,
 })(class Post {
   // Add validation functions below
   // e.g.:
