@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 const Socket = require('src/domain/Socket');
 
 class RegisterSocket extends Operation {

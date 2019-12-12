@@ -1,5 +1,5 @@
 
-const { BaseRepository } = require('@brewery/core');
+const { BaseRepository } = require('../../infra/core/core');
 
 class NotificationRepository extends BaseRepository {
   constructor({ NotificationModel }) {

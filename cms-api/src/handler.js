@@ -1,8 +1,8 @@
 require('module').Module._initPaths();
-const { brew } = require('@brewery/core');
 const awilix = require('awilix');
 const config = require('config');
 const fetch = require('node-fetch');
+const { brew } = require('../src/infra/core/core');
 const httpClient = require('./infra/http-request');
 
 const { asClass } = awilix;

@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 const User = require('src/domain/User');
 
 class CreateUser extends Operation {

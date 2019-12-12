@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 
 class ListPosts extends Operation {
   constructor({ PostRepository }) {

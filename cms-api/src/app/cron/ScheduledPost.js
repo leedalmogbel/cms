@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
 const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');

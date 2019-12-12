@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 
 class ApprovePost extends Operation {
   constructor({ PostRepository, PostUtils }) {
