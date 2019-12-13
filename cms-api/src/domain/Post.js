@@ -23,6 +23,8 @@ const Post = attributes({
   attachments: Array,
   assignedUserId: Number,
   status: String,
+  isLocked: Number,
+  lockUser: Object,
   scheduledAt: Date,
   expiredAt: Date,
   publishedAt: Date,

@@ -23,11 +23,7 @@ class NotificationSocket extends Operation {
       const { data } = JSON.parse(event.body);
 
       // get all sockets connected with type notification
-      const sockets = await this.SocketRepository.getAll({
-        where: {
-          type: 'notification',
-        },
-      });
+      const sockets = await this.SocketRepository.getAll();
 
       sockets.map(async (socket) => {
         // skip same connectionId to prevent sending to self
@@ -73,7 +69,6 @@ class NotificationSocket extends Operation {
   async notifyUser(userId, data) {
     const socket = await this.SocketRepository.model.findOne({
       where: {
-        type: 'notification',
         userId,
       },
     });
