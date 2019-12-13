@@ -91,4 +91,9 @@ functions:
     handler: src/socket.kickLockedPost
     events:
       - websocket:
-          route: KICK_LOCKED_POST  
+          route: KICK_LOCKED_POST
+  unlockPost:
+    handler: src/socket.unlockPost
+    events:
+      - websocket:
+          route: UNLOCK_POST  
