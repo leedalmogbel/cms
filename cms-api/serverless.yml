@@ -86,14 +86,14 @@ functions:
     handler: src/socket.lockPost
     events:
       - websocket:
-          route: LOCK_POST
+          route: LOCKPOST
   kickLockedPost:
     handler: src/socket.kickLockedPost
     events:
       - websocket:
-          route: KICK_LOCKED_POST
+          route: KICKLOCKEDPOST
   unlockPost:
     handler: src/socket.unlockPost
     events:
       - websocket:
-          route: UNLOCK_POST  
+          route: UNLOCKPOST  
