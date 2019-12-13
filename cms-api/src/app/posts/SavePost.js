@@ -1,5 +1,5 @@
-const { Operation } = require('../../infra/core/core');
 const Post = require('src/domain/Post');
+const { Operation } = require('../../infra/core/core');
 
 class SavePost extends Operation {
   constructor({ PostRepository, GetLocation, PostUtils }) {

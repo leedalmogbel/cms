@@ -77,34 +77,23 @@ functions:
     events:
       - websocket:
           route: $default
-  socketNotify:
+  notify:
     handler: src/socket.notify
     events:
       - websocket:
           route: NOTIFY
-
-  # notificationConnectionHandler:
-  #   handler: src/notifications.connectionHandler
-  #   events:
-  #     - websocket:
-  #         route: $connect
-  #     - websocket:
-  #         route: $disconnect
-  # defaultHandler:
-  #   handler: src/notifications.default
-  #   events:
-  #     - websocket:
-  #         route: $default
-  # notify:
-  #   handler: src/notifications.notify
-  #   events:
-  #     - websocket:
-  #         route: notify 
-          
-  # updateClient:
-  #   handler: src/notifications.updateClient
-  #   events:
-  #     - http:
-  #         path: /update-client
-  #         method: post
-  #         cors: true
+  lockPost:
+    handler: src/socket.lockPost
+    events:
+      - websocket:
+          route: LOCK_POST
+  kickLockedPost:
+    handler: src/socket.kickLockedPost
+    events:
+      - websocket:
+          route: KICK_LOCKED_POST
+  unlockPost:
+    handler: src/socket.unlockPost
+    events:
+      - websocket:
+          route: UNLOCK_POST  

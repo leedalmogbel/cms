@@ -27,8 +27,12 @@ module.exports = {
       comments: DataTypes.JSON,
       advisories: DataTypes.JSON,
       attachments: DataTypes.JSON,
-      assignedUserId: DataTypes.INTEGER,
       status: DataTypes.STRING,
+      isLocked: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
+      lockUser: DataTypes.JSON,
       scheduledAt: DataTypes.DATE,
       expiredAt: DataTypes.DATE,
       publishedAt: DataTypes.DATE,
