@@ -18,6 +18,7 @@ class PostsController extends BaseController {
     router.post('/:id/revise', this.injector('RevisePost'), this.update);
     router.post('/:id/publish', this.injector('PublishPost'), this.update);
     router.post('/:id/remove', this.injector('RemovePost'), this.update);
+    router.post('/:id/comment', this.injector('AddPostComment'), this.update);
     // router.delete('/:id', this.injector('DeletePost'), this.delete);
 
     return router;
