@@ -270,15 +270,15 @@
         }
       }
     },
-    "/posts/{id}/draft": {
+    "/posts/{id}/save": {
       "post": {
-        "operationId": "SaveDraftPost",
+        "operationId": "SaveRawPost",
         "tags": [ "Posts" ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Id of draft post",
+            "description": "Id of raw post",
             "required": true,
               "content": {
               "application/json": {
@@ -293,7 +293,7 @@
           }
         ],
         "requestBody": {
-          "description": "Post Draft new data",
+          "description": "Post Raw new data",
           "required": true,
           "content": {
             "application/json": {
@@ -305,7 +305,7 @@
         },
         "responses": {
           "202": {
-            "description": "Post Draft updated successfully",
+            "description": "Post Raw updated successfully",
             "content": {
               "application/json": {
                 "schema": {

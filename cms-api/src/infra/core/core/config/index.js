@@ -1,5 +1,5 @@
 module.exports = {
   defaultConnectors: {
-    sql: '../../../../sql-connector'
-  }
+    sql: '../../../../sql-connector',
+  },
 };
