@@ -1,5 +1,5 @@
-const { Operation } = require('../../infra/core/core');
 const AWS = require('aws-sdk');
+const { Operation } = require('../../infra/core/core');
 
 class NotificationSocket extends Operation {
   constructor({ SocketRepository }) {
@@ -25,14 +25,16 @@ class NotificationSocket extends Operation {
       // get all sockets connected with type notification
       const sockets = await this.SocketRepository.getAll();
 
-      sockets.map(async (socket) => {
-        // skip same connectionId to prevent sending to self
-        if (socket.connectionId === connectionId) {
-          return;
-        }
+      await Promise.all(
+        sockets.map(async (socket) => {
+          // skip same connectionId to prevent sending to self
+          if (socket.connectionId === connectionId) {
+            return;
+          }
 
-        await this.notify(socket.connectionId, data);
-      });
+          await this.notify(socket.connectionId, data);
+        }),
+      );
 
       return {
         statusCode: 200,

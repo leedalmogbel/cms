@@ -29,17 +29,6 @@ class RegisterSocket extends Operation {
 
       await this.SocketRepository.add(payload);
 
-      try {
-        await this.socketConnector.postToConnection({
-          ConnectionId: connectionId,
-          Data: JSON.stringify({
-            type: 'CONNECT',
-            message: 'You are now connected to websocket',
-            meta: {},
-          }),
-        }).promise();
-      } catch (err) {}
-
       return {
         statusCode: 200,
         headers,
