@@ -1,10 +1,15 @@
-const { Operation } = require('../../infra/core/core');
+const AWS = require('aws-sdk');
 const Socket = require('src/domain/Socket');
+const { Operation } = require('../../infra/core/core');
 
 class RegisterSocket extends Operation {
   constructor({ SocketRepository }) {
     super();
     this.SocketRepository = SocketRepository;
+    this.socketConnector = new AWS.ApiGatewayManagementApi({
+      apiVersion: '2018-11-29',
+      endpoint: process.env.WEBSOCKET_API_ENDPOINT,
+    });
   }
 
   async execute(event) {
@@ -23,6 +28,17 @@ class RegisterSocket extends Operation {
       });
 
       await this.SocketRepository.add(payload);
+
+      try {
+        await this.socketConnector.postToConnection({
+          ConnectionId: connectionId,
+          Data: JSON.stringify({
+            type: 'CONNECT',
+            message: 'You are now connected to websocket',
+            meta: {},
+          }),
+        }).promise();
+      } catch (err) {}
 
       return {
         statusCode: 200,
