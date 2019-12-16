@@ -33,6 +33,7 @@ class PostUtils extends Operation {
         ...data,
         locationDetails,
         locationAddress,
+        isActive: 1,
       };
     }
 
@@ -77,7 +78,6 @@ class PostUtils extends Operation {
 
     await this.NotificationSocket
       .notifyUser(userId, {
-        type: 'NOTIFICATION',
         message,
         meta: {
           ...meta,

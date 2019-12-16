@@ -1,7 +1,7 @@
 const BaseConnector = require('../BaseConnector');
 const { defaultConnectors } = require('../../../config');
 
-console.log( {defaultConnectors})
+console.log({ defaultConnectors });
 /**
  *
  * @param {Object} config
@@ -17,7 +17,7 @@ const dataSourceFactory = ({ name, connector, config }) => {
         resolvedConnector = require(defaultConnectors[connector]);
       } catch (err) {
         console.log(
-          `Unable to resolve ${defaultConnectors[connector]}. Please install ${defaultConnectors[connector]}`
+          `Unable to resolve ${defaultConnectors[connector]}. Please install ${defaultConnectors[connector]}`,
         );
         throw new Error(err);
       }
@@ -28,7 +28,7 @@ const dataSourceFactory = ({ name, connector, config }) => {
     resolvedConnector = connector;
   } else {
     throw new Error(
-      `Invalid connector ${connector}, connector must be one of default connectors or an instance of BaseConnector`
+      `Invalid connector ${connector}, connector must be one of default connectors or an instance of BaseConnector`,
     );
   }
 

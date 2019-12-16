@@ -29,16 +29,14 @@ class PostRepository extends BaseRepository {
     // set keyword
     if ('keyword' in data
       && data.keyword) {
-      args.where = {
-        [Op.or]: {
-          title: {
-            [Op.like]:
+      args.where[Op.or] = {
+        title: {
+          [Op.like]:
             `%${data.keyword}%`,
-          },
-          content: {
-            [Op.like]:
+        },
+        content: {
+          [Op.like]:
             `%${data.keyword}%`,
-          },
         },
       };
     }
@@ -81,30 +79,22 @@ class PostRepository extends BaseRepository {
                 startDate,
                 endDate,
               ],
-              // [Op.eq]: null,
             },
           };
-        } else if ('all' in data) {
-          args.where = {
-            [Op.or]: {
-              publishedAt: {
-                [Op.between]: [
-                  startDate,
-                  endDate,
-                ],
-              },
-              scheduledAt: {
-                [Op.between]: [
-                  startDate,
-                  endDate,
-                ],
-              },
+        } else {
+          // default filter
+          args.where[Op.or] = {
+            updatedAt: {
+              [Op.between]: [
+                startDate,
+                endDate,
+              ],
             },
           };
         }
       }
 
-      order = [['publishedAt', 'DESC']];
+      order = [['updatedAt', 'DESC']];
     }
 
     if ('status' in data) {
