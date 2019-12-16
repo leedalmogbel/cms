@@ -12,7 +12,7 @@ module.exports = {
     pool: {
       max: 1,
       min: 0,
-      idle: 1000,
+      idle: 10000,
     },
     logging: false,
     timezone: '+08:00',
