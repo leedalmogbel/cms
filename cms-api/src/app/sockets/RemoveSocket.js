@@ -1,9 +1,14 @@
+const Sequelize = require('sequelize');
 const { Operation } = require('../../infra/core/core');
 
+const { Op } = Sequelize;
+
 class RemoveSocket extends Operation {
-  constructor({ SocketRepository }) {
+  constructor({ SocketRepository, PostRepository, LockPostSocket }) {
     super();
     this.SocketRepository = SocketRepository;
+    this.PostRepository = PostRepository;
+    this.LockPostSocket = LockPostSocket;
   }
 
   async execute(event) {
@@ -20,6 +25,22 @@ class RemoveSocket extends Operation {
           connectionId,
         },
       });
+
+      // unlock post if exists
+      // const post = await this.PostRepository
+      //   .model
+      //   .findOne({
+      //     where: {
+      //       isLocked: true,
+      //       lockUser: {
+      //         '"connectionId"': {
+      //           [Op.eq]: connectionId,
+      //         },
+      //       },
+      //     },
+      //   });
+
+      // console.log(post.toJSON());
 
       return {
         statusCode: 200,
