@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk');
-const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class LockPostSocket extends Operation {
@@ -17,7 +16,6 @@ class LockPostSocket extends Operation {
 
   async lock(event) {
     const headers = {
-      'Content-Type': 'text/plain',
       'Access-Control-Allow-Origin': '*',
     };
 
@@ -25,61 +23,74 @@ class LockPostSocket extends Operation {
     const { data: { id, userId } } = JSON.parse(event.body);
 
     // validate userId
-    const user = await this.UserRepository.getUserById(userId);
-    if (!user) {
+    let user;
+    try {
+      user = await this.UserRepository.getUserById(userId);
+    } catch (error) {
       return {
         statusCode: 500,
         headers,
-        body: 'Invalid user id',
+        body: JSON.stringify({
+          message: 'Invalid user id',
+        }),
       };
     }
 
     const name = `${user.firstName} ${user.lastName}`;
 
     // validate post
-    const post = await this.PostRepository.getById(id);
-    if (!post) {
+    let post;
+    try {
+      post = await this.PostRepository.getById(id);
+    } catch (error) {
       return {
         statusCode: 500,
         headers,
-        body: 'Invalid post id',
+        body: JSON.stringify({
+          message: 'Invalid post id',
+        }),
       };
     }
 
-    if (post.isLocked) return;
-
-    const payload = new Post({
-      isLocked: true,
-      lockUser: {
-        connectionId,
-        userId,
-        name,
-      },
-    });
-
     try {
-      await this.PostRepository.update(id, payload);
+      await this.PostRepository.update(id, {
+        isLocked: true,
+        lockUser: {
+          connectionId,
+          userId,
+          name,
+        },
+      });
     } catch (error) {
       console.log('Lock Post Error', error);
     }
 
     // send post lock broadcast to all connections
     const sockets = await this.SocketRepository.getAll();
-    sockets.map(async (socket) => {
-      // skip same connectionId to prevent sending to self
-      if (socket.connectionId === connectionId) return;
 
-      await this.send(socket.connectionId, {
-        type: 'BROADCAST_LOCK',
-        message: '',
-        meta: {
-          id,
-          postId: post.postId,
-          userId,
-          name,
-        },
-      });
-    });
+    await Promise.all(
+      sockets.map(async (socket) => {
+        // skip same connectionId to prevent sending to self
+        if (socket.connectionId === connectionId) return;
+
+        await this.send(socket.connectionId, {
+          type: 'BROADCAST_LOCK',
+          message: '',
+          meta: {
+            id,
+            postId: post.postId,
+            userId,
+            name,
+          },
+        });
+      }),
+    );
+
+    return {
+      statusCode: 200,
+      headers,
+      body: 'Lock post response.',
+    };
   }
 
   async kick(event) {
@@ -92,61 +103,74 @@ class LockPostSocket extends Operation {
     const { data: { id, userId } } = JSON.parse(event.body);
 
     // validate userId
-    const user = await this.UserRepository.getUserById(userId);
-    if (!user) {
+    let user;
+    try {
+      user = await this.UserRepository.getUserById(userId);
+    } catch (error) {
       return {
         statusCode: 500,
         headers,
-        body: 'Invalid user id',
+        body: JSON.stringify({
+          message: 'Invalid user id',
+        }),
       };
     }
 
     const name = `${user.firstName} ${user.lastName}`;
 
     // validate post
-    const post = await this.PostRepository.getById(id);
-    if (!post) {
+    let post;
+    try {
+      post = await this.PostRepository.getById(id);
+    } catch (error) {
       return {
         statusCode: 500,
         headers,
-        body: 'Invalid post id',
+        body: JSON.stringify({
+          message: 'Invalid post id',
+        }),
       };
     }
 
-    if (!post.isLocked) return;
-
-    const payload = new Post({
-      isLocked: true,
-      lockUser: {
-        connectionId,
-        userId,
-        name: `${user.firstName} ${user.lastName}`,
-      },
-    });
-
     try {
-      await this.PostRepository.update(id, payload);
+      await this.PostRepository.update(id, {
+        isLocked: true,
+        lockUser: {
+          connectionId,
+          userId,
+          name: `${user.firstName} ${user.lastName}`,
+        },
+      });
     } catch (error) {
       console.log('Kick Locked Post Error', error);
     }
 
     // send post lock broadcast to all connections
     const sockets = await this.SocketRepository.getAll();
-    sockets.map(async (socket) => {
-      // skip same connectionId to prevent sending to self
-      if (socket.connectionId === connectionId) return;
 
-      await this.send(socket.connectionId, {
-        type: 'BROADCAST_LOCK',
-        message: '',
-        meta: {
-          id,
-          postId: post.postId,
-          userId,
-          name,
-        },
-      });
-    });
+    await Promise.all(
+      sockets.map(async (socket) => {
+        // skip same connectionId to prevent sending to self
+        if (socket.connectionId === connectionId) return;
+
+        await this.send(socket.connectionId, {
+          type: 'BROADCAST_LOCK',
+          message: '',
+          meta: {
+            id,
+            postId: post.postId,
+            userId,
+            name,
+          },
+        });
+      }),
+    );
+
+    return {
+      statusCode: 200,
+      headers,
+      body: 'Kick lock post response.',
+    };
   }
 
   async unlock(event) {
@@ -158,40 +182,49 @@ class LockPostSocket extends Operation {
     const { data: { id } } = JSON.parse(event.body);
 
     // validate post
-    const post = await this.PostRepository.getById(id);
-    if (!post) {
+    let post;
+    try {
+      post = await this.PostRepository.getById(id);
+    } catch (error) {
       return {
         statusCode: 500,
         headers,
-        body: 'Invalid post id',
+        body: JSON.stringify({
+          message: 'Invalid post id',
+        }),
       };
     }
 
-    if (!post.isLocked) return;
-
-    const payload = new Post({
-      isLocked: false,
-      lockUser: null,
-    });
-
     try {
-      await this.PostRepository.update(id, payload);
+      await this.PostRepository.update(id, {
+        isLocked: false,
+        lockUser: null,
+      });
     } catch (error) {
       console.log('Unlock Post Error', error);
     }
 
     // send post lock broadcast to all connections
     const sockets = await this.SocketRepository.getAll();
-    sockets.map(async (socket) => {
-      await this.send(socket.connectionId, {
-        type: 'BROADCAST_UNLOCK',
-        message: '',
-        meta: {
-          id,
-          postId: post.postId,
-        },
-      });
-    });
+
+    await Promise.all(
+      sockets.map(async (socket) => {
+        await this.send(socket.connectionId, {
+          type: 'BROADCAST_UNLOCK',
+          message: '',
+          meta: {
+            id,
+            postId: post.postId,
+          },
+        });
+      }),
+    );
+
+    return {
+      statusCode: 200,
+      headers,
+      body: 'Unlock post response.',
+    };
   }
 
   async send(connectionId, data) {

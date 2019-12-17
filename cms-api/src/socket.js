@@ -28,17 +28,20 @@ module.exports.notify = async (event, context) => {
   return Container.resolve('NotificationSocket').execute(event);
 };
 
-module.exports.lockPost = async (event, context) => {
+module.exports.lockPost = async (event, context, callback) => {
   const Container = await getContainer();
-  return Container.resolve('LockPostSocket').lock(event);
+  const res = await Container.resolve('LockPostSocket').lock(event);
+  callback(null, res);
 };
 
-module.exports.kickLockedPost = async (event, context) => {
+module.exports.kickLockedPost = async (event, context, callback) => {
   const Container = await getContainer();
-  return Container.resolve('LockPostSocket').kick(event);
+  const res = await Container.resolve('LockPostSocket').kick(event);
+  callback(null, res);
 };
 
-module.exports.unlockPost = async (event, context) => {
+module.exports.unlockPost = async (event, context, callback) => {
   const Container = await getContainer();
-  return Container.resolve('LockPostSocket').unlock(event);
+  const res = await Container.resolve('LockPostSocket').unlock(event);
+  callback(null, res);
 };

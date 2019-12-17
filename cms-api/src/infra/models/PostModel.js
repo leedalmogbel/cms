@@ -32,7 +32,11 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
       },
-      lockUser: DataTypes.JSON,
+      lockUser: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: null,
+      },
       scheduledAt: DataTypes.DATE,
       expiredAt: DataTypes.DATE,
       publishedAt: DataTypes.DATE,
