@@ -27,7 +27,10 @@ class SaveRawPost extends Operation {
       const post = await this.PostRepository.getPostById(id);
 
       // NOTE: Disable for now
-      // await this.PostUtils.postNotifications(prevPost, post);
+      if (Object.entries(post.toJSON().contributors.editor).length !== 0
+        && post.toJSON().contributors.writers.length !== 0) {
+        await this.PostUtils.postNotifications(prevPost, post);
+      }
 
       this.emit(SUCCESS, {
         results: { id },
