@@ -8,9 +8,9 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     dialect: process.env.DB_DIALECT,
-    isSync: true,
+    isSync: false,
     pool: {
-      max: 1,
+      max: 2,
       min: 0,
       idle: 10000,
     },
