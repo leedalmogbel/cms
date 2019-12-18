@@ -1,5 +1,5 @@
-const { Operation } = require('@brewery/core');
 const AWS = require('aws-sdk');
+const { Operation } = require('../../infra/core/core');
 
 class NotificationSocket extends Operation {
   constructor({ SocketRepository }) {
@@ -23,20 +23,18 @@ class NotificationSocket extends Operation {
       const { data } = JSON.parse(event.body);
 
       // get all sockets connected with type notification
-      const sockets = await this.SocketRepository.getAll({
-        where: {
-          type: 'notification',
-        },
-      });
+      const sockets = await this.SocketRepository.getAll();
 
-      sockets.map(async (socket) => {
-        // skip same connectionId to prevent sending to self
-        if (socket.connectionId === connectionId) {
-          return;
-        }
+      await Promise.all(
+        sockets.map(async (socket) => {
+          // skip same connectionId to prevent sending to self
+          if (socket.connectionId === connectionId) {
+            return;
+          }
 
-        await this.notify(socket.connectionId, data);
-      });
+          await this.notify(socket.connectionId, data);
+        }),
+      );
 
       return {
         statusCode: 200,
@@ -73,14 +71,13 @@ class NotificationSocket extends Operation {
   async notifyUser(userId, data) {
     const socket = await this.SocketRepository.model.findOne({
       where: {
-        type: 'notification',
         userId,
       },
+      order: [['createdAt', 'DESC']],
     });
 
     if (!socket) return;
-    const res = await this.notify(socket.connectionId, data);
-    console.log('Notif Response', res);
+    await this.notify(socket.connectionId, data);
   }
 }
 module.exports = NotificationSocket;

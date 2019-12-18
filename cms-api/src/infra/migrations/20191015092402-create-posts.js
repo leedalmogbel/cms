@@ -34,6 +34,10 @@ module.exports = {
     publishedAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
     createdAt: Sequelize.DATE,
+    isActive: {
+      type: Sequelize.INTEGER,
+      defaultValue: 1,
+    },
   }),
 
   down: (queryInterface, Sequelize) => queryInterface.dropTable('posts'),

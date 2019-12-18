@@ -1,7 +1,7 @@
 
 const { Router } = require('express');
-const { BaseController } = require('@brewery/core');
 const Status = require('http-status');
+const { BaseController } = require('../../../infra/core/core');
 
 class NotificationsController extends BaseController {
   constructor() {
@@ -9,6 +9,7 @@ class NotificationsController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('ListNotifications'), this.index);
+    router.put('/:id', this.injector('UpdateNotification'), this.update);
 
     return router;
   }

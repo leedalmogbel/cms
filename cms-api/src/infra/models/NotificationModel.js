@@ -12,21 +12,15 @@ module.exports = {
       userId: DataTypes.INTEGER,
       message: DataTypes.STRING,
       meta: DataTypes.JSON,
+      isRead: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
       active: DataTypes.INTEGER,
     }, {
       tableName: 'notifications',
       timestamps: true,
     });
-
-
-    NotificationModel.associate = () => {
-      NotificationModel.belongsToMany(datasource.models.UserModel, {
-        through: datasource.models.UserNotificationModel,
-        as: 'users',
-        foreignKey: 'notificationId',
-        otherKey: 'userdId',
-      });
-    };
 
     /**
      * Examples on how to associate or set relationship with other models

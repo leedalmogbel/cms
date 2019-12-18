@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
 const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');
@@ -18,7 +18,7 @@ class ScheduledPost extends Operation {
     // get current timestamp
     // and timestamp 30 minutes ago
     const now = new Date();
-    const thirtyMinutes = new Date().setMinutes(new Date().getMinutes() - 30);
+    const thirtyMinutes = new Date().setMinutes(new Date().getMinutes() - 60);
     const ago = new Date(thirtyMinutes);
 
     console.log('Cron Started');
@@ -28,6 +28,7 @@ class ScheduledPost extends Operation {
     const posts = await this.PostRepository.getAll({
       where: {
         publishedAt: null,
+        status: 'scheduled',
         scheduledAt: {
           [Op.ne]: null,
           [Op.lte]: now,
@@ -40,9 +41,10 @@ class ScheduledPost extends Operation {
 
     await Promise.all(
       posts.map(async (post) => {
-        const payload = new Post({
+        const payload = {
           publishedAt: new Date().toISOString(),
-        });
+          status: 'published',
+        };
 
         // publish post and fetch updated
         await this.PostRepository.update(post.id, payload);

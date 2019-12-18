@@ -1,13 +1,14 @@
 require('module').Module._initPaths();
-const { brew } = require('@brewery/core');
 const config = require('config');
 const awilix = require('awilix');
+const { brew } = require('./infra/core/core');
 
 const { asClass } = awilix;
 const httpClient = require('./infra/http-request');
 
 
 module.exports.handler = (event, context, callback) => {
+  context.callbackWaitsForEmptyEventLoop = false;
   console.log({
     resource: event.resource,
     path: event.path,

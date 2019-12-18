@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 
 class ListNotifications extends Operation {
   constructor({ NotificationRepository }) {
@@ -10,19 +10,11 @@ class ListNotifications extends Operation {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      let posts = await this.NotificationRepository.getNotifications(args);
-      posts = posts.map((post) => {
-        post = {
-          ...post.toJSON(),
-        };
-
-        return post;
-      });
-
-      const total = await this.PostRepository.count(args);
+      const notifs = await this.NotificationRepository.getNotifications(args);
+      const total = await this.NotificationRepository.count(args);
 
       this.emit(SUCCESS, {
-        results: posts,
+        results: notifs,
         meta: {
           total,
         },
@@ -33,6 +25,6 @@ class ListNotifications extends Operation {
   }
 }
 
-ListNotifications.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+ListNotifications.setEvents(['SUCCESS', 'ERROR']);
 
 module.exports = ListNotifications;

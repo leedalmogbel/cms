@@ -1,5 +1,5 @@
 
-const { BaseRepository } = require('@brewery/core');
+const { BaseRepository } = require('../../infra/core/core');
 
 class UserRepository extends BaseRepository {
   constructor({ UserModel, RoleModel }) {

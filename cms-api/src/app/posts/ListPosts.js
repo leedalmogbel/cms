@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 
 class ListPosts extends Operation {
   constructor({ PostRepository }) {
@@ -15,6 +15,7 @@ class ListPosts extends Operation {
         post = {
           ...post.toJSON(),
         };
+        post.expiredAt = post.expiredAt !== '1970-01-01 08:00:00' ? post.expiredAt : null;
 
         return post;
       });

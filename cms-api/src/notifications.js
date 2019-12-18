@@ -1,7 +1,7 @@
 require('module').Module._initPaths();
-const { brew } = require('@brewery/core');
 const util = require('util');
 const AWS = require('aws-sdk');
+const { brew } = require('../../infra/core/core');
 
 const success = {
   statusCode: 200,

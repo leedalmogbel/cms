@@ -20,9 +20,10 @@ provider:
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_1}
       - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_2}
   stackTags:
-
     ProjectCode: "CMS"
     SupportContact: "Stratpoint"
+    # Name: CMS-Lambda-CF-${file(env.yml):${self:custom.stage}}
+  role:  ${file(env.yml):${self:custom.stage}.ROLE_ARN}
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -35,8 +36,9 @@ functions:
           path: /{proxy+}
           method: any
           cors: true
-        # authorizer:
-        #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
+          # authorizer:
+          #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
+    reservedConcurrency: 10
   autocomplete:
     handler: src/handler.location
     events:
@@ -65,44 +67,36 @@ functions:
     events:
       - websocket:
           route: $connect
+    reservedConcurrency: 5
   socketDisconnect:
     handler: src/socket.disconnect
     events:
       - websocket:
           route: $disconnect
+    reservedConcurrency: 5
   socketDefault:
     handler: src/socket.default
     events:
       - websocket:
           route: $default
-  socketNotify:
+    reservedConcurrency: 5
+  notify:
     handler: src/socket.notify
     events:
       - websocket:
           route: NOTIFY
-
-  # notificationConnectionHandler:
-  #   handler: src/notifications.connectionHandler
-  #   events:
-  #     - websocket:
-  #         route: $connect
-  #     - websocket:
-  #         route: $disconnect
-  # defaultHandler:
-  #   handler: src/notifications.default
-  #   events:
-  #     - websocket:
-  #         route: $default
-  # notify:
-  #   handler: src/notifications.notify
-  #   events:
-  #     - websocket:
-  #         route: notify 
-          
-  # updateClient:
-  #   handler: src/notifications.updateClient
-  #   events:
-  #     - http:
-  #         path: /update-client
-  #         method: post
-  #         cors: true
+  lockPost:
+    handler: src/socket.lockPost
+    events:
+      - websocket:
+          route: LOCKPOST
+  kickLockedPost:
+    handler: src/socket.kickLockedPost
+    events:
+      - websocket:
+          route: KICKLOCKEDPOST
+  unlockPost:
+    handler: src/socket.unlockPost
+    events:
+      - websocket:
+          route: UNLOCKPOST  

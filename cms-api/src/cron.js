@@ -1,5 +1,5 @@
 require('module').Module._initPaths();
-const { brew } = require('@brewery/core');
+const { brew } = require('../../infra/core/core');
 const awilix = require('awilix');
 const config = require('config');
 const httpClient = require('./infra/http-request');

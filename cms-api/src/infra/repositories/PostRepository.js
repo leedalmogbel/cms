@@ -1,6 +1,6 @@
 
-const { BaseRepository } = require('@brewery/core');
 const Sequelize = require('sequelize');
+const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
@@ -17,31 +17,26 @@ class PostRepository extends BaseRepository {
       where: {
         status: {
           [Op.and]: [
-            { [Op.ne]: 'draft' },
             { [Op.ne]: 'initial' },
-            { [Op.ne]: 'for-revision' },
           ],
         },
+        isActive: 1,
       },
     };
 
-    // set order by default on
-    // publisched descending and scheduled ascending
-    let order = [['publishedAt', 'DESC'], ['createdAt', 'DESC'], ['scheduledAt', 'ASC']];
+    let order = [['updatedAt', 'DESC']];
 
     // set keyword
     if ('keyword' in data
       && data.keyword) {
-      args.where = {
-        [Op.or]: {
-          title: {
-            [Op.like]:
+      args.where[Op.or] = {
+        title: {
+          [Op.like]:
             `%${data.keyword}%`,
-          },
-          content: {
-            [Op.like]:
+        },
+        content: {
+          [Op.like]:
             `%${data.keyword}%`,
-          },
         },
       };
     }
@@ -84,30 +79,22 @@ class PostRepository extends BaseRepository {
                 startDate,
                 endDate,
               ],
-              // [Op.eq]: null,
             },
           };
-        } else if ('all' in data) {
-          args.where = {
-            [Op.or]: {
-              publishedAt: {
-                [Op.between]: [
-                  startDate,
-                  endDate,
-                ],
-              },
-              scheduledAt: {
-                [Op.between]: [
-                  startDate,
-                  endDate,
-                ],
-              },
+        } else {
+          // default filter
+          args.where[Op.or] = {
+            updatedAt: {
+              [Op.between]: [
+                startDate,
+                endDate,
+              ],
             },
           };
         }
       }
 
-      order = [['publishedAt', 'DESC']];
+      order = [['updatedAt', 'DESC']];
     }
 
     if ('status' in data) {

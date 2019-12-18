@@ -1,10 +1,15 @@
-const { Operation } = require('@brewery/core');
+const AWS = require('aws-sdk');
 const Socket = require('src/domain/Socket');
+const { Operation } = require('../../infra/core/core');
 
 class RegisterSocket extends Operation {
   constructor({ SocketRepository }) {
     super();
     this.SocketRepository = SocketRepository;
+    this.socketConnector = new AWS.ApiGatewayManagementApi({
+      apiVersion: '2018-11-29',
+      endpoint: process.env.WEBSOCKET_API_ENDPOINT,
+    });
   }
 
   async execute(event) {
@@ -15,12 +20,11 @@ class RegisterSocket extends Operation {
 
     try {
       const { connectionId } = event.requestContext;
-      const { type, userId } = event.queryStringParameters;
+      const { userId } = event.queryStringParameters;
 
       const payload = new Socket({
         userId,
         connectionId,
-        type,
       });
 
       await this.SocketRepository.add(payload);

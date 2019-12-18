@@ -1,10 +1,10 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 
-class SaveDraftPost extends Operation {
-  constructor({ PostRepository, SavePost }) {
+class RemovePost extends Operation {
+  constructor({ PostRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
-    this.SavePost = SavePost;
+    this.PostUtils = PostUtils;
   }
 
   async execute(id, data) {
@@ -19,13 +19,12 @@ class SaveDraftPost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
-    data = await this.SavePost.build(data = {
-      ...data,
-      status: 'draft',
-    });
-
     try {
-      await this.PostRepository.update(id, data);
+      await this.PostRepository.update(id, data = {
+        ...data,
+        isActive: 0,
+      });
+
       this.emit(SUCCESS, {
         results: { id },
         meta: {},
@@ -36,6 +35,6 @@ class SaveDraftPost extends Operation {
   }
 }
 
-SaveDraftPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+RemovePost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = SaveDraftPost;
+module.exports = RemovePost;

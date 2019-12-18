@@ -23,11 +23,14 @@ const Post = attributes({
   attachments: Array,
   assignedUserId: Number,
   status: String,
+  isLocked: Number,
+  lockUser: Object,
   scheduledAt: Date,
   expiredAt: Date,
   publishedAt: Date,
   createdAt: Date,
   updatedAt: Date,
+  isActive: Number,
 })(class Post {
   // Add validation functions below
   // e.g.:
