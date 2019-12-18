@@ -1,9 +1,10 @@
 const { Operation } = require('../../infra/core/core');
 
 class ApprovePost extends Operation {
-  constructor({ PostRepository, PostUtils }) {
+  constructor({ PostRepository, UserRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
+    this.UserRepository = UserRepository;
     this.PostUtils = PostUtils;
   }
 
@@ -40,7 +41,7 @@ class ApprovePost extends Operation {
       await this.PostRepository.update(id, data);
       const post = await this.PostRepository.getPostById(id);
 
-      if (post.scheduledAt) {
+      if (post.status === 'scheduled') {
         return this.emit(SUCCESS, {
           results: { id },
           meta: {},
@@ -51,9 +52,18 @@ class ApprovePost extends Operation {
       if ('writers' in contributors && contributors.writers.length) {
         const writerId = contributors.writers[0].id;
 
+        // format message
+        let message = `Your Post "${post.title}" has been approved.`;
+        if (post.userId) {
+          const author = await this.UserRepository.getById(post.userId);
+          if (author) {
+            message = `${author.firstName} ${author.lastName} approve your post ${post.title}`;
+          }
+        }
+
         this.PostUtils.saveNotification({
           userId: writerId,
-          message: `Your Post "${post.title}" has been approved.`,
+          message,
           meta: { id, postId },
         });
       }

@@ -1,8 +1,9 @@
 const { Operation } = require('../../infra/core/core');
 
 class RevisePost extends Operation {
-  constructor({ PostRepository, PostUtils }) {
+  constructor({ PostRepository, UserRepository, PostUtils }) {
     super();
+    this.UserRepository = UserRepository;
     this.PostRepository = PostRepository;
     this.PostUtils = PostUtils;
   }
@@ -34,12 +35,22 @@ class RevisePost extends Operation {
       const post = await this.PostRepository.getPostById(id);
       const { postId, contributors } = post;
 
+      // send notification
       if ('writers' in contributors && contributors.writers.length) {
         const writerId = contributors.writers[0].id;
 
-        this.PostUtils.saveNotification({
+        // format message
+        let message = `Your Post "${post.title}" has been rejected.`;
+        if (post.userId) {
+          const author = await this.UserRepository.getById(post.userId);
+          if (author) {
+            message = `${author.firstName} ${author.lastName} returned a post for revision ${post.title}`;
+          }
+        }
+
+        await this.PostUtils.saveNotification({
           userId: writerId,
-          message: `Your Post "${post.title}" has been rejected.`,
+          message,
           meta: { id, postId },
         });
       }

@@ -73,11 +73,11 @@ class NotificationSocket extends Operation {
       where: {
         userId,
       },
+      order: [['createdAt', 'DESC']],
     });
 
     if (!socket) return;
-    const res = await this.notify(socket.connectionId, data);
-    console.log('Notif Response', res);
+    await this.notify(socket.connectionId, data);
   }
 }
 module.exports = NotificationSocket;
