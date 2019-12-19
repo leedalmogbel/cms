@@ -61,7 +61,7 @@ class ApprovePost extends Operation {
           }
         }
 
-        this.PostUtils.saveNotification({
+        await this.PostUtils.saveNotification({
           userId: writerId,
           message,
           meta: { id, postId },

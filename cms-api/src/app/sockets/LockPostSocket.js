@@ -47,7 +47,17 @@ class LockPostSocket extends Operation {
         statusCode: 500,
         headers,
         body: JSON.stringify({
-          message: 'Invalid post id',
+          message: 'Invalid post id.',
+        }),
+      };
+    }
+
+    if (post && post.isLocked) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Post has already been locked.',
         }),
       };
     }
@@ -191,6 +201,16 @@ class LockPostSocket extends Operation {
         headers,
         body: JSON.stringify({
           message: 'Invalid post id',
+        }),
+      };
+    }
+
+    if (post && !post.isLocked) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Post has already been unlocked.',
         }),
       };
     }
