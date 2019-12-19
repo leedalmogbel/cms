@@ -151,5 +151,14 @@
     "firstName": "John",
     "lastName": "Pascual",
     "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "mmrivera",
+    "email": "mmrivera@abs-cbn.com",
+    "password": "",
+    "firstName": "Michael Angelo",
+    "lastName": "Rivera",
+    "active": 1
   }
 ]
