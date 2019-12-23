@@ -21,6 +21,7 @@ class PostRepository extends BaseRepository {
           ],
         },
         isActive: 1,
+        limit: 20,
       },
     };
 
