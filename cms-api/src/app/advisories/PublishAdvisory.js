@@ -23,7 +23,6 @@ class PublishAdvisory extends Operation {
     try {
       data = await this.SaveAdvisory.build({
         ...data,
-        draft: 0,
         verified: false,
         publishedAt: new Date().toISOString(),
       });

@@ -1,6 +1,6 @@
 
-const { BaseRepository } = require('../../infra/core/core');
 const Sequelized = require('sequelize');
+const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelized;
 
@@ -13,11 +13,16 @@ class AdvisoryRepository extends BaseRepository {
     // init fetch arguments
     const args = {
       where: {
-        draft: false, // default draft false
+        status: {
+          [Op.and]: [
+            { [Op.ne]: 'draft' },
+          ],
+        },
+        isActive: 1,
       },
     };
 
-    const order = [['createdAt', 'DESC']]; // set order by default descending
+    const order = [['updatedAt', 'DESC']]; // set order by default descending
 
     // fetch verified
     if ('verified' in data) {
@@ -32,14 +37,18 @@ class AdvisoryRepository extends BaseRepository {
       }
     }
 
+    if ('status' in data) {
+      args.where.status = data.status;
+    }
+
     // offset
     if ('offset' in args) {
-      args.offset = data.offset;
+      args.offset = Number(data.offset);
     }
 
     // limit
     if ('limit' in args) {
-      args.limit = data.limit;
+      args.limit = Number(data.limit);
     }
 
     // order
