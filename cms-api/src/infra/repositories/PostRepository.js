@@ -21,8 +21,8 @@ class PostRepository extends BaseRepository {
           ],
         },
         isActive: 1,
-        limit: 20,
       },
+      limit: 20,
     };
 
     let order = [['updatedAt', 'DESC']];
