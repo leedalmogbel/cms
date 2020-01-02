@@ -63,13 +63,16 @@ class LockPostSocket extends Operation {
     }
 
     try {
-      await this.PostRepository.update(id, {
+      // update post without updating the updatedAt
+      post.update({
         isLocked: true,
         lockUser: {
           connectionId,
           userId,
           name,
         },
+      }, {
+        silent: true,
       });
     } catch (error) {
       console.log('Lock Post Error', error);
@@ -143,13 +146,16 @@ class LockPostSocket extends Operation {
     }
 
     try {
-      await this.PostRepository.update(id, {
+      // update post without updating the updatedAt
+      post.update({
         isLocked: true,
         lockUser: {
           connectionId,
           userId,
           name: `${user.firstName} ${user.lastName}`,
         },
+      }, {
+        silent: true,
       });
     } catch (error) {
       console.log('Kick Locked Post Error', error);
@@ -216,9 +222,12 @@ class LockPostSocket extends Operation {
     }
 
     try {
-      await this.PostRepository.update(id, {
+      // update post without updating the updatedAt
+      post.update({
         isLocked: false,
         lockUser: null,
+      }, {
+        silent: true,
       });
     } catch (error) {
       console.log('Unlock Post Error', error);
