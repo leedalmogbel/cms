@@ -5,8 +5,10 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelized;
 
 class AdvisoryRepository extends BaseRepository {
-  constructor({ AdvisoryModel }) {
+  constructor({ AdvisoryModel, UserModel }) {
     super(AdvisoryModel);
+
+    this.UserModel = UserModel;
   }
 
   buildListArgs(data) {
@@ -58,7 +60,37 @@ class AdvisoryRepository extends BaseRepository {
   }
 
   getAdvisories(args) {
-    return this.getAll(this.buildListArgs(args));
+    return this.getAll({
+      ...this.buildListArgs(args),
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: [
+            'id',
+            'firstname',
+            'lastname',
+          ],
+        },
+      ],
+    });
+  }
+
+  getAdvisoryById(id) {
+    return this.model.findOne({
+      where: {
+        id,
+      },
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
+    });
   }
 
   count(args) {

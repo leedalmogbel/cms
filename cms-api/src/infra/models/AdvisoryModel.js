@@ -47,6 +47,13 @@ module.exports = {
       timestamps: true,
     });
 
+    AdvisoryModel.associate = function () {
+      AdvisoryModel.belongsTo(datasource.models.UserModel, {
+        foreignKey: 'userId',
+        as: 'user',
+      });
+    };
+
     return AdvisoryModel;
   },
 };

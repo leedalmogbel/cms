@@ -14,7 +14,7 @@ class ShowAdvisory extends Operation {
     const { SUCCESS, NOT_FOUND } = this.events;
 
     try {
-      const advisory = await this.AdvisoryRepository.getById(id);
+      const advisory = await this.AdvisoryRepository.getAdvisoryById(id);
       let { attachments } = advisory;
 
       // check if theres attachments
