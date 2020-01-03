@@ -18,7 +18,7 @@ class AdvisoryRepository extends BaseRepository {
             { [Op.ne]: 'draft' },
           ],
         },
-        isActive: 1,
+        // isActive: 1,
       },
     };
 
