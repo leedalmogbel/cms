@@ -10,7 +10,7 @@ module.exports = {
         type: DataTypes.INTEGER,
       },
       userId: DataTypes.INTEGER,
-      title: DataTypes.STRING,
+      title: DataTypes.TEXT,
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: 1,
