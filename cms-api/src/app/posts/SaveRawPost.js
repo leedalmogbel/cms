@@ -15,6 +15,7 @@ class SaveRawPost extends Operation {
     let prevPost;
     try {
       prevPost = await this.PostRepository.getById(id);
+      prevPost = prevPost.toJSON();
     } catch (error) {
       error.message = 'Post not found';
       return this.emit(NOT_FOUND, error);
@@ -24,13 +25,12 @@ class SaveRawPost extends Operation {
 
     try {
       await this.PostRepository.update(id, data);
-      const post = await this.PostRepository.getPostById(id);
+      let post = await this.PostRepository.getPostById(id);
+      post = post.toJSON();
 
-      // NOTE: Disable for now
-      if (Object.entries(post.toJSON().contributors.editor).length !== 0
-        && post.toJSON().contributors.writers.length !== 0) {
-        await this.PostUtils.postNotifications(prevPost, post);
-      }
+      await this.PostUtils.postNotifications(prevPost, post);
+      await this.PostUtils.firehoseUpdate(post);
+      await this.PostUtils.pmsUpdate(post);
 
       this.emit(SUCCESS, {
         results: { id },
