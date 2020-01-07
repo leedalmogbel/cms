@@ -24,6 +24,7 @@ module.exports = (post) => {
   } = post;
 
   const tagsRetained = post.tagsRetained || [];
+  const tagsRemoved = post.tagsRemoved || [];
   const tagsAdded = post.tagsAdded || [];
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
 
@@ -35,9 +36,9 @@ module.exports = (post) => {
       ...tagsRetained,
       ...tagsAdded,
     ],
-    postAcceptedKeywords: post.tagsRetained,
-    postRejectedKeywords: post.tagsRemoved,
-    postAddedKeywords: post.tagsAdded,
+    postAcceptedKeywords: tagsRetained,
+    postRejectedKeywords: tagsRemoved,
+    postAddedKeywords: tagsAdded,
     postLocation: {
       locationAddress: post.locationAddress,
       lat: post.locationDetails.lat,

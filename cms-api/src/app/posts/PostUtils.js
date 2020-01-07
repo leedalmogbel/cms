@@ -58,6 +58,24 @@ class PostUtils extends Operation {
     console.log(`Firehose response for id: ${data.postId}`, fres, payload);
   }
 
+  async firehoseUpdate(data) {
+    if (data.status !== 'published') return;
+
+    const firehose = new AWS.Firehose({
+      apiVersion: '2015-08-04',
+    });
+
+    const payload = PublistPostStreams(data);
+    const fres = await firehose.putRecord({
+      DeliveryStreamName: 'UpdatePost-cms',
+      Record: {
+        Data: JSON.stringify(payload),
+      },
+    }).promise();
+
+    console.log(`Firehose response for id: ${data.postId}`, fres, payload);
+  }
+
   async pmsIntegrate(data) {
     if (data.status !== 'published') return;
 
@@ -71,6 +89,10 @@ class PostUtils extends Operation {
     );
 
     console.log(`PMS response for id: ${data.postId}`, pres, payload);
+  }
+
+  async pmsUpdate(data) {
+    if (data.status !== 'published') return;
   }
 
   async saveNotification({ userId, message, meta = {} }) {
@@ -118,7 +140,7 @@ class PostUtils extends Operation {
     author = author.toJSON();
     author.name = `${author.firstName} ${author.lastName}`;
 
-    if (editor) {
+    if (editor && Object.entries(editor).length !== 0) {
       if (prevEditor && prevEditor.id !== editor.id) {
         // send notification to removed editor
         await this.saveNotification({

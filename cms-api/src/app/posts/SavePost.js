@@ -17,24 +17,22 @@ class SavePost extends Operation {
     let prevPost;
     try {
       prevPost = await this.PostRepository.getById(id);
+      prevPost = prevPost.toJSON();
     } catch (error) {
       error.message = 'Post not found';
       return this.emit(NOT_FOUND, error);
     }
 
-    try {
-      data = await this.PostUtils.build(data);
-      data.validateData();
-    } catch (error) {
-      return this.emit(VALIDATION_ERROR, error);
-    }
+    data = await this.PostUtils.build(data);
 
     try {
       await this.PostRepository.update(id, data);
-      const post = await this.PostRepository.getPostById(id);
+      let post = await this.PostRepository.getPostById(id);
+      post = post.toJSON();
 
-      await this.PostUtils
-        .postNotifications(prevPost, post);
+      await this.PostUtils.postNotifications(prevPost, post);
+      await this.PostUtils.firehoseUpdate(post);
+      await this.PostUtils.pmsUpdate(post);
 
       this.emit(SUCCESS, {
         results: { id },
