@@ -28,6 +28,10 @@ module.exports = {
       advisories: DataTypes.JSON,
       attachments: DataTypes.JSON,
       status: DataTypes.STRING,
+      isPublishedImmediately: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
       isLocked: {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
