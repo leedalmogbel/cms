@@ -17,12 +17,11 @@ const getContainer = () => new Promise((resolve) => {
 });
 
 module.exports.scheduled = async (event, context, callback) => {
-  const container = await getContainer();
+  const Container = await getContainer();
+  return Container.resolve('ScheduledPost').execute();
+};
 
-  await container.resolve('ScheduledPost')
-    .execute();
-
-  return {
-    message: 'success',
-  };
+module.exports.lockedPost = async (event, context, callback) => {
+  const Container = await getContainer();
+  return Container.resolve('ClearIdleLockedPost').execute();
 };
