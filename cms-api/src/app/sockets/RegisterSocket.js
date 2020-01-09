@@ -1,4 +1,3 @@
-const AWS = require('aws-sdk');
 const Socket = require('src/domain/Socket');
 const { Operation } = require('../../infra/core/core');
 
@@ -6,10 +5,6 @@ class RegisterSocket extends Operation {
   constructor({ SocketRepository }) {
     super();
     this.SocketRepository = SocketRepository;
-    this.socketConnector = new AWS.ApiGatewayManagementApi({
-      apiVersion: '2018-11-29',
-      endpoint: process.env.WEBSOCKET_API_ENDPOINT,
-    });
   }
 
   async execute(event) {
@@ -45,6 +40,7 @@ class RegisterSocket extends Operation {
         body: 'Socket successfully registered.',
       };
     } catch (err) {
+      console.log(err);
       return {
         statusCode: 500,
         headers,
