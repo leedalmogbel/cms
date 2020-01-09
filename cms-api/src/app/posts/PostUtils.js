@@ -91,10 +91,6 @@ class PostUtils extends Operation {
     console.log(`PMS response for id: ${data.postId}`, pres, payload);
   }
 
-  async pmsUpdate(data) {
-    if (data.status !== 'published') return;
-  }
-
   async saveNotification({ userId, message, meta = {} }) {
     const date = new Date().toISOString();
 

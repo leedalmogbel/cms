@@ -30,7 +30,7 @@ class SaveRawPost extends Operation {
 
       await this.PostUtils.postNotifications(prevPost, post);
       await this.PostUtils.firehoseUpdate(post);
-      await this.PostUtils.pmsUpdate(post);
+      await this.PostUtils.pmsIntegrate(post);
 
       this.emit(SUCCESS, {
         results: { id },
