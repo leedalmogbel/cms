@@ -22,6 +22,16 @@ class RegisterSocket extends Operation {
       const { connectionId } = event.requestContext;
       const { userId } = event.queryStringParameters;
 
+      // remove any existing socket by userId
+      const exists = await this.SocketRepository.getByUserId(userId);
+      if (exists) {
+        await this.SocketRepository.model.destroy({
+          where: {
+            userId,
+          },
+        });
+      }
+
       const payload = new Socket({
         userId,
         connectionId,
