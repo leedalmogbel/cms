@@ -1,4 +1,4 @@
-module.exports = (post) => {
+module.exports = (post, oldPost) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
 
   post = {
@@ -24,10 +24,15 @@ module.exports = (post) => {
     },
   } = post;
 
+  const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
+
   const tagsRetained = post.tagsRetained || [];
   const tagsRemoved = post.tagsRemoved || [];
   const tagsAdded = post.tagsAdded || [];
-  const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
+
+  const oldTagsRetained = oldPost.tagsRetained || [];
+  const oldTagsRemoved = oldPost.tagsRemoved || [];
+  const oldTagsAdded = oldPost.tagsAdded || [];
 
   return {
     postId: post.postId,
@@ -40,6 +45,13 @@ module.exports = (post) => {
     postAcceptedKeywords: tagsRetained,
     postRejectedKeywords: tagsRemoved,
     postAddedKeywords: tagsAdded,
+    oldPostKeywords: [
+      ...oldTagsRetained,
+      ...oldTagsAdded,
+    ],
+    oldPostAcceptedKeywords: oldTagsRetained,
+    oldPostRejectedKeywords: oldTagsRemoved,
+    oldPostAddedKeywords: oldTagsAdded,
     postLocation: {
       locationAddress: post.locationAddress,
       lat: post.locationDetails.lat,
@@ -55,7 +67,8 @@ module.exports = (post) => {
     placeId,
     postTimestampPosted: post.publishedAt,
     postTimestampEvent: null,
-    postTimestampUpdated: null,
+    postTimestampUpdated: post.updatedAt,
+    version: null,
     postCommunityID: null,
     postExpirationDate: null,
     postWordCount: post.title.split(' ').length,
