@@ -11,27 +11,26 @@ class AttachmentUrlAdvisory extends Operation {
   }
 
   async execute(args) {
+    const { SUCCESS, ERROR } = this.events;
+
     AWS.config.update({
       accessKeyId: 'AKIATB4WJMQJKPOCPEJA',
       secretAccessKey: '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',
       signatureVersion: 'v4',
     });
 
-    const url = [];
-    let keyName = '';
-    const { files } = args;
+    const Key = `Advisory/${args}/`;
 
-    files.map(async (file) => {
-      keyName = file.fileName;
+    const getUrl = await this.getUrl(Key);
+    const putUrl = await this.putUrl(Key);
 
-      url.push({
-        fileName: keyName,
-        downloadUrl: await this.getUrl(keyName),
-        uploadUrl: await this.putUrl(keyName),
-      });
+    return this.emit(SUCCESS, {
+      results: {
+        downloadUrl: getUrl,
+        uploadUrl: putUrl,
+      },
+      meta: {},
     });
-
-    return url;
   }
 
   // fetch object by filename
@@ -69,5 +68,7 @@ class AttachmentUrlAdvisory extends Operation {
     });
   }
 }
+
+AttachmentUrlAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = AttachmentUrlAdvisory;
