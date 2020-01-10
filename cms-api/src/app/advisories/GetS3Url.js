@@ -19,15 +19,48 @@ class GetS3Url extends Operation {
       signatureVersion: 'v4',
     });
 
-    const keyName = 'Advisory';
-    const getUrl = s3.getSignedUrl('getObject', {
-      Bucket,
-      keyName,
-    });
+    const Key = `Advisory/${args}/`;
+
+    const getUrl = await this.getUrl(Key);
+    const putUrl = await this.putUrl(Key);
 
     return this.emit(SUCCESS, {
-      results: getUrl,
+      results: {
+        downloadUrl: getUrl,
+        uploadUrl: putUrl,
+      },
       meta: {},
+    });
+  }
+
+  async getUrl(Key) {
+    return new Promise((resolve, reject) => {
+      s3.getSignedUrl('getObject', {
+        Bucket,
+        Key,
+      }, (err, url) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(url);
+      });
+    });
+  }
+
+  async putUrl(Key) {
+    return new Promise((resolve, reject) => {
+      s3.getSignedUrl('putObject', {
+        Bucket,
+        Key,
+        ContentType: 'application/octet-stream',
+        Expires: 10000,
+        ACL: 'public-read',
+      }, (err, url) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(url);
+      });
     });
   }
 }
