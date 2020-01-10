@@ -32,20 +32,8 @@ const httpPost = (url, body) => new Promise((resolve, reject) => {
 });
 
 module.exports.location = async (event, context, callback) => {
-  const res = await httpPost(
-    'https://vv0j1ovhzj.execute-api.ap-southeast-1.amazonaws.com/dev2/users/location/autocomplete',
-    event.body,
-  );
-
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-      'X-Content-Type-Options': 'nosniff',
-    },
-    body: JSON.stringify(res),
-  };
+  const Container = await getContainer();
+  return Container.resolve('AutocompleteLocation').execute(event);
 };
 
 module.exports.smartTags = async (event, context, callback) => {
