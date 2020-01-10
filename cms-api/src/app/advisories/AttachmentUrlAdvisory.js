@@ -11,26 +11,27 @@ class AttachmentUrlAdvisory extends Operation {
   }
 
   async execute(args) {
-    const { SUCCESS, ERROR } = this.events;
-
     AWS.config.update({
       accessKeyId: 'AKIATB4WJMQJKPOCPEJA',
       secretAccessKey: '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',
       signatureVersion: 'v4',
     });
 
-    const Key = `Advisory/${args}/`;
+    const url = [];
+    let keyName = '';
+    const { files } = args;
 
-    const getUrl = await this.getUrl(Key);
-    const putUrl = await this.putUrl(Key);
+    files.map(async (file) => {
+      keyName = file.fileName;
 
-    return this.emit(SUCCESS, {
-      results: {
-        downloadUrl: getUrl,
-        uploadUrl: putUrl,
-      },
-      meta: {},
+      url.push({
+        fileName: keyName,
+        downloadUrl: await this.getUrl(keyName),
+        uploadUrl: await this.putUrl(keyName),
+      });
     });
+
+    return url;
   }
 
   // fetch object by filename

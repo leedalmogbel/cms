@@ -10,7 +10,7 @@ class GetS3Url extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute(args) {
+  async execute(id, args) {
     const { SUCCESS, ERROR } = this.events;
 
     AWS.config.update({
@@ -19,40 +19,25 @@ class GetS3Url extends Operation {
       signatureVersion: 'v4',
     });
 
-    const Key = `Advisory/${args}/`;
+    const Key = `Advisory/${id}/${args.filename}`;
+    const { fileType } = args;
 
-    const getUrl = await this.getUrl(Key);
-    const putUrl = await this.putUrl(Key);
+    const putUrl = await this.putUrl(Key, fileType);
 
     return this.emit(SUCCESS, {
       results: {
-        downloadUrl: getUrl,
         uploadUrl: putUrl,
       },
       meta: {},
     });
   }
 
-  async getUrl(Key) {
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl('getObject', {
-        Bucket,
-        Key,
-      }, (err, url) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(url);
-      });
-    });
-  }
-
-  async putUrl(Key) {
+  async putUrl(Key, fileType) {
     return new Promise((resolve, reject) => {
       s3.getSignedUrl('putObject', {
         Bucket,
         Key,
-        ContentType: 'application/octet-stream',
+        ContentType: fileType,
         Expires: 10000,
         ACL: 'public-read',
       }, (err, url) => {
