@@ -7,121 +7,54 @@ class GetLocation extends Operation {
   }
 
   async execute(placeId) {
-    const fields = [
-      'address_components',
-      'formatted_address',
-      'geometry',
-      'place_id',
-      'types',
-    ].join();
-
-    // send place detail request
-    let res = await this.httpClient.get(process.env.PLACE_ENDPOINT, {
-      key: process.env.PLACE_KEY,
-      place_id: placeId,
-      fields,
-    });
-
-    if ('status' in res && res.status === 'OK') {
-      res = res.result;
-
-      const details = {};
-      const data = {
-        locationAddress: '',
-        locationDetails: details,
-      };
-
-      // set formatted address
-      data.locationAddress = res.formatted_address;
-
-      // set longitude and latitude
-      const loc = res.geometry.location;
-      details.lat = loc.lat;
-      details.lng = loc.lng;
-
-      // set place id
-      details.placeId = res.place_id;
-
-      // format address components
-      const components = GetLocation.formatAddressComponents(
-        res.address_components,
-        res.types,
-      );
-
-      // construct location details
-      data.locationDetails = {
-        ...details,
-        ...components,
-      };
-
-      // return location data
-      return data;
-    }
-
-    throw new Error('Location search failed');
-  }
-
-  static formatAddressComponents(data, locTypes) {
-    const components = {
-      streetNumber: '',
-      street: '',
-      barangay: '',
-      district: '',
-      city: '',
-      province: '',
-      region: '',
-      country: '',
-      locationLevel: '',
-    };
-
-    // required component types based on hierarchy
-    // note: sequence of mapping of fields are fixed
-    // please dont change the arrangement
-    const required = {
-      street_number: 'streetNumber',
-      route: 'street',
-      street_address: 'street',
-      administrative_area_level_5: 'barangay',
-      neighborhood: 'barangay',
-      administrative_area_level_4: 'district',
-      sublocality: 'district',
-      sublocality_level_1: 'district',
-      sublocality_level_2: 'district',
-      sublocality_level_3: 'district',
-      sublocality_level_4: 'district',
-      sublocality_level_5: 'district',
-      administrative_area_level_3: 'city',
-      locality: 'city',
-      administrative_area_level_2: 'province',
-      administrative_area_level_1: 'region',
-    };
-
-    // iterate through components
-    data.forEach((component) => {
-      const { types } = component;
-      const longName = component.long_name;
-      const shortName = component.short_name;
-
-      // iterate through each required types
-      // to get address type values
-      Object.keys(required).forEach((value, key) => {
-        if (types.includes(key)) {
-          components[value] = shortName;
-        }
+    try {
+      const osmResponse = await this.httpClient.get(process.env.OSM_DETAIL_ENDPOINT, {
+        q: `_id:'${placeId}'`,
+        'q.parser': 'structured',
+        return: '_all_fields',
       });
 
-      // get country
-      if (types.includes('country')) {
-        components.country = longName;
+      if (osmResponse && 'hits' in osmResponse && osmResponse.hits.found) {
+        const place = osmResponse.hits.hit[0];
+        const { fields } = place;
+
+        const {
+          street,
+          barangay,
+          municipality,
+          province,
+          region,
+          country,
+          type,
+          location,
+        } = fields;
+
+        // get longitude and latitude
+        const latlng = location.split(',');
+
+        return {
+          locationAddress: fields.complete_name,
+          locationDetails: {
+            streetNumber: '',
+            street,
+            barangay,
+            district: '',
+            city: municipality,
+            province,
+            region,
+            country,
+            locationLevel: type,
+            lat: latlng[0],
+            lng: latlng[1],
+            placeId: place.id,
+          },
+        };
       }
-    });
 
-    // get location level based on types
-    if (locTypes.length && locTypes[0] in required) {
-      components.locationLevel = required[locTypes[0]];
+      throw new Error('Location search failed');
+    } catch (error) {
+      throw new Error('Location search failed');
     }
-
-    return components;
   }
 }
 
