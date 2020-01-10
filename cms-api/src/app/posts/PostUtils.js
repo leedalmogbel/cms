@@ -41,34 +41,23 @@ class PostUtils extends Operation {
     return new Post(data);
   }
 
-  async firehoseIntegrate(data) {
-    if (data.status !== 'published') return;
-
-    const firehose = new AWS.Firehose({
-      apiVersion: '2015-08-04',
-    });
-
-    const payload = PublishPostStreams(data);
-    const fres = await firehose.putRecord({
-      DeliveryStreamName: 'AddPost-cms',
-      Record: {
-        Data: JSON.stringify(payload),
-      },
-    }).promise();
-
-    console.log(`Firehose response for id: ${data.postId}`, fres, payload);
-  }
-
-  async firehoseUpdate(post, oldPost) {
+  async firehoseIntegrate(oldPost, post) {
     if (post.status !== 'published') return;
 
+    let DeliveryStreamName = 'AddPost-cms';
+    let payload = PublishPostStreams(post, oldPost);
+
+    if (oldPost.status === 'published') {
+      DeliveryStreamName = 'UpdatePost-cms';
+      payload = UpdatePostStreams(post, oldPost);
+    }
+
     const firehose = new AWS.Firehose({
       apiVersion: '2015-08-04',
     });
 
-    const payload = UpdatePostStreams(post, oldPost);
     const fres = await firehose.putRecord({
-      DeliveryStreamName: 'UpdatePost-cms',
+      DeliveryStreamName,
       Record: {
         Data: JSON.stringify(payload),
       },
