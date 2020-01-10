@@ -29,7 +29,7 @@ class SavePost extends Operation {
       post = post.toJSON();
 
       await this.PostUtils.postNotifications(oldPost, post);
-      await this.PostUtils.firehoseUpdate(post, oldPost);
+      await this.PostUtils.firehoseIntegrate(oldPost, post);
       await this.PostUtils.pmsIntegrate(post);
 
       this.emit(SUCCESS, {

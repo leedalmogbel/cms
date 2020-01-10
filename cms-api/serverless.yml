@@ -44,7 +44,7 @@ functions:
     events:
       - http:
           path: /location/autocomplete
-          method: get
+          method: post
           cors: true
   tags:
     handler: src/handler.smartTags

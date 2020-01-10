@@ -7,7 +7,7 @@ class AutocompleteLocation extends Operation {
   }
 
   async execute(event) {
-    const { location_string } = event.queryStringParameters;
+    const { location_string } = JSON.parse(event.body);
 
     const response = {
       statusCode: 200,
