@@ -14,6 +14,8 @@ class AdvisoriesController extends BaseController {
     router.post('/', this.injector('CreateDraftAdvisory'), this.create);
     router.put('/:id', this.injector('SaveAdvisory'), this.update);
     router.post('/:id/publish', this.injector('PublishAdvisory'), this.update);
+    router.post('/:id/attach', this.injector('AttachmentUrlAdvisory'), this.attach);
+    router.get('/:id/geturl', this.injector('GetS3Url'), this.index);
 
     return router;
   }
@@ -74,6 +76,33 @@ class AdvisoriesController extends BaseController {
   }
 
   update(req, res, next) {
+    const { operation } = req;
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = operation.events;
+
+    operation
+      .on(SUCCESS, (result) => {
+        res
+          .status(Status.ACCEPTED)
+          .json(result);
+      })
+      .on(VALIDATION_ERROR, (error) => {
+        res.status(Status.BAD_REQUEST).json({
+          message: error.message,
+        });
+      })
+      .on(NOT_FOUND, (error) => {
+        res.status(Status.NOT_FOUND).json({
+          message: error.message,
+        });
+      })
+      .on(ERROR, next);
+
+    operation.execute(Number(req.params.id), req.body);
+  }
+
+  attach(req, res, next) {
     const { operation } = req;
     const {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,

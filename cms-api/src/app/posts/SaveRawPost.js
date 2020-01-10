@@ -12,10 +12,10 @@ class SaveRawPost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
-    let prevPost;
+    let oldPost;
     try {
-      prevPost = await this.PostRepository.getById(id);
-      prevPost = prevPost.toJSON();
+      oldPost = await this.PostRepository.getById(id);
+      oldPost = oldPost.toJSON();
     } catch (error) {
       error.message = 'Post not found';
       return this.emit(NOT_FOUND, error);
@@ -28,8 +28,8 @@ class SaveRawPost extends Operation {
       let post = await this.PostRepository.getPostById(id);
       post = post.toJSON();
 
-      await this.PostUtils.postNotifications(prevPost, post);
-      await this.PostUtils.firehoseUpdate(post);
+      await this.PostUtils.postNotifications(oldPost, post);
+      await this.PostUtils.firehoseUpdate(post, oldPost);
       await this.PostUtils.pmsIntegrate(post);
 
       this.emit(SUCCESS, {
