@@ -40,6 +40,12 @@ module.exports.kickLockedPost = async (event, context, callback) => {
   callback(null, res);
 };
 
+module.exports.kickLockedPostConfirm = async (event, context, callback) => {
+  const Container = await getContainer();
+  const res = await Container.resolve('LockPostSocket').kickConfirm(event);
+  callback(null, res);
+};
+
 module.exports.unlockPost = async (event, context, callback) => {
   const Container = await getContainer();
   const res = await Container.resolve('LockPostSocket').unlock(event);

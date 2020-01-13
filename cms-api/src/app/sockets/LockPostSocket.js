@@ -202,6 +202,64 @@ class LockPostSocket extends Operation {
     };
   }
 
+  async kickConfirm(event) {
+    const headers = {
+      'Content-Type': 'text/plain',
+      'Access-Control-Allow-Origin': '*',
+    };
+
+    const { connectionId } = event.requestContext;
+    const { data: { id, userId } } = JSON.parse(event.body);
+
+    // validate lockUser
+    let user;
+    try {
+      user = await this.UserRepository.getUserById(userId);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Invalid user id',
+        }),
+      };
+    }
+
+    const name = `${user.firstName} ${user.lastName}`;
+
+    // validate post
+    let post;
+    try {
+      post = await this.PostRepository.getById(id);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Invalid post id',
+        }),
+      };
+    }
+
+    // notify current lock user
+    await this.send(post.lockUser.connectionId, {
+      type: 'BROADCAST_KICK_CONFIRM',
+      message: '',
+      meta: {
+        id,
+        postId: post.postId,
+        userId,
+        name,
+      },
+    });
+
+    return {
+      statusCode: 200,
+      headers,
+      body: 'Kick lock post confirm response.',
+    };
+  }
+
   async unlock(event) {
     const headers = {
       'Content-Type': 'text/plain',
