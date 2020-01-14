@@ -57,45 +57,34 @@ class PostRepository extends BaseRepository {
     }
 
     // set date
-    if ('date' in data) {
-      if (data.date) {
-        const d = data.date;
-        const newDate = d.split(' ');
-        newDate[1] = '00:00:00';
-        const startDate = newDate.join(' ');
-        newDate[1] = '23:59:59';
-        const endDate = newDate.join(' ');
+    if ('date' in data && data.date) {
+      const date = new Date(data.date);
+      const startDate = new Date((date).setHours(0, 0, 0, 0)).toISOString();
+      const endDate = new Date((date).setHours(24, 0, 0, 0)).toISOString();
 
-        if ('scheduled' in data) {
-          args.where.scheduledAt = {
-            [Op.between]: [
-              startDate,
-              endDate,
-            ],
-          };
-        } else if ('published' in data) {
-          args.where.publishedAt = {
-            [Op.or]: {
-              [Op.between]: [
-                startDate,
-                endDate,
-              ],
-            },
-          };
-        } else {
-          // default filter
-          args.where[Op.or] = {
-            updatedAt: {
-              [Op.between]: [
-                startDate,
-                endDate,
-              ],
-            },
-          };
-        }
+      if ('status' in data && data.status === 'scheduled') {
+        args.where.scheduledAt = {
+          [Op.between]: [
+            startDate,
+            endDate,
+          ],
+        };
+      } else if ('status' in data && data.status === 'published') {
+        args.where.publishedAt = {
+          [Op.between]: [
+            startDate,
+            endDate,
+          ],
+        };
+      } else {
+        // default filter
+        args.where.updatedAt = {
+          [Op.between]: [
+            startDate,
+            endDate,
+          ],
+        };
       }
-
-      order = [['updatedAt', 'DESC']];
     }
 
     if ('status' in data) {
