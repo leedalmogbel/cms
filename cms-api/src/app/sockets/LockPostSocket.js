@@ -146,17 +146,19 @@ class LockPostSocket extends Operation {
     }
 
     // notify current lock user
-    const currentUser = post.lockUser;
-    await this.send(currentUser.connectionId, {
-      type: 'BROADCAST_KICK',
-      message: '',
-      meta: {
-        id,
-        postId: post.postId,
-        userId,
-        name,
-      },
-    });
+    if (post.isLocked && post.lockUser) {
+      const currentUser = post.lockUser;
+      await this.send(currentUser.connectionId, {
+        type: 'BROADCAST_KICK',
+        message: '',
+        meta: {
+          id,
+          postId: post.postId,
+          userId,
+          name,
+        },
+      });
+    }
 
     try {
       // update post without updating the updatedAt
