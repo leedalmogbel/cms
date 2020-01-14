@@ -23,12 +23,28 @@ class GetS3Url extends Operation {
     const { fileType } = args;
 
     const putUrl = await this.putUrl(Key, fileType);
+    const getUrl = await this.getUrl(Key);
 
     return this.emit(SUCCESS, {
       results: {
         uploadUrl: putUrl,
+        download: getUrl
       },
       meta: {},
+    });
+  }
+
+  async getUrl(Key) {
+    return new Promise((resolve, reject) => {
+      s3.getSignedUrl('getObject', {
+        Bucket,
+        Key,
+      }, (err, url) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(url);
+      });
     });
   }
 
