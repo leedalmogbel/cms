@@ -248,9 +248,7 @@ class LockPostSocket extends Operation {
       type: 'BROADCAST_KICK_CONFIRM',
       message: '',
       meta: {
-        id,
-        postId: post.postId,
-        userId,
+        ...post,
         name,
       },
     });
@@ -268,7 +266,7 @@ class LockPostSocket extends Operation {
       'Access-Control-Allow-Origin': '*',
     };
 
-    const { data: { id } } = JSON.parse(event.body);
+    const { data: { id, userId } } = JSON.parse(event.body);
 
     // validate post
     let post;
@@ -290,6 +288,16 @@ class LockPostSocket extends Operation {
         headers,
         body: JSON.stringify({
           message: 'Post has already been unlocked.',
+        }),
+      };
+    }
+
+    if (post && post.lockUser && post.lockUser.userId !== userId) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Post locked owner belongs to another user.',
         }),
       };
     }

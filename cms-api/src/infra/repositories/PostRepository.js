@@ -59,8 +59,8 @@ class PostRepository extends BaseRepository {
     // set date
     if ('date' in data && data.date) {
       const date = new Date(data.date);
-      const startDate = new Date((date).setHours(0, 0, 0, 0)).toISOString();
-      const endDate = new Date((date).setHours(24, 0, 0, 0)).toISOString();
+      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
+      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
 
       if ('status' in data && data.status === 'scheduled') {
         args.where.scheduledAt = {

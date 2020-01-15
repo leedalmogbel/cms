@@ -47,7 +47,8 @@ class PostUtils extends Operation {
     let DeliveryStreamName = 'AddPost-cms';
     let payload = PublishPostStreams(post, oldPost);
 
-    if (oldPost.status === 'published') {
+    // if republished or update post send to updatepost-cms stream
+    if (oldPost.publishedAt) {
       DeliveryStreamName = 'UpdatePost-cms';
       payload = UpdatePostStreams(post, oldPost);
     }
