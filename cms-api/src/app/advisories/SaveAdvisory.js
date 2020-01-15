@@ -1,5 +1,5 @@
-const { Operation } = require('../../infra/core/core');
 const Advisory = require('src/domain/Advisory');
+const { Operation } = require('../../infra/core/core');
 
 class SaveAdvisory extends Operation {
   constructor({ AdvisoryRepository, GetLocation }) {

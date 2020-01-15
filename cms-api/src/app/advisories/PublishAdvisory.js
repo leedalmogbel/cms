@@ -16,6 +16,7 @@ class PublishAdvisory extends Operation {
     try {
       await this.AdvisoryRepository.getById(id);
     } catch (error) {
+      console.log(error);
       error.message = 'Advisory not found';
       return this.emit(NOT_FOUND, error);
     }
