@@ -1,6 +1,6 @@
 const { Operation } = require('../../infra/core/core');
 
-class GetLocation extends Operation {
+class GetLocationGoogle extends Operation {
   constructor({ httpClient }) {
     super();
     this.httpClient = httpClient;
@@ -43,7 +43,7 @@ class GetLocation extends Operation {
       details.placeId = res.place_id;
 
       // format address components
-      const components = GetLocation.formatAddressComponents(
+      const components = GetLocationGoogle.formatAddressComponents(
         res.address_components,
         res.types,
       );
@@ -98,15 +98,17 @@ class GetLocation extends Operation {
 
     // iterate through components
     data.forEach((component) => {
+      // console.log('componsefsdf', component);
       const { types } = component;
       const longName = component.long_name;
       const shortName = component.short_name;
 
       // iterate through each required types
       // to get address type values
-      Object.keys(required).forEach((value, key) => {
+      // Object.
+      Object.keys(required).forEach((key) => {
         if (types.includes(key)) {
-          components[value] = shortName;
+          components[required[key]] = shortName;
         }
       });
 
@@ -125,4 +127,4 @@ class GetLocation extends Operation {
   }
 }
 
-module.exports = GetLocation;
+module.exports = GetLocationGoogle;

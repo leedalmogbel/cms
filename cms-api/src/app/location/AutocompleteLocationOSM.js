@@ -1,6 +1,6 @@
 const { Operation } = require('../../infra/core/core');
 
-class AutocompleteLocation extends Operation {
+class AutocompleteLocationOSM extends Operation {
   constructor({ httpClient }) {
     super();
     this.httpClient = httpClient;
@@ -52,4 +52,4 @@ class AutocompleteLocation extends Operation {
   }
 }
 
-module.exports = AutocompleteLocation;
+module.exports = AutocompleteLocationOSM;
