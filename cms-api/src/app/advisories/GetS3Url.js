@@ -13,12 +13,6 @@ class GetS3Url extends Operation {
   async execute(id, args) {
     const { SUCCESS, ERROR } = this.events;
 
-    // AWS.config.update({
-    //   accessKeyId: 'AKIATB4WJMQJKPOCPEJA',
-    //   secretAccessKey: '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',
-    //   signatureVersion: 'v4',
-    // });
-
     const Key = `Advisory/${id}/${args.fileName}`;
     const { fileType } = args;
 

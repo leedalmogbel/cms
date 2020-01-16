@@ -12,10 +12,11 @@ class SavePost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
+    const autosave = 'autosave' in data;
     let oldPost;
+
     try {
       oldPost = await this.PostRepository.getById(id);
-      oldPost = oldPost.toJSON();
     } catch (error) {
       error.message = 'Post not found';
       return this.emit(NOT_FOUND, error);
@@ -24,9 +25,18 @@ class SavePost extends Operation {
     data = await this.PostUtils.build(data);
 
     try {
-      await this.PostRepository.update(id, data);
+      // if autosave use silent update
+      if (autosave) {
+        oldPost.update(data, {
+          silent: true,
+        });
+      } else {
+        await this.PostRepository.update(id, data);
+      }
+
       let post = await this.PostRepository.getPostById(id);
       post = post.toJSON();
+      oldPost = oldPost.toJSON();
 
       await this.PostUtils.postNotifications(oldPost, post);
       await this.PostUtils.firehoseIntegrate(oldPost, post);
