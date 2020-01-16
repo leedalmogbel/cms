@@ -1,8 +1,4 @@
-const AWS = require('aws-sdk');
 const { Operation } = require('../../infra/core/core');
-
-const s3 = new AWS.S3();
-const Bucket = 'kapp-cms';
 
 class ListAdvisories extends Operation {
   constructor({ AdvisoryRepository }) {
@@ -27,7 +23,7 @@ class ListAdvisories extends Operation {
             if (attachments !== undefined) {
               attachments.forEach(async (attachment) => {
                 promises.push({
-                  filename: attachment.filename,
+                  filename: attachment.fileName,
                   filetype: attachment.filetype,
                   url: attachment.url,
                 });

@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const { Operation } = require('../../infra/core/core');
 
 const s3 = new AWS.S3();
-const Bucket = 'kapp-cms';
+const Bucket = process.env.BUCKET_NAME;
 
 class GetS3Url extends Operation {
   constructor({ AdvisoryRepository }) {
