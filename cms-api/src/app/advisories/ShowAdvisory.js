@@ -18,14 +18,14 @@ class ShowAdvisory extends Operation {
       let { attachments } = advisory;
 
       // check if theres attachments
-      if (attachments && attachments.length > 0) {
+      if (attachments && attachments.length) {
         const promises = [];
 
         attachments.forEach(async (attachment) => {
           promises.push({
-            fileName: attachment.fileName,
-            downloadUrl: await ShowAdvisory.getUrl(attachment.fileName),
-            uploadUrl: '',
+            filename: attachment.filename,
+            filetype: attachment.filetype,
+            url: attachment.url,
           });
         });
 
@@ -40,20 +40,6 @@ class ShowAdvisory extends Operation {
       error.message = 'Advisory not found';
       this.emit(NOT_FOUND, error);
     }
-  }
-
-  static async getUrl(Key) {
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl('getObject', {
-        Bucket,
-        Key,
-      }, (err, url) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(url);
-      });
-    });
   }
 }
 

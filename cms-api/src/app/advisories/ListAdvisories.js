@@ -20,19 +20,21 @@ class ListAdvisories extends Operation {
       this.emit(SUCCESS, {
         results: await advisories.map((advisory) => {
           // check if theres attachments
-          if (advisory.attachments && advisory.attachments.length > 0) {
+          if (advisory.attachments && advisory.attachments.length) {
             const promises = [];
             const { attachments } = advisory.attachments || [];
 
-            attachments.map(async (attachment) => {
-              promises.push({
-                fileName: attachment.fileName,
-                downloadUrl: await ListAdvisories.getUrl(attachment.fileName),
-                uploadUrl: '',
-              });
+            if (attachments !== undefined) {
+              attachments.forEach(async (attachment) => {
+                promises.push({
+                  filename: attachment.filename,
+                  filetype: attachment.filetype,
+                  url: attachment.url,
+                });
 
-              Promise.all(promises).then(() => { attachment = promises; });
-            });
+                Promise.all(promises).then(() => { attachment = promises; });
+              });
+            }
           }
 
           return advisory.toJSON();
@@ -44,20 +46,6 @@ class ListAdvisories extends Operation {
     } catch (error) {
       this.emit(ERROR, error);
     }
-  }
-
-  static async getUrl(Key) {
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl('getObject', {
-        Bucket,
-        Key,
-      }, (err, url) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(url);
-      });
-    });
   }
 }
 
