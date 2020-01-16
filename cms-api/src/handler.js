@@ -33,7 +33,7 @@ const httpPost = (url, body) => new Promise((resolve, reject) => {
 
 module.exports.location = async (event, context, callback) => {
   const Container = await getContainer();
-  return Container.resolve('AutocompleteLocation').execute(event);
+  return Container.resolve('BaseLocation').autocomplete(event);
 };
 
 module.exports.smartTags = async (event, context, callback) => {

@@ -10,7 +10,7 @@ class PostUtils extends Operation {
     PostRepository,
     NotificationRepository,
     UserRepository,
-    GetLocation,
+    BaseLocation,
     NotificationSocket,
     httpClient,
   }) {
@@ -19,7 +19,7 @@ class PostUtils extends Operation {
     this.UserRepository = UserRepository;
     this.NotificationRepository = NotificationRepository;
     this.NotificationSocket = NotificationSocket;
-    this.GetLocation = GetLocation;
+    this.BaseLocation = BaseLocation;
     this.httpClient = httpClient;
   }
 
@@ -28,7 +28,7 @@ class PostUtils extends Operation {
       const {
         locationDetails,
         locationAddress,
-      } = await this.GetLocation.execute(data.placeId);
+      } = await this.BaseLocation.detail(data.placeId);
 
       data = {
         ...data,

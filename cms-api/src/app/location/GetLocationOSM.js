@@ -1,6 +1,6 @@
 const { Operation } = require('../../infra/core/core');
 
-class GetLocation extends Operation {
+class GetLocationOSM extends Operation {
   constructor({ httpClient }) {
     super();
     this.httpClient = httpClient;
@@ -19,14 +19,14 @@ class GetLocation extends Operation {
         const { fields } = place;
 
         const {
-          street,
-          barangay,
-          municipality,
-          province,
-          region,
-          country,
-          type,
-          location,
+          name = '',
+          barangay = '',
+          municipality = '',
+          province = '',
+          region = '',
+          country = '',
+          type = '',
+          location = '',
         } = fields;
 
         // get longitude and latitude
@@ -36,7 +36,7 @@ class GetLocation extends Operation {
           locationAddress: fields.complete_name,
           locationDetails: {
             streetNumber: '',
-            street,
+            street: name,
             barangay,
             district: '',
             city: municipality,
@@ -58,4 +58,4 @@ class GetLocation extends Operation {
   }
 }
 
-module.exports = GetLocation;
+module.exports = GetLocationOSM;
