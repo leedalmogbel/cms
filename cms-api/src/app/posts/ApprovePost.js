@@ -13,14 +13,16 @@ class ApprovePost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
+    let oldPost;
     try {
-      await this.PostRepository.getById(id);
+      oldPost = await this.PostRepository.getById(id);
+      oldPost = oldPost.toJSON();
     } catch (error) {
       error.message = 'Post not found';
       return this.emit(NOT_FOUND, error);
     }
 
-    data.status = 'published';
+    data.status = await this.getStatus(data);
     if ('scheduledAt' in data) {
       data.status = 'scheduled';
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
@@ -39,7 +41,8 @@ class ApprovePost extends Operation {
 
     try {
       await this.PostRepository.update(id, data);
-      const post = await this.PostRepository.getPostById(id);
+      let post = await this.PostRepository.getPostById(id);
+      post = post.toJSON();
 
       if (post.status === 'scheduled') {
         return this.emit(SUCCESS, {
@@ -68,8 +71,8 @@ class ApprovePost extends Operation {
         });
       }
 
-      await this.PostUtils.firehoseIntegrate(post.toJSON());
-      await this.PostUtils.pmsIntegrate(post.toJSON());
+      await this.PostUtils.firehoseIntegrate(oldPost, post);
+      await this.PostUtils.pmsIntegrate(post);
 
       this.emit(SUCCESS, {
         results: { id },
@@ -77,6 +80,28 @@ class ApprovePost extends Operation {
       });
     } catch (error) {
       this.emit(ERROR, error);
+    }
+  }
+
+  async getStatus(data) {
+    const { NOT_FOUND } = this.events;
+
+    try {
+      let user = await this.UserRepository.getUserById(data.userId);
+      user = user.toJSON();
+
+      if (user.role.title === 'writer') {
+        return 'for-approval';
+      }
+
+      if (data.scheduledAt && !data.publishedAt) {
+        return 'scheduled';
+      }
+
+      return 'published';
+    } catch (error) {
+      error.message = 'User not found';
+      this.emit(NOT_FOUND, error);
     }
   }
 }

@@ -23,9 +23,18 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: '0',
       },
+      status: DataTypes.STRING,
+      tagsOriginal: DataTypes.JSON,
+      tagsRetained: DataTypes.JSON,
+      tagsAdded: DataTypes.JSON,
+      tagsRemoved: DataTypes.JSON,
       attachments: {
         type: DataTypes.JSON,
         allowNull: true,
+      },
+      isActive: {
+        type: DataTypes.INTEGER,
+        defaultValue: 1,
       },
       publishedAt: {
         type: DataTypes.DATE,
@@ -37,6 +46,13 @@ module.exports = {
       tableName: 'advisories',
       timestamps: true,
     });
+
+    AdvisoryModel.associate = function () {
+      AdvisoryModel.belongsTo(datasource.models.UserModel, {
+        foreignKey: 'userId',
+        as: 'user',
+      });
+    };
 
     return AdvisoryModel;
   },

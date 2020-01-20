@@ -12,9 +12,11 @@ class SaveRawPost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
-    let prevPost;
+    const autosave = 'autosave' in data;
+    let oldPost;
+
     try {
-      prevPost = await this.PostRepository.getById(id);
+      oldPost = await this.PostRepository.getById(id);
     } catch (error) {
       error.message = 'Post not found';
       return this.emit(NOT_FOUND, error);
@@ -23,14 +25,22 @@ class SaveRawPost extends Operation {
     data = await this.PostUtils.build(data);
 
     try {
-      await this.PostRepository.update(id, data);
-      const post = await this.PostRepository.getPostById(id);
-
-      // NOTE: Disable for now
-      if (Object.entries(post.toJSON().contributors.editor).length !== 0
-        && post.toJSON().contributors.writers.length !== 0) {
-        await this.PostUtils.postNotifications(prevPost, post);
+      // if autosave use silent update
+      if (autosave) {
+        oldPost.update(data, {
+          silent: true,
+        });
+      } else {
+        await this.PostRepository.update(id, data);
       }
+
+      let post = await this.PostRepository.getPostById(id);
+      post = post.toJSON();
+      oldPost = oldPost.toJSON();
+
+      await this.PostUtils.postNotifications(oldPost, post);
+      await this.PostUtils.firehoseIntegrate(oldPost, post);
+      await this.PostUtils.pmsIntegrate(post);
 
       this.emit(SUCCESS, {
         results: { id },

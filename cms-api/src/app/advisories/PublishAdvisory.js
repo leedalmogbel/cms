@@ -16,6 +16,7 @@ class PublishAdvisory extends Operation {
     try {
       await this.AdvisoryRepository.getById(id);
     } catch (error) {
+      console.log(error);
       error.message = 'Advisory not found';
       return this.emit(NOT_FOUND, error);
     }
@@ -23,7 +24,7 @@ class PublishAdvisory extends Operation {
     try {
       data = await this.SaveAdvisory.build({
         ...data,
-        draft: false,
+        verified: false,
         publishedAt: new Date().toISOString(),
       });
 

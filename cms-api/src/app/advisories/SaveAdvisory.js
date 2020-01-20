@@ -1,11 +1,11 @@
-const { Operation } = require('../../infra/core/core');
 const Advisory = require('src/domain/Advisory');
+const { Operation } = require('../../infra/core/core');
 
 class SaveAdvisory extends Operation {
-  constructor({ AdvisoryRepository, GetLocation }) {
+  constructor({ AdvisoryRepository, BaseLocation }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
-    this.GetLocation = GetLocation;
+    this.BaseLocation = BaseLocation;
   }
 
   async execute(id, data = {}) {
@@ -44,7 +44,7 @@ class SaveAdvisory extends Operation {
       const {
         locationDetails,
         locationAddress,
-      } = await this.GetLocation.execute(data.placeId);
+      } = await this.BaseLocation.detail(data.placeId);
 
       data = {
         ...data,

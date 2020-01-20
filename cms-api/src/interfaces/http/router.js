@@ -46,6 +46,7 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
   apiRouter.use('/posts', controller('controllers/PostsController.js'));
   apiRouter.use('/advisories', controller('controllers/AdvisoriesController.js'));
   apiRouter.use('/notifications', controller('controllers/NotificationsController.js'));
+  apiRouter.use('/agendas', controller('controllers/AgendasController.js'));
   
   /* apiRoutes END */
 

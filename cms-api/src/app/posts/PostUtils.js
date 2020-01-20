@@ -1,7 +1,8 @@
 const AWS = require('aws-sdk');
 const Post = require('src/domain/Post');
 const PmsPost = require('src/domain/pms/Post');
-const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
+const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
+const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
 const { Operation } = require('../../infra/core/core');
 
 class PostUtils extends Operation {
@@ -9,7 +10,7 @@ class PostUtils extends Operation {
     PostRepository,
     NotificationRepository,
     UserRepository,
-    GetLocation,
+    BaseLocation,
     NotificationSocket,
     httpClient,
   }) {
@@ -18,7 +19,7 @@ class PostUtils extends Operation {
     this.UserRepository = UserRepository;
     this.NotificationRepository = NotificationRepository;
     this.NotificationSocket = NotificationSocket;
-    this.GetLocation = GetLocation;
+    this.BaseLocation = BaseLocation;
     this.httpClient = httpClient;
   }
 
@@ -27,7 +28,7 @@ class PostUtils extends Operation {
       const {
         locationDetails,
         locationAddress,
-      } = await this.GetLocation.execute(data.placeId);
+      } = await this.BaseLocation.detail(data.placeId);
 
       data = {
         ...data,
@@ -40,22 +41,30 @@ class PostUtils extends Operation {
     return new Post(data);
   }
 
-  async firehoseIntegrate(data) {
-    if (data.status !== 'published') return;
+  async firehoseIntegrate(oldPost, post) {
+    if (post.status !== 'published') return;
+
+    let DeliveryStreamName = 'AddPost-cms';
+    let payload = PublishPostStreams(post, oldPost);
+
+    // if republished or update post send to updatepost-cms stream
+    if (oldPost.publishedAt) {
+      DeliveryStreamName = 'UpdatePost-cms';
+      payload = UpdatePostStreams(post, oldPost);
+    }
 
     const firehose = new AWS.Firehose({
       apiVersion: '2015-08-04',
     });
 
-    const payload = PublistPostStreams(data);
     const fres = await firehose.putRecord({
-      DeliveryStreamName: 'AddPost-cms',
+      DeliveryStreamName,
       Record: {
         Data: JSON.stringify(payload),
       },
     }).promise();
 
-    console.log(`Firehose response for id: ${data.postId}`, fres, payload);
+    console.log(`Firehose response for id: ${post.postId}`, fres, payload);
   }
 
   async pmsIntegrate(data) {
@@ -97,16 +106,16 @@ class PostUtils extends Operation {
     });
   }
 
-  async postNotifications(prevPost, updatedPost) {
+  async postNotifications(oldPost, updatedPost) {
     const {
       editor,
       writers,
     } = updatedPost.contributors || {};
 
     const {
-      editor: prevEditor,
-      writers: prevWriters,
-    } = prevPost.contributors || {};
+      editor: oldEditor,
+      writers: oldWriters,
+    } = oldPost.contributors || {};
 
     const { id, postId } = updatedPost;
     const meta = {
@@ -118,22 +127,22 @@ class PostUtils extends Operation {
     author = author.toJSON();
     author.name = `${author.firstName} ${author.lastName}`;
 
-    if (editor) {
-      if (prevEditor && prevEditor.id !== editor.id) {
+    if (editor && Object.entries(editor).length !== 0) {
+      if (oldEditor && oldEditor.id !== editor.id) {
         // send notification to removed editor
         await this.saveNotification({
-          userId: prevEditor.id,
+          userId: oldEditor.id,
           message: `You are removed as an editor for Post "${updatedPost.title}"`,
           meta: {
             ...meta,
-            name: `${prevEditor.firstName} ${prevEditor.lastName}`,
+            name: `${oldEditor.firstName} ${oldEditor.lastName}`,
           },
         });
 
         // send notification to current editor
         await this.saveNotification({
           userId: editor.id,
-          message: `${prevEditor.firstName} ${prevEditor.lastName} assigned you as editor for post ${updatedPost.title}`,
+          message: `${oldEditor.firstName} ${oldEditor.lastName} assigned you as editor for post ${updatedPost.title}`,
           meta: {
             ...meta,
             name: `${editor.firstName} ${editor.lastName}`,
@@ -162,25 +171,25 @@ class PostUtils extends Operation {
       if (author.id === writer.id) return;
 
       // send notification to removed writer
-      let prevWriterId;
-      if (prevWriters && prevWriters.length) {
-        const prevWriter = prevWriters[0];
-        prevWriterId = prevWriter.id;
+      let oldWriterId;
+      if (oldWriters && oldWriters.length) {
+        const oldWriter = oldWriters[0];
+        oldWriterId = oldWriter.id;
 
-        if (prevWriterId !== writer.id) {
+        if (oldWriterId !== writer.id) {
           this.saveNotification({
-            userId: prevWriterId,
+            userId: oldWriterId,
             message: `You are removed as a writer for Post "${updatedPost.title}"`,
             meta: {
               ...meta,
-              name: `${prevWriters[0].firstName} ${prevWriters[0].lastName}`,
+              name: `${oldWriters[0].firstName} ${oldWriters[0].lastName}`,
             },
           });
         }
       }
 
       // skip the same writer
-      if (prevWriterId === writer.id) return;
+      if (oldWriterId === writer.id) return;
 
       let editorName;
       if (editor) {

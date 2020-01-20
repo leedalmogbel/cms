@@ -13,12 +13,16 @@ const Advisory = attributes({
   locationAddress: String,
   locationDetails: Object,
   verified: Boolean,
-  draft: Boolean,
-  tags: Array,
+  tagsOriginal: Array,
+  tagsRetained: Array,
+  tagsAdded: Array,
+  tagsRemoved: Array,
+  status: String,
   attachments: Array,
   publishedAt: Date,
   createdAt: Date,
   updatedAt: Date,
+  isActive: Number,
 })(class Advisory {
   validateData() {
     if (!this.category || !this.category.length) {

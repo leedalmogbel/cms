@@ -63,13 +63,16 @@ class LockPostSocket extends Operation {
     }
 
     try {
-      await this.PostRepository.update(id, {
+      // update post without updating the updatedAt
+      post.update({
         isLocked: true,
         lockUser: {
           connectionId,
           userId,
           name,
         },
+      }, {
+        silent: true,
       });
     } catch (error) {
       console.log('Lock Post Error', error);
@@ -142,14 +145,32 @@ class LockPostSocket extends Operation {
       };
     }
 
+    // notify current lock user
+    if (post.isLocked && post.lockUser) {
+      const currentUser = post.lockUser;
+      await this.send(currentUser.connectionId, {
+        type: 'BROADCAST_KICK',
+        message: '',
+        meta: {
+          id,
+          postId: post.postId,
+          userId,
+          name,
+        },
+      });
+    }
+
     try {
-      await this.PostRepository.update(id, {
+      // update post without updating the updatedAt
+      post.update({
         isLocked: true,
         lockUser: {
           connectionId,
           userId,
-          name: `${user.firstName} ${user.lastName}`,
+          name,
         },
+      }, {
+        silent: true,
       });
     } catch (error) {
       console.log('Kick Locked Post Error', error);
@@ -183,13 +204,69 @@ class LockPostSocket extends Operation {
     };
   }
 
+  async kickConfirm(event) {
+    const headers = {
+      'Content-Type': 'text/plain',
+      'Access-Control-Allow-Origin': '*',
+    };
+
+    const { connectionId } = event.requestContext;
+    const { data: { id, userId } } = JSON.parse(event.body);
+
+    // validate lockUser
+    let user;
+    try {
+      user = await this.UserRepository.getUserById(userId);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Invalid user id',
+        }),
+      };
+    }
+
+    const name = `${user.firstName} ${user.lastName}`;
+
+    // validate post
+    let post;
+    try {
+      post = await this.PostRepository.getById(id);
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Invalid post id',
+        }),
+      };
+    }
+
+    // notify current lock user
+    await this.send(post.lockUser.connectionId, {
+      type: 'BROADCAST_KICK_CONFIRM',
+      message: '',
+      meta: {
+        ...post.toJSON(),
+        name,
+      },
+    });
+
+    return {
+      statusCode: 200,
+      headers,
+      body: 'Kick lock post confirm response.',
+    };
+  }
+
   async unlock(event) {
     const headers = {
       'Content-Type': 'text/plain',
       'Access-Control-Allow-Origin': '*',
     };
 
-    const { data: { id } } = JSON.parse(event.body);
+    const { data: { id, userId } } = JSON.parse(event.body);
 
     // validate post
     let post;
@@ -215,10 +292,23 @@ class LockPostSocket extends Operation {
       };
     }
 
+    if (post && post.lockUser && post.lockUser.userId !== userId) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Post locked owner belongs to another user.',
+        }),
+      };
+    }
+
     try {
-      await this.PostRepository.update(id, {
+      // update post without updating the updatedAt
+      post.update({
         isLocked: false,
         lockUser: null,
+      }, {
+        silent: true,
       });
     } catch (error) {
       console.log('Unlock Post Error', error);

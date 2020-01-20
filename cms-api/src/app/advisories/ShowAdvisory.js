@@ -1,8 +1,4 @@
-const AWS = require('aws-sdk');
 const { Operation } = require('../../infra/core/core');
-
-const s3 = new AWS.S3();
-const Bucket = 'kapp-cms';
 
 class ShowAdvisory extends Operation {
   constructor({ AdvisoryRepository }) {
@@ -14,18 +10,18 @@ class ShowAdvisory extends Operation {
     const { SUCCESS, NOT_FOUND } = this.events;
 
     try {
-      const advisory = await this.AdvisoryRepository.getById(id);
+      const advisory = await this.AdvisoryRepository.getAdvisoryById(id);
       let { attachments } = advisory;
 
       // check if theres attachments
-      if (attachments && attachments.length > 0) {
+      if (attachments && attachments.length) {
         const promises = [];
 
         attachments.forEach(async (attachment) => {
           promises.push({
-            fileName: attachment.fileName,
-            downloadUrl: await ShowAdvisory.getUrl(attachment.fileName),
-            uploadUrl: '',
+            filename: attachment.fileName,
+            filetype: attachment.fileType,
+            url: attachment.url,
           });
         });
 
@@ -40,20 +36,6 @@ class ShowAdvisory extends Operation {
       error.message = 'Advisory not found';
       this.emit(NOT_FOUND, error);
     }
-  }
-
-  static async getUrl(Key) {
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl('getObject', {
-        Bucket,
-        Key,
-      }, (err, url) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(url);
-      });
-    });
   }
 }
 
