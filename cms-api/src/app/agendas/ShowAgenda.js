@@ -12,6 +12,10 @@ class ShowAgenda extends Operation {
     try {
       const agenda = await this.AgendaRepository.getAgendaById(id);
 
+      if (!agenda || !agenda.isActive) {
+        throw new Error();
+      }
+
       this.emit(SUCCESS, {
         results: agenda,
         meta: {},

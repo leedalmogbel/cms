@@ -47,7 +47,7 @@ class AgendaRepository extends BaseRepository {
     return args;
   }
 
-  getPosts(args) {
+  getAgendas(args) {
     return this.getAll({
       ...this.buildListArgs(args),
       include: [
@@ -66,6 +66,7 @@ class AgendaRepository extends BaseRepository {
     return this.model.findOne({
       where: {
         id,
+        isActive: 1,
       },
       include: [
         {

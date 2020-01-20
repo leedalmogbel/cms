@@ -10,7 +10,7 @@ class ListAgendas extends Operation {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      const agendas = await this.AgendaRepository.getPosts(args);
+      const agendas = await this.AgendaRepository.getAgendas(args);
       const total = await this.AgendaRepository.count(args);
 
       this.emit(SUCCESS, {
