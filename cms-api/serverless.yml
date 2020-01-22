@@ -36,8 +36,8 @@ functions:
           path: /{proxy+}
           method: any
           cors: true
-          # authorizer:
-          #   arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
+          authorizer:
+            arn: arn:aws:cognito-idp:ap-southeast-1:${file(env.yml):${self:custom.stage}.AWS_ACCOUNT}:userpool/${file(env.yml):${self:custom.stage}.REGION}_${file(env.yml):${self:custom.stage}.COGNITO_POOL_ID}
     reservedConcurrency: 10
   autocomplete:
     handler: src/handler.location
