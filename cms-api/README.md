@@ -112,3 +112,54 @@ This boilerplate comes with a collection of npm scripts to make your life easier
 ## Contributing
 
 This boilerplate is open to suggestions and contributions, documentation contributions are also important! :)
+
+
+```
+CMS-API
+├── .serverless
+├── .vscode
+├── config
+├── logs
+├── node_modules
+├── scripts
+├── src
+│   ├── app
+│   │   ├── advisories
+│   │   ├── agendas
+│   │   ├── auth
+│   │   ├── cron
+│   │   ├── notifications
+│   │   ├── posts
+│   │   ├── sockets
+│   │   └── users
+│   ├── domain
+│   │   ├── pms
+│   │   └── streams
+│   ├── infra
+│   │   ├── core
+│   │   ├── dataSources
+│   │   ├── http-request
+│   │   ├── models
+│   │   └── repositories
+│   ├── interfaces
+│   │   ├── console
+│   │   ├── http
+│   │   │   ├── controllers
+│   │   │   ├── middlewares
+│   │   │   ├── public
+│   │   │   └── utils
+│   │   ├── openApi.json
+│   │   └── router.json
+│   ├── app-serverless.js
+│   ├── app.js
+│   ├── cron.js
+│   ├── handler.js
+│   ├── seeds.json
+│   └── socket.js
+├── tests
+├── .env
+├── .env.yml
+├── package.json
+├── README.md
+└── serverless.yml
+```
