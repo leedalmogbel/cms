@@ -1,6 +1,6 @@
 const { Operation } = require('../../infra/core/core');
 
-class RemovePost extends Operation {
+class RecoverPost extends Operation {
   constructor({ PostRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
@@ -21,7 +21,7 @@ class RemovePost extends Operation {
 
     try {
       await this.PostRepository.update(id, {
-        isActive: 0,
+        isActive: 1,
       });
 
       this.emit(SUCCESS, {
@@ -34,6 +34,6 @@ class RemovePost extends Operation {
   }
 }
 
-RemovePost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+RecoverPost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = RemovePost;
+module.exports = RecoverPost;
