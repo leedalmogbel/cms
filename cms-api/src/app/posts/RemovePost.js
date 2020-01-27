@@ -7,7 +7,7 @@ class RemovePost extends Operation {
     this.PostUtils = PostUtils;
   }
 
-  async execute(id, data) {
+  async execute(id) {
     const {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
@@ -20,8 +20,7 @@ class RemovePost extends Operation {
     }
 
     try {
-      await this.PostRepository.update(id, data = {
-        ...data,
+      await this.PostRepository.update(id, {
         isActive: 0,
       });
 
