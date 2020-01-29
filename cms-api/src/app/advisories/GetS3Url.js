@@ -47,6 +47,7 @@ class GetS3Url extends Operation {
         Bucket,
         Key,
         ContentType: fileType,
+        ExpiresIn: 604800,
         ACL: 'public-read',
       });
 
