@@ -1,8 +1,0 @@
-const ENV = process.env.NODE_ENV || 'development';
-
-module.exports = {
-  config: 'config/database.js',
-  'migrations-path': 'src/infra/migrations',
-  'models-path': 'src/infra/models',
-  'seeders-path': 'src/infra/seeds'
-};
