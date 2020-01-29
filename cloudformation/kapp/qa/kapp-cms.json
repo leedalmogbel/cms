@@ -54,9 +54,9 @@
                 },
                 "PublicAccessBlockConfiguration": {
                   "BlockPublicAcls" : false,
-                  "IgnorePublicAcls" : true,
+                  "IgnorePublicAcls" : false,
                   "BlockPublicPolicy" : false,
-                  "RestrictPublicBuckets" : true
+                  "RestrictPublicBuckets" : false
                 }
                 
             }
@@ -103,7 +103,7 @@
                     "ErrorDocument": "index.html",
                     "IndexDocument": "index.html"
                 },
-                "AccessControl": "Public",
+                "AccessControl": "PublicRead",
                 "BucketEncryption": {
                     "ServerSideEncryptionConfiguration": [
                         {
@@ -161,7 +161,10 @@
                     },
                     "TargetOriginId" : "S3Origin",
                     "ViewerProtocolPolicy" : "redirect-to-https",
-                  },
+                    "DefaultTTL" : "2.0",
+                    "MaxTTL" : "2.0",
+                    "MinTTL" : "2.0",
+                },
 
                   "PriceClass": "PriceClass_All"
               },
@@ -180,44 +183,6 @@
                 }
             ]
             }
-        },
-        "CMSDatabase":
-        {
-            "Type" : "AWS::RDS::DBCluster",
-            "Properties" : {
-                "AssociatedRoles" : [ DBClusterRole, ... ],
-                "AvailabilityZones" : [ String, ... ],
-                "BacktrackWindow" : Long,
-                "BackupRetentionPeriod" : Integer,
-                "DatabaseName" : String,
-                "DBClusterIdentifier" : String,
-                "DBClusterParameterGroupName" : String,
-                "DBSubnetGroupName" : String,
-                "DeletionProtection" : Boolean,
-                "EnableCloudwatchLogsExports" : [ String, ... ],
-                "EnableHttpEndpoint" : Boolean,
-                "EnableIAMDatabaseAuthentication" : Boolean,
-                "Engine" : String,
-                "EngineMode" : String,
-                "EngineVersion" : String,
-                "KmsKeyId" : String,
-                "MasterUsername" : String,
-                "MasterUserPassword" : String,
-                "Port" : Integer,
-                "PreferredBackupWindow" : String,
-                "PreferredMaintenanceWindow" : String,
-                "ReplicationSourceIdentifier" : String,
-                "RestoreType" : String,
-                "ScalingConfiguration" : ScalingConfiguration,
-                "SnapshotIdentifier" : String,
-                "SourceDBClusterIdentifier" : String,
-                "SourceRegion" : String,
-                "StorageEncrypted" : Boolean,
-                "Tags" : [ Tag, ... ],
-                "UseLatestRestorableTime" : Boolean,
-                "VpcSecurityGroupIds" : [ String, ... ]
-              }
-          }
+        }
     }
 }
-  
