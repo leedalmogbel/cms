@@ -44,12 +44,12 @@ class PostUtils extends Operation {
   async firehoseIntegrate(oldPost, post) {
     if (post.status !== 'published') return;
 
-    let DeliveryStreamName = 'AddPost-cms';
+    let DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_ADD;
     let payload = PublishPostStreams(post, oldPost);
 
     // if republished or update post send to updatepost-cms stream
     if (oldPost.publishedAt) {
-      DeliveryStreamName = 'UpdatePost-cms';
+      DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
       payload = UpdatePostStreams(post, oldPost);
     }
 
