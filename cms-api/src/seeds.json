@@ -160,5 +160,14 @@
     "firstName": "Michael Angelo",
     "lastName": "Rivera",
     "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "luiscba",
+    "email": "luiscba@abs-cbn.com",
+    "password": "",
+    "firstName": "Luis",
+    "lastName": "Baptista",
+    "active": 1
   }
 ]
