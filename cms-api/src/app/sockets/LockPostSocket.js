@@ -248,7 +248,9 @@ class LockPostSocket extends Operation {
       type: 'BROADCAST_KICK_CONFIRM',
       message: '',
       meta: {
-        ...post.toJSON(),
+        id,
+        postId: post.postId,
+        userId,
         name,
       },
     });
