@@ -6,12 +6,12 @@
   },
   "servers": [
     {
-      "description": "rest-temporary",
-      "url": "https://qp3fgsp42g.execute-api.ap-southeast-1.amazonaws.com/rest/api"
+      "description": "UAT",
+      "url": "https://oxx11jcynk.execute-api.ap-southeast-1.amazonaws.com/uat/api"
     },
     {
-      "description": "dev",
-      "url": "https://sztg7uncla.execute-api.ap-southeast-1.amazonaws.com/dev/api"
+      "description": "DEV",
+      "url": "https://clm9srfcck.execute-api.ap-southeast-1.amazonaws.com/dev/api"
     }
   ],
   "paths": {
@@ -144,7 +144,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PostInitial"
+                "$ref": "#/components/schemas/Post"
               }
             }
           }
@@ -155,7 +155,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PostInitial"
+                  "$ref": "#/components/schemas/Post"
                 }
               }
             }
@@ -268,6 +268,50 @@
             }
           }
         }
+      },
+      "delete": {
+        "operationId": "RemovePost",
+        "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of post to delete",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Post Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/posts/{id}/save": {
@@ -351,6 +395,177 @@
         ],
         "requestBody": {
           "description": "Post Draft new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Post Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}/approve": {
+      "post": {
+        "operationId": "ApprovePost",
+        "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of post to approve",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Post new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}/comment": {
+      "post": {
+        "operationId": "AddPostComment",
+        "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Add comment to a post",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Post new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}/recover": {
+      "post": {
+        "operationId": "RecoverPost",
+        "tags": [ "Posts" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of post to Recover",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Post recover data",
           "required": true,
           "content": {
             "application/json": {
@@ -501,7 +716,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AdvisoryDraft"
+                "$ref": "#/components/schemas/Advisory"
               }
             }
           }
@@ -512,7 +727,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AdvisoryDraft"
+                  "$ref": "#/components/schemas/Advisory"
                 }
               }
             }
@@ -683,6 +898,520 @@
           }
         }
       }
+    },
+    "/advisories/{id}/geturl": {
+      "post": {
+        "operationId": "GetS3Url",
+        "tags": [ "Advisories" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Get download/upload attachments",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Advisory"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Advisory Get S3 Url",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Advisory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Advisory Draft updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Advisory"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Advisory not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendas": {
+      "get": {
+        "operationId": "ListAgendas",
+        "tags": [ "Agendas" ],
+        "parameters": [
+          {
+            "name": "isActive",
+            "in": "query",
+            "description": "filter active agendas",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Agenda"
+                  },
+                  "example": [{
+                    "draft": true
+                  }]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all agendas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Agenda"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "List of all agendas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "CreateAgenda",
+        "tags": [ "Agendas" ],
+        "requestBody": {
+          "description": "Creates an agenda",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Agenda"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Agendas has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agenda"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not created because of validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendas/{id}": {
+      "get": {
+        "operationId": "ShowAgenda",
+        "tags": [ "Agendas" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of agenda to show",
+            "required": true,
+            "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Agenda"
+                  }
+                }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return agenda with given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agenda"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "SaveAgenda",
+        "tags": [ "Agendas" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of agenda to update",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Agenda"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Agenda new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Agenda"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Agenda updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Agenda"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agenda not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteAgenda",
+        "tags": [ "Agendas" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of genda to delete",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Agenda"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Agenda deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Agenda"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agenda not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag": {
+      "get": {
+        "operationId": "ListTags",
+        "tags": [ "Tags" ],
+        "parameters": [
+          {
+            "name": "isActive",
+            "in": "query",
+            "description": "filter active tags",
+            "required": false,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "List of all tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "CreateTag",
+        "tags": [ "Tags" ],
+        "requestBody": {
+          "description": "Creates an tag",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tags has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not created because of validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tags/{id}": {
+      "get": {
+        "operationId": "ShowTag",
+        "tags": [ "Tags" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of tag to show",
+            "required": true,
+            "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return tag with given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "SaveTag",
+        "tags": [ "Tags" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of tag to update",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Tag new data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tag"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Tag updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteTag",
+        "tags": [ "Tags" ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of tag to delete",
+            "required": true,
+              "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Tag deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref":"#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -833,25 +1562,50 @@
           }
         }
       },
-      "PostInitial": {
+      "Agenda": {
+        "type": "object",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32",
-            "description": "Unique Identifier representing a draft of post",
-            "x-primary-key": true,
-            "default": 1
+            "description": "Unique Identifier representing a agenda",
+            "x-primary-key": true
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Identifier representing an author"
+          },
+          "title": {
+            "type": "string"
+          },  
+          "isActive": {
+            "type": "boolean"
           }
         }
       },
-      "AdvisoryDraft": {
+      "Tag": {
+        "type": "object",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32",
-            "description": "Unique Identifier representing a draft of advisory",
-            "x-primary-key": true,
-            "default": 1
+            "description": "Unique Identifier representing a tag",
+            "x-primary-key": true
+          },
+          "userId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Identifier representing an author"
+          },
+          "name": {
+            "type": "string"
+          },
+          "meta": {
+            "type": "object"
+          },  
+          "isActive": {
+            "type": "boolean"
           }
         }
       },

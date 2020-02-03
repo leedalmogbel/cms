@@ -6,13 +6,32 @@ class UpdateNotification extends Operation {
     this.NotificationRepository = NotificationRepository;
   }
 
-  async execute(id, data) {
+  async execute(data) {
     const {
       SUCCESS, NOT_FOUND, VALIDATION_ERROR, ERROR,
     } = this.events;
 
     try {
-      const notification = await this.NotificationRepository.update(id, data);
+      let notification;
+
+      if (typeof data.id !== 'number') {
+        const ids = data.id;
+
+        ids.forEach(async (id) => {
+          await this.NotificationRepository.update(id, data);
+        });
+
+        notification = {
+          id: ids,
+        };
+      } else {
+        await this.NotificationRepository.update(data.id, data);
+
+        notification = {
+          id: data.id,
+        };
+      }
+
       this.emit(SUCCESS, notification);
     } catch (error) {
       switch (error.message) {

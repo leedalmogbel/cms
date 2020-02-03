@@ -26,6 +26,7 @@ class ListAdvisories extends Operation {
                   filename: attachment.fileName,
                   filetype: attachment.filetype,
                   url: attachment.url,
+                  size: attachment.size,
                 });
 
                 Promise.all(promises).then(() => { attachment = promises; });

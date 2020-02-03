@@ -14,7 +14,7 @@ module.exports = {
       category: DataTypes.STRING,
       subCategory: DataTypes.STRING,
       postId: DataTypes.STRING,
-      title: DataTypes.STRING,
+      title: DataTypes.STRING(500),
       content: DataTypes.TEXT,
       priorityLevel: DataTypes.STRING,
       source: DataTypes.STRING,

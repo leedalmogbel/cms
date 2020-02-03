@@ -1,0 +1,187 @@
+{
+    "Resources": {
+        "WebsiteBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "kapp-cms-frontend-uat",
+                "CorsConfiguration": {
+                    "CorsRules": [
+                        {
+                            "AllowedHeaders": [
+                                "Authorization"
+                            ],
+                            "AllowedMethods": [
+                                "GET",
+                                "HEAD"
+                            ],
+                            "AllowedOrigins": [
+                                "*"
+                            ],
+                            "MaxAge": 3000
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "CMS-frontend-website-s3-UAT"
+                    },
+                    {
+                        "Key": "ProjectCode",
+                        "Value": "CMS"
+                    },
+                    {
+                        "Key": "SupportContact",
+                        "Value": "Stratpoint"
+                    }
+                ],
+                "VersioningConfiguration": {
+                    "Status": "Suspended"
+                },
+                "WebsiteConfiguration": {
+                    "ErrorDocument": "index.html",
+                    "IndexDocument": "index.html"
+                },
+                "AccessControl": "Private",
+                "BucketEncryption": {
+                    "ServerSideEncryptionConfiguration": [
+                        {
+                            "ServerSideEncryptionByDefault": {
+                                "SSEAlgorithm": "AES256"
+                            }
+                        }
+                    ]
+                },
+                "PublicAccessBlockConfiguration": {
+                  "BlockPublicAcls" : false,
+                  "IgnorePublicAcls" : false,
+                  "BlockPublicPolicy" : false,
+                  "RestrictPublicBuckets" : false
+                }
+                
+            }
+        },
+        "AttachmentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "kapp-cms-attachments-uat",
+                "CorsConfiguration": {
+                    "CorsRules": [
+                        {
+                            "AllowedHeaders": [
+                                "Authorization"
+                            ],
+                            "AllowedMethods": [
+                                "GET",
+                                "HEAD"
+                            ],
+                            "AllowedOrigins": [
+                                "*"
+                            ],
+                            "MaxAge": 3000
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "CMS-frontend-website-s3-UAT"
+                    },
+                    {
+                        "Key": "ProjectCode",
+                        "Value": "CMS"
+                    },
+                    {
+                        "Key": "SupportContact",
+                        "Value": "Stratpoint"
+                    }
+                ],
+                "VersioningConfiguration": {
+                    "Status": "Suspended"
+                },  
+                "WebsiteConfiguration": {
+                    "ErrorDocument": "index.html",
+                    "IndexDocument": "index.html"
+                },
+                "AccessControl": "PublicRead",
+                "BucketEncryption": {
+                    "ServerSideEncryptionConfiguration": [
+                        {
+                            "ServerSideEncryptionByDefault": {
+                                "SSEAlgorithm": "AES256"
+                            }
+                        }
+                    ]
+                },
+                "PublicAccessBlockConfiguration": {
+                  "BlockPublicAcls" : false,
+                  "IgnorePublicAcls" : false,
+                  "BlockPublicPolicy" : false,
+                  "RestrictPublicBuckets" : false
+                }
+                
+            }
+        },
+        "WebsiteCloudfront":
+        {
+            "Type": "AWS::CloudFront::Distribution",
+            "DependsOn": ["WebsiteBucket"],
+            "Properties": {
+              "DistributionConfig": {
+                  "Comment": "Cloudfront Distribution pointing to S3 bucket",
+                  "Origins": [
+                        {
+                          "CustomOriginConfig" : {
+                            "HTTPPort" : "80",
+                            "HTTPSPort" : "443",
+                            "OriginProtocolPolicy" : "http-only"
+                          },
+                          "DomainName" : {
+                            "Fn::Select" : [ 2, {
+                                "Fn::Split" : [ "/", {
+                                    "Fn::GetAtt" : [ "WebsiteBucket", "WebsiteURL" ]
+                                }] 
+                            } ]
+                          },
+                          "Id" : "S3Origin"
+                        }
+                ],
+                "Enabled": true,
+                "HttpVersion": "http2",
+                "DefaultRootObject": "index.html",
+                "DefaultCacheBehavior":
+                {
+                    "AllowedMethods" : [ "GET", "HEAD" ],
+                    "Compress" : true,
+                    "ForwardedValues" : {
+                        "QueryString": true,
+                        "Cookies": {
+                            "Forward": "none"
+                        }
+                    },
+                    "TargetOriginId" : "S3Origin",
+                    "ViewerProtocolPolicy" : "redirect-to-https",
+                    "DefaultTTL" : "2",
+                    "MaxTTL" : "2",
+                    "MinTTL" : "2"
+                  },
+                  "PriceClass": "PriceClass_All"
+              },
+              "Tags" : [
+                {
+                    "Key": "Name",
+                    "Value": "CMS-Website-Cloudfront-UAT"
+                },
+                {
+                    "Key": "ProjectCode",
+                    "Value": "CMS"
+                },
+                {
+                    "Key": "SupportContact",
+                    "Value": "Stratpoint"
+                }
+            ]
+            }
+        }
+    }
+}

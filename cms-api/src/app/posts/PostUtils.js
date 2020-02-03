@@ -43,13 +43,14 @@ class PostUtils extends Operation {
 
   async firehoseIntegrate(oldPost, post) {
     if (post.status !== 'published') return;
+    console.time('FIREHOSE INTEGRATION');
 
-    let DeliveryStreamName = 'AddPost-cms';
+    let DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_ADD;
     let payload = PublishPostStreams(post, oldPost);
 
     // if republished or update post send to updatepost-cms stream
     if (oldPost.publishedAt) {
-      DeliveryStreamName = 'UpdatePost-cms';
+      DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
       payload = UpdatePostStreams(post, oldPost);
     }
 
@@ -64,11 +65,13 @@ class PostUtils extends Operation {
       },
     }).promise();
 
+    console.timeEnd('FIREHOSE INTEGRATION');
     console.log(`Firehose response for id: ${post.postId}`, fres, payload);
   }
 
   async pmsIntegrate(data) {
     if (data.status !== 'published') return;
+    console.time('PMS INTEGRATION');
 
     const payload = PmsPost(data);
     const pres = await this.httpClient.post(
@@ -79,6 +82,7 @@ class PostUtils extends Operation {
       },
     );
 
+    console.timeEnd('PMS INTEGRATION');
     console.log(`PMS response for id: ${data.postId}`, pres, payload);
   }
 

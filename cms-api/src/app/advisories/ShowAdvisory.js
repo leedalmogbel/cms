@@ -22,6 +22,7 @@ class ShowAdvisory extends Operation {
             filename: attachment.fileName,
             filetype: attachment.fileType,
             url: attachment.url,
+            size: attachment.size,
           });
         });
 

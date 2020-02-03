@@ -9,7 +9,7 @@ class NotificationsController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('ListNotifications'), this.index);
-    router.put('/:id', this.injector('UpdateNotification'), this.update);
+    router.post('/', this.injector('UpdateNotification'), this.create);
 
     return router;
   }
@@ -27,6 +27,26 @@ class NotificationsController extends BaseController {
       .on(ERROR, next);
 
     operation.execute(req.query);
+  }
+
+  create(req, res, next) {
+    const { operation } = req;
+    const { SUCCESS, ERROR, VALIDATION_ERROR } = operation.events;
+
+    operation
+      .on(SUCCESS, (result) => {
+        res
+          .status(Status.CREATED)
+          .json(result);
+      })
+      .on(VALIDATION_ERROR, (error) => {
+        res.status(Status.BAD_REQUEST).json({
+          message: error.message,
+        });
+      })
+      .on(ERROR, next);
+
+    operation.execute(req.body);
   }
 }
 

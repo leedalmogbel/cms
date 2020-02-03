@@ -20,8 +20,9 @@ class AdvisoryRepository extends BaseRepository {
             { [Op.ne]: 'draft' },
           ],
         },
-        // isActive: 1,
+        isActive: 1,
       },
+      limit: 20,
     };
 
     const order = [['updatedAt', 'DESC']]; // set order by default descending

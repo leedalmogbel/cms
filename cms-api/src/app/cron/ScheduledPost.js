@@ -1,8 +1,9 @@
-const { Operation } = require('../../infra/core/core');
-const PublistPostStreams = require('src/domain/streams/PublishPostStreams');
+const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
+const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
 const PmsPost = require('src/domain/pms/Post');
 const AWS = require('aws-sdk');
 const Sequelize = require('sequelize');
+const { Operation } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
@@ -40,29 +41,36 @@ class ScheduledPost extends Operation {
     console.log(`List of posts to be published: ${posts.length}`);
 
     await Promise.all(
-      posts.map(async (post) => {
+      posts.map(async (oldPost) => {
         const payload = {
           publishedAt: new Date().toISOString(),
           status: 'published',
         };
 
         // publish post and fetch updated
-        await this.PostRepository.update(post.id, payload);
-        post = await this.PostRepository.getById(post.id);
+        await this.PostRepository.update(oldPost.id, payload);
+        const post = await this.PostRepository.getById(oldPost.id);
 
         // publish to firehose
         const firehose = new AWS.Firehose({
           apiVersion: '2015-08-04',
         });
 
-        const firehoseRes = await firehose
-          .putRecord({
-            DeliveryStreamName: 'AddPost-cms',
-            Record: {
-              Data: JSON.stringify(PublistPostStreams(post.toJSON())),
-            },
-          })
-          .promise();
+        let DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_ADD;
+        let streamPayload = PublishPostStreams(post, oldPost);
+
+        // if republished or update post send to updatepost-cms stream
+        if (oldPost.publishedAt) {
+          DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
+          streamPayload = UpdatePostStreams(post, oldPost);
+        }
+
+        const firehoseRes = await firehose.putRecord({
+          DeliveryStreamName,
+          Record: {
+            Data: JSON.stringify(streamPayload),
+          },
+        }).promise();
 
         console.log(`Firehose response for postId: ${post.id}`, firehoseRes);
 
