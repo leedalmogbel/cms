@@ -4,7 +4,6 @@ const Category = attributes({
   // Add atttributes here
   id: Number,
   categoryId: String,
-  postId: Number,
   name: String,
   description: String,
   parent: String,
