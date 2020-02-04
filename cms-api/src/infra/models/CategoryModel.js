@@ -10,14 +10,14 @@ module.exports = {
         type: DataTypes.INTEGER,
       },
       categoryId: DataTypes.STRING,
-      name: DataTypes.TEXT,
-      description: DataTypes.TEXT,
-      parent: {
+      parentId: {
         type: DataTypes.INTEGER,
         defaultValue: null,
       },
-      status: DataTypes.TEXT,
-      priority: DataTypes.TEXT,
+      name: DataTypes.STRING,
+      description: DataTypes.TEXT,
+      status: DataTypes.STRING,
+      priority: DataTypes.INTEGER,
       isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: 1,
