@@ -12,15 +12,13 @@ class PostsController extends BaseController {
     router.get('/', this.injector('ListPosts'), this.index);
     router.get('/:id', this.injector('ShowPost'), this.show);
     router.post('/', this.injector('CreateInitialPost'), this.create);
-    router.put('/:id', this.injector('SavePost'), this.update);
-    router.post('/:id/save', this.injector('SaveRawPost'), this.update);
+    router.post('/:id/save', this.injector('SavePost'), this.update);
     router.post('/:id/approve', this.injector('ApprovePost'), this.update);
     router.post('/:id/revise', this.injector('RevisePost'), this.update);
     router.post('/:id/publish', this.injector('PublishPost'), this.update);
     router.post('/:id/comment', this.injector('AddPostComment'), this.update);
     router.delete('/:id', this.injector('RemovePost'), this.delete);
     router.post('/:id/recover', this.injector('RecoverPost'), this.update);
-    // router.delete('/:id', this.injector('DeletePost'), this.delete);
 
     return router;
   }
