@@ -1,6 +1,6 @@
 const { attributes } = require('structure');
 
-const Agena = attributes({
+const Agenda = attributes({
   // Add atttributes here
   id: Number,
   userId: Number,
@@ -8,8 +8,8 @@ const Agena = attributes({
   isActive: Number,
   createdAt: Date,
   updatedAt: Date,
-})(class Agena {
+})(class Agenda {
 });
 
 
-module.exports = Agena;
+module.exports = Agenda;
