@@ -9,8 +9,7 @@ module.exports = {
         autoIncrement: true,
         type: DataTypes.INTEGER,
       },
-      categoryId: DataTypes.TEXT,
-      postId: DataTypes.INTEGER,
+      categoryId: DataTypes.STRING,
       name: DataTypes.TEXT,
       description: DataTypes.TEXT,
       parent: {
@@ -27,25 +26,6 @@ module.exports = {
       tableName: 'categories',
       timestamps: true,
     });
-
-    /**
-     * Examples on how to associate or set relationship with other models
-     *
-     *  CategoryModel.associate = function () {
-     *   CategoryModel.belongsTo(datasource.models.GroupModel, {
-     *     foreignKey: 'groupId',
-     *     as: 'group',
-     *   });
-     *  };
-     *
-     * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
-     */
-    CategoryModel.associate = () => {
-      CategoryModel.belongsTo(datasource.models.PostModel, {
-        foreignKey: 'postId',
-        as: 'post',
-      });
-    };
 
     return CategoryModel;
   },
