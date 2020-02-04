@@ -6,7 +6,7 @@ const Category = attributes({
   categoryId: String,
   name: String,
   description: String,
-  parent: String,
+  parentId: String,
   status: String,
   priority: Number,
   isActive: Number,

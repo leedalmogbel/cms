@@ -39,10 +39,6 @@ class PostRepository extends BaseRepository {
           [Op.like]:
             `%${data.keyword}%`,
         },
-        tagsAdded: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
       };
     }
 
