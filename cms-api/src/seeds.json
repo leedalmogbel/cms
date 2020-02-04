@@ -169,5 +169,23 @@
     "firstName": "Luis",
     "lastName": "Baptista",
     "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "adunida",
+    "email": "adunida@abs-cbn.com",
+    "password": "",
+    "firstName": "Angela",
+    "lastName": "Unida",
+    "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "jmpalma",
+    "email": "jmpalma@abs-cbn.com",
+    "password": "",
+    "firstName": "Jonalyn",
+    "lastName": "Palma",
+    "active": 1
   }
 ]
