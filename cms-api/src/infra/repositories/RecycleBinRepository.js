@@ -4,24 +4,25 @@ const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
-class PostRepository extends BaseRepository {
-  constructor({ PostModel, UserModel, RecycleBinModel }) {
-    super(PostModel);
+class RecycleBinRepository extends BaseRepository {
+  constructor({ RecycleBinModel, UserModel, PostRepository }) {
+    super(RecycleBinModel);
 
     this.UserModel = UserModel;
-    this.RecycleBinModel = RecycleBinModel;
   }
 
   buildListArgs(data = {}) {
     // init fetch arguments
     const args = {
       where: {
-        status: {
-          [Op.and]: [
-            { [Op.ne]: 'initial' },
-          ],
-        },
-        isActive: 1,
+        meta: {
+          status: {
+            [Op.and]: [
+              { [Op.ne]: 'initial' },
+            ],
+          },
+          isActive: 1
+        }
       },
       limit: 20,
     };
@@ -32,21 +33,27 @@ class PostRepository extends BaseRepository {
     if ('keyword' in data
       && data.keyword) {
       args.where[Op.or] = {
-        title: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-        content: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
+        meta: {
+          title: {
+            [Op.like]:
+              `%${data.keyword}%`,
+          },
+          content: {
+            [Op.like]:
+              `%${data.keyword}%`,
+          },
+          tagsAdded: {
+            [Op.like]:
+              `%${data.keyword}%`,
+          },
+        }
       };
     }
 
     // set location
     if ('location' in data) {
       if (data.location) {
-        args.where.locationAddress = {
+        args.where.meta.locationAddress = {
           [Op.like]:
             `%${data.location}%`,
         };
@@ -54,7 +61,7 @@ class PostRepository extends BaseRepository {
     }
 
     if ('category' in data) {
-      args.where.category = data.category;
+      args.where.meta.category = data.category;
     }
 
     // set date
@@ -64,14 +71,14 @@ class PostRepository extends BaseRepository {
       const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
 
       if ('status' in data && data.status === 'scheduled') {
-        args.where.scheduledAt = {
+        args.where.meta.scheduledAt = {
           [Op.between]: [
             startDate,
             endDate,
           ],
         };
       } else if ('status' in data && data.status === 'published') {
-        args.where.publishedAt = {
+        args.where.meta.publishedAt = {
           [Op.between]: [
             startDate,
             endDate,
@@ -79,7 +86,7 @@ class PostRepository extends BaseRepository {
         };
       } else {
         // default filter
-        args.where.updatedAt = {
+        args.where.meta.updatedAt = {
           [Op.between]: [
             startDate,
             endDate,
@@ -89,14 +96,14 @@ class PostRepository extends BaseRepository {
     }
 
     if ('status' in data) {
-      args.where.status = data.status;
+      args.where.meta.status = data.status;
 
       if (data.status === 'published') {
-        order = [['publishedAt', 'DESC']];
+        order = [['meta.publishedAt', 'DESC']];
       }
 
       if (data.status === 'scheduled') {
-        order = [['scheduledAt', 'ASC']];
+        order = [['meta.scheduledAt', 'ASC']];
       }
     }
 
@@ -130,50 +137,9 @@ class PostRepository extends BaseRepository {
     });
   }
 
-  getPostById(id) {
-    return this.model.findOne({
-      where: {
-        id,
-      },
-      include: [
-        {
-          model: this.UserModel,
-          as: 'user',
-          attributes: {
-            exclude: ['password'],
-          },
-        },
-      ],
-    });
-  }
-
   count(args) {
     return this.model.count(this.buildListArgs(args));
   }
-
-  async moveToBin(id) {
-    const entity = await this._getById(id);
-    const transaction = await this.model.sequelize.transaction();
-
-    try {
-
-      const post = await this.RecycleBinModel.create({
-        userId: entity.userId,
-        type: 'post',
-        meta: entity
-      }, { transaction });
-
-      await entity.destroy(id, { transaction });
-
-      await transaction.commit();
-
-      return post;
-    } catch(error) {
-      await transaction.rollback();
-
-      throw error;
-    }
-  }
 }
 
-module.exports = PostRepository;
+module.exports = RecycleBinRepository;

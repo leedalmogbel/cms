@@ -1,7 +1,7 @@
 const { Operation } = require('../../infra/core/core');
 
 class RemovePost extends Operation {
-  constructor({ PostRepository, PostUtils }) {
+  constructor({ PostRepository, PostUtils,  }) {
     super();
     this.PostRepository = PostRepository;
     this.PostUtils = PostUtils;
@@ -20,9 +20,7 @@ class RemovePost extends Operation {
     }
 
     try {
-      await this.PostRepository.update(id, {
-        isActive: 0,
-      });
+      await this.PostRepository.moveToBin(id);
 
       this.emit(SUCCESS, {
         results: { id },
