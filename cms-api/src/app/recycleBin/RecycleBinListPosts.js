@@ -10,7 +10,7 @@ class RecycleBinListPosts extends Operation {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      let posts = await this.RecycleBinRepository.getPosts(args);
+      let posts = await this.RecycleBinRepository.getList(args);
       posts = posts.map((post) => {
         post = {
           ...post.toJSON(),

@@ -156,7 +156,6 @@ class PostRepository extends BaseRepository {
     const transaction = await this.model.sequelize.transaction();
 
     try {
-
       const post = await this.RecycleBinModel.create({
         userId: entity.userId,
         type: 'post',

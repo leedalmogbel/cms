@@ -5,10 +5,11 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class RecycleBinRepository extends BaseRepository {
-  constructor({ RecycleBinModel, UserModel, PostRepository }) {
+  constructor({ RecycleBinModel, UserModel, PostModel }) {
     super(RecycleBinModel);
 
     this.UserModel = UserModel;
+    this.PostModel = PostModel;
   }
 
   buildListArgs(data = {}) {
@@ -126,7 +127,7 @@ class RecycleBinRepository extends BaseRepository {
     return args;
   }
 
-  getPosts(args) {
+  getList(args) {
     return this.getAll({
       ...this.buildListArgs(args),
       include: [
@@ -143,6 +144,52 @@ class RecycleBinRepository extends BaseRepository {
 
   count(args) {
     return this.model.count(this.buildListArgs(args));
+  }
+
+  recoverList(ids) {
+    const posts = {};
+
+    
+
+    return posts;
+  }
+
+  async recoverList(ids) {
+    const transaction = await this.model.sequelize.transaction();
+    const posts = {};
+
+    try {
+      if(typeof ids !== 'number') {
+        await Promise.all(ids.map(async id => this.recover(id, transaction)));
+      } else {
+        await this.recover(ids, transaction);
+      }
+
+      posts.id = ids;
+
+      await transaction.commit();
+
+      return posts;
+    } catch(error) {
+      await transaction.rollback();
+
+      throw error;
+    }
+  }
+
+  async recover(id, transaction) {
+    const entity = await this._getById(id);
+    await entity.destroy(id, { transaction });
+
+    if('post' == entity.type) {
+      await this.PostModel.create({
+        ...entity.meta
+      }, { transaction });
+    } else {
+      // advisory
+    }
+
+    return entity.meta;
   }
 }
 
