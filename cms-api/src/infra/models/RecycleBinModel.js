@@ -11,12 +11,6 @@ module.exports = {
       },
       userId: DataTypes.INTEGER,
       type: DataTypes.STRING,
-      //title: DataTypes.STRING(500),
-      //content: DataTypes.TEXT,
-      //tagsAdded: DataTypes.JSON,
-      //locationAddress: DataTypes.STRING,
-      //category: DataTypes.STRING,
-      //status: DataTypes.STRING,
       meta: DataTypes.JSON
     }, {
       tableName: 'recycleBin',
