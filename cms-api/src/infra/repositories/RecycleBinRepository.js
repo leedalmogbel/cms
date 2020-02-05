@@ -29,6 +29,10 @@ class RecycleBinRepository extends BaseRepository {
 
     let order = [['updatedAt', 'DESC']];
 
+    if ('type' in data && data.type) {
+      args.where.type = data.type;
+    }
+
     // set keyword
     if ('keyword' in data
       && data.keyword) {
