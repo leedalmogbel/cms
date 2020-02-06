@@ -15,15 +15,50 @@ class PublishPost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
+    let post;
     try {
-      if (!('locations' in data) || !data.locations || !data.locations.length) {
-        throw new Error('Invalid post location');
-      }
+      post = await this.PostRepository.getById(id);
     } catch (error) {
-      return this.emit(VALIDATION_ERROR, error);
+      return this.emit(
+        VALIDATION_ERROR,
+        new Error('Post not found'),
+      );
     }
 
+    // do not process multiple location if scheduled post
+    if ('scheduledAt' in data) {
+      if ('locations' in data && data.locations.length) {
+        data = {
+          ...data,
+          ...data.locations[0],
+        };
+      }
+
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
+        meta: {},
+      });
+    }
+
+    // if update post proceed to publish
+    if (post.publishedAt) {
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
+        meta: {},
+      });
+    }
+
+    // process publish multiple locations
     const { locations } = data;
+
+    if (!locations || typeof locations === 'undefined') {
+      return this.emit(
+        VALIDATION_ERROR,
+        new Error('Invalid post location'),
+      );
+    }
 
     await Promise.all(
       locations.map(async (loc, index) => {
@@ -37,6 +72,17 @@ class PublishPost extends Operation {
 
         // set initial post id to first location
         id = index > 0 ? null : id;
+
+        // create initial post for succeeding locations
+        if (!id) {
+          const payload = new Post({
+            status: 'initial',
+            postId: `kapp-cms-${uuidv1()}`,
+          });
+
+          const newPost = await this.PostRepository.add(payload);
+          id = newPost.id;
+        }
 
         const post = await this.publish(id, data);
         return post.id;
@@ -77,23 +123,11 @@ class PublishPost extends Operation {
 
     let oldPost;
 
-    if (!id) {
-      const data = {
-        status: 'initial',
-        postId: `kapp-cms-${uuidv1()}`,
-      };
-
-      const payload = new Post(data);
-      oldPost = await this.PostRepository.add(payload);
-
-      id = oldPost.id;
-    } else {
-      try {
-        oldPost = await this.PostRepository.getById(id);
-        oldPost = oldPost.toJSON();
-      } catch (error) {
-        throw new Error('Post not found');
-      }
+    try {
+      oldPost = await this.PostRepository.getById(id);
+      oldPost = oldPost.toJSON();
+    } catch (error) {
+      throw new Error('Post not found');
     }
 
     data.status = await this.getStatus(data);
