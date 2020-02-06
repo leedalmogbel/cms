@@ -14,6 +14,8 @@ const Post = attributes({
   source: String,
   locationAddress: String,
   locationDetails: Object,
+  locations: Array,
+  isGeofence: Number,
   tagsOriginal: Array,
   tagsRetained: Array,
   tagsAdded: Array,
