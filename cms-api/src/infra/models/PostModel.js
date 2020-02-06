@@ -20,6 +20,11 @@ module.exports = {
       source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
       locationDetails: DataTypes.JSON,
+      locations: DataTypes.JSON,
+      isGeofence: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
       tagsOriginal: DataTypes.JSON,
       tagsRetained: DataTypes.JSON,
       tagsAdded: DataTypes.JSON,
