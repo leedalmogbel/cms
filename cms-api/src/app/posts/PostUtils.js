@@ -13,6 +13,7 @@ class PostUtils extends Operation {
     BaseLocation,
     NotificationSocket,
     httpClient,
+    PostTagRepository,
   }) {
     super();
     this.PostRepository = PostRepository;
@@ -21,9 +22,46 @@ class PostUtils extends Operation {
     this.NotificationSocket = NotificationSocket;
     this.BaseLocation = BaseLocation;
     this.httpClient = httpClient;
+    this.PostTagRepository = PostTagRepository;
   }
 
   async build(data) {
+    if ('tagsAdded' in data && data.tagsAdded) {
+      await data.tagsAdded.forEach((tag) => {
+        this.savePostTags({
+          postId: data.id,
+          name: tag,
+        });
+      });
+    }
+
+    if ('tagsOriginal' in data && data.tagsOriginal) {
+      await data.tagsOriginal.forEach((tag) => {
+        this.savePostTags({
+          postId: data.id,
+          name: tag[0],
+        });
+      });
+    }
+
+    if ('tagsRetained' in data && data.tagsRetained) {
+      await data.tagsRetained.forEach((tag) => {
+        this.savePostTags({
+          postId: data.id,
+          name: tag[0],
+        });
+      });
+    }
+
+    if ('tagsRemoved' in data && data.tagsRemoved) {
+      await data.tagsRemoved.forEach((tag) => {
+        this.savePostTags({
+          postId: data.id,
+          name: tag[0],
+        });
+      });
+    }
+
     if ('placeId' in data && data.placeId) {
       const {
         locationDetails,
@@ -108,6 +146,17 @@ class PostUtils extends Operation {
       },
       active: 1,
     });
+  }
+
+  async savePostTags({ postId, name }) {
+    const exists = await this.PostTagRepository.getTagByName(name);
+
+    if (!exists) {
+      await this.PostTagRepository.add({
+        postId,
+        name,
+      });
+    }
   }
 
   async postNotifications(oldPost, updatedPost) {

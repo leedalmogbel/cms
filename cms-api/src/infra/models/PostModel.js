@@ -53,10 +53,15 @@ module.exports = {
       timestamps: true,
     });
 
-    PostModel.associate = function () {
+    PostModel.associate = () => {
       PostModel.belongsTo(datasource.models.UserModel, {
         foreignKey: 'userId',
         as: 'user',
+      });
+
+      PostModel.hasMany(datasource.models.PostTagModel, {
+        foreignKey: 'postId',
+        as: 'postTag',
       });
     };
 

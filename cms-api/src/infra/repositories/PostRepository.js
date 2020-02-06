@@ -5,10 +5,11 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
-  constructor({ PostModel, UserModel }) {
+  constructor({ PostModel, UserModel, PostTagModel }) {
     super(PostModel);
 
     this.UserModel = UserModel;
+    this.PostTagModel = PostTagModel;
   }
 
   buildListArgs(data = {}) {
@@ -30,16 +31,22 @@ class PostRepository extends BaseRepository {
     // set keyword
     if ('keyword' in data
       && data.keyword) {
-      args.where[Op.or] = {
-        title: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-        content: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-      };
+      if ('ids' in data) {
+        args.where = {
+          id: data.ids,
+        };
+      } else {
+        args.where[Op.or] = {
+          title: {
+            [Op.like]:
+              `%${data.keyword}%`,
+          },
+          content: {
+            [Op.like]:
+              `%${data.keyword}%`,
+          },
+        };
+      }
     }
 
     // set location
