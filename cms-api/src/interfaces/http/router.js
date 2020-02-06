@@ -49,6 +49,7 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
   apiRouter.use('/agendas', controller('controllers/AgendasController.js'));
   apiRouter.use('/tags', controller('controllers/TagsController.js'));
   apiRouter.use('/categories', controller('controllers/CategoriesController.js'));
+  apiRouter.use('/recyclebin', controller('controllers/RecycleBinController.js'));
   apiRouter.use('/posttags', controller('controllers/PostTagsController.js'));
   
   /* apiRoutes END */

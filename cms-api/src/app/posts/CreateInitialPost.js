@@ -1,6 +1,6 @@
-const { Operation } = require('../../infra/core/core');
 const Post = require('src/domain/Post');
 const uuidv1 = require('uuid/v1');
+const { Operation } = require('../../infra/core/core');
 
 class CreateInitialPost extends Operation {
   constructor({ PostRepository }) {

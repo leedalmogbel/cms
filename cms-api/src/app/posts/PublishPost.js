@@ -1,3 +1,5 @@
+const Post = require('src/domain/Post');
+const uuidv1 = require('uuid/v1');
 const { Operation } = require('../../infra/core/core');
 
 class PublishPost extends Operation {
@@ -13,59 +15,89 @@ class PublishPost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
-    let oldPost;
+    let post;
     try {
-      oldPost = await this.PostRepository.getById(id);
-      oldPost = oldPost.toJSON();
+      post = await this.PostRepository.getById(id);
     } catch (error) {
-      error.message = 'Post not found';
-      return this.emit(NOT_FOUND, error);
+      return this.emit(
+        VALIDATION_ERROR,
+        new Error('Post not found'),
+      );
     }
 
-    data.status = await this.getStatus(data);
-    if (data.status === 'published') {
-      data.publishedAt = new Date().toISOString();
-    }
-
+    // do not process multiple location if scheduled post
     if ('scheduledAt' in data) {
-      data.scheduledAt = new Date(data.scheduledAt).toISOString();
-    }
-
-    try {
-      data = await this.PostUtils.build(data);
-      data.validateData();
-    } catch (error) {
-      return this.emit(VALIDATION_ERROR, error);
-    }
-
-    try {
-      await this.PostRepository.update(id, data);
-      let post = await this.PostRepository.getPostById(id);
-      post = post.toJSON();
-
-      if (post.scheduledAt) {
-        return this.emit(SUCCESS, {
-          results: { id },
-          meta: {},
-        });
+      if ('locations' in data && data.locations.length) {
+        data = {
+          ...data,
+          ...data.locations[0],
+        };
       }
 
-      await this.PostUtils.postNotifications(oldPost, post);
-      await this.PostUtils.firehoseIntegrate(oldPost, post);
-      await this.PostUtils.pmsIntegrate(post);
-
-      this.emit(SUCCESS, {
-        results: { id },
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
         meta: {},
       });
-    } catch (error) {
-      this.emit(ERROR, error);
     }
+
+    // if update post proceed to publish
+    if (post.publishedAt) {
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
+        meta: {},
+      });
+    }
+
+    // process publish multiple locations
+    const { locations } = data;
+
+    if (!locations || typeof locations === 'undefined') {
+      return this.emit(
+        VALIDATION_ERROR,
+        new Error('Invalid post location'),
+      );
+    }
+
+    await Promise.all(
+      locations.map(async (loc, index) => {
+        const { placeId, isGeofence } = loc;
+
+        data = {
+          ...data,
+          placeId,
+          isGeofence,
+        };
+
+        // set initial post id to first location
+        id = index > 0 ? null : id;
+
+        // create initial post for succeeding locations
+        if (!id) {
+          const payload = new Post({
+            status: 'initial',
+            postId: `kapp-cms-${uuidv1()}`,
+          });
+
+          const newPost = await this.PostRepository.add(payload);
+          id = newPost.id;
+        }
+
+        const post = await this.publish(id, data);
+        return post.id;
+      }),
+    ).then((ids) => {
+      this.emit(SUCCESS, {
+        results: { ids },
+        meta: {},
+      });
+    }).catch((errors) => {
+      this.emit(VALIDATION_ERROR, errors);
+    });
   }
 
   async getStatus(data) {
-    const { NOT_FOUND } = this.events;
-
     try {
       let user = await this.UserRepository.getUserById(data.userId);
       user = user.toJSON();
@@ -80,9 +112,49 @@ class PublishPost extends Operation {
 
       return 'published';
     } catch (error) {
-      error.message = 'User not found';
-      this.emit(NOT_FOUND, error);
+      throw new Error('User not found');
     }
+  }
+
+  async publish(id = null, data) {
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = this.events;
+
+    let oldPost;
+
+    try {
+      oldPost = await this.PostRepository.getById(id);
+      oldPost = oldPost.toJSON();
+    } catch (error) {
+      throw new Error('Post not found');
+    }
+
+    data.status = await this.getStatus(data);
+    if (data.status === 'published') {
+      data.publishedAt = new Date().toISOString();
+    }
+
+    if ('scheduledAt' in data) {
+      data.scheduledAt = new Date(data.scheduledAt).toISOString();
+    }
+
+    data = await this.PostUtils.build(data);
+    data.validateData();
+
+    await this.PostRepository.update(id, data);
+    let post = await this.PostRepository.getPostById(id);
+    post = post.toJSON();
+
+    if (post.scheduledAt) {
+      return post;
+    }
+
+    await this.PostUtils.postNotifications(oldPost, post);
+    await this.PostUtils.firehoseIntegrate(oldPost, post);
+    await this.PostUtils.pmsIntegrate(post);
+
+    return post;
   }
 }
 
