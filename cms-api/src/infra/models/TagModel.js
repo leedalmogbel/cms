@@ -9,7 +9,7 @@ module.exports = {
         type: DataTypes.INTEGER,
       },
       userId: DataTypes.INTEGER,
-      name: DataTypes.TEXT,
+      name: DataTypes.STRING,
       meta: DataTypes.JSON,
       isActive: {
         type: DataTypes.BOOLEAN,

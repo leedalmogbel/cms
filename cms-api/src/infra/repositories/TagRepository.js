@@ -61,6 +61,15 @@ class TagRepository extends BaseRepository {
     });
   }
 
+  getTagByName(name) {
+    return this.model.findOne({
+      where: {
+        name,
+        isActive: 1,
+      },
+    });
+  }
+
   count(args) {
     return this.model.count(this.buildListArgs(args));
   }

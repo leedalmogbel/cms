@@ -5,11 +5,14 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
-  constructor({ PostModel, UserModel, RecycleBinModel }) {
+  constructor({
+    PostModel, UserModel, RecycleBinModel, PostTagModel,
+  }) {
     super(PostModel);
 
     this.UserModel = UserModel;
     this.RecycleBinModel = RecycleBinModel;
+    this.PostTagModel = PostTagModel;
   }
 
   buildListArgs(data = {}) {
@@ -31,16 +34,22 @@ class PostRepository extends BaseRepository {
     // set keyword
     if ('keyword' in data
       && data.keyword) {
-      args.where[Op.or] = {
-        title: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-        content: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-      };
+      if ('ids' in data) {
+        args.where = {
+          id: data.ids,
+        };
+      } else {
+        args.where[Op.or] = {
+          title: {
+            [Op.like]:
+              `%${data.keyword}%`,
+          },
+          content: {
+            [Op.like]:
+              `%${data.keyword}%`,
+          },
+        };
+      }
     }
 
     // set location
@@ -159,7 +168,7 @@ class PostRepository extends BaseRepository {
       const post = await this.RecycleBinModel.create({
         userId: entity.userId,
         type: 'post',
-        meta: entity
+        meta: entity,
       }, { transaction });
 
       await entity.destroy(id, { transaction });
@@ -167,7 +176,7 @@ class PostRepository extends BaseRepository {
       await transaction.commit();
 
       return post;
-    } catch(error) {
+    } catch (error) {
       await transaction.rollback();
 
       throw error;

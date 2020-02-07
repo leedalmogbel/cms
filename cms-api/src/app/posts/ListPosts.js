@@ -1,9 +1,11 @@
 const { Operation } = require('../../infra/core/core');
 
 class ListPosts extends Operation {
-  constructor({ PostRepository }) {
+  constructor({ PostRepository, PostTagRepository }) {
     super();
+
     this.PostRepository = PostRepository;
+    this.PostTagRepository = PostTagRepository;
   }
 
   async execute(args) {
@@ -11,6 +13,31 @@ class ListPosts extends Operation {
 
     try {
       let posts = await this.PostRepository.getPosts(args);
+      let total = await this.PostRepository.count(args);
+
+      if ('keyword' in args) {
+        const postIds = posts.map((post) => post.id);
+        const postTags = await this.PostTagRepository.getPostIdByTagName(args.keyword);
+
+        const postTagIds = postTags.map((pTags) => {
+          pTags = {
+            ...pTags.toJSON(),
+          };
+
+          return pTags.postId;
+        });
+
+        posts = await this.PostRepository.getPosts({
+          ...args,
+          ids: Array.from(new Set([...postIds, ...postTagIds])),
+        });
+
+        total = await this.PostRepository.count({
+          ...args,
+          ids: Array.from(new Set([...postIds, ...postTagIds])),
+        });
+      }
+
       posts = posts.map((post) => {
         post = {
           ...post.toJSON(),
@@ -20,8 +47,6 @@ class ListPosts extends Operation {
 
         return post;
       });
-
-      const total = await this.PostRepository.count(args);
 
       this.emit(SUCCESS, {
         results: posts,
