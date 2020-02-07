@@ -38,20 +38,23 @@ class RecycleBinRepository extends BaseRepository {
     if ('keyword' in data
       && data.keyword) {
       args.where[Op.or] = {
-        meta: {
-          title: {
-            [Op.like]:
-              `%${data.keyword}%`,
-          },
-          content: {
-            [Op.like]:
-              `%${data.keyword}%`,
-          },
-          tagsAdded: {
-            [Op.like]:
-              `%${data.keyword}%`,
-          },
-        }
+        "meta.title": {
+          [Op.like]:
+            `%${data.keyword}%`,
+        },
+        "meta.content": {
+          [Op.like]:
+            `%${data.keyword}%`,
+        },
+        "meta.tagsAdded": {
+          [Op.like]:`%${data.keyword}%`,
+        },
+        "meta.tagsOriginal": {
+          [Op.like]:`%${data.keyword}%`,
+        },
+        "meta.tagsRetained": {
+          [Op.like]:`%${data.keyword}%`,
+        },
       };
     }
 
@@ -146,23 +149,15 @@ class RecycleBinRepository extends BaseRepository {
     return this.model.count(this.buildListArgs(args));
   }
 
-  recoverList(ids) {
-    const posts = {};
-
-    
-
-    return posts;
-  }
-
-  async recoverList(ids) {
+  async restoreList(ids) {
     const transaction = await this.model.sequelize.transaction();
     const posts = {};
 
     try {
       if(typeof ids !== 'number') {
-        await Promise.all(ids.map(async id => this.recover(id, transaction)));
+        await Promise.all(ids.map(async id => this.restore(id, transaction)));
       } else {
-        await this.recover(ids, transaction);
+        await this.restore(ids, transaction);
       }
 
       posts.id = ids;
@@ -177,7 +172,7 @@ class RecycleBinRepository extends BaseRepository {
     }
   }
 
-  async recover(id, transaction) {
+  async restore(id, transaction) {
     const entity = await this._getById(id);
     await entity.destroy(id, { transaction });
 
