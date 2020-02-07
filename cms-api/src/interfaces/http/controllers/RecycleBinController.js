@@ -10,7 +10,7 @@ class RecycleBinController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('RecycleBinListPosts'), this.index);
-    router.post('/recover', this.injector('Recover'), this.update);
+    router.post('/restore', this.injector('Restore'), this.update);
 
     return router;
   }

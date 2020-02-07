@@ -542,63 +542,6 @@
         }
       }
     },
-    "/posts/{id}/recover": {
-      "post": {
-        "operationId": "RecoverPost",
-        "tags": [ "Posts" ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Id of post to Recover",
-            "required": true,
-              "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Post"
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Post recover data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Post"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Post Draft updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref":"#/components/schemas/Post"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Post not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/posts/{id}/publish": {
       "post": {
         "operationId": "PublishPost",

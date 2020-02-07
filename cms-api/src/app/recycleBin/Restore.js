@@ -1,6 +1,6 @@
 const { Operation } = require('../../infra/core/core');
 
-class Recover extends Operation {
+class Restore extends Operation {
   constructor({ RecycleBinRepository }) {
     super();
     this.RecycleBinRepository = RecycleBinRepository;
@@ -12,7 +12,7 @@ class Recover extends Operation {
     } = this.events;
 
     try {
-      const ids = await this.RecycleBinRepository.recoverList(data.id);
+      const ids = await this.RecycleBinRepository.restoreList(data.id);
 
       this.emit(SUCCESS, ids);
     } catch (error) {
@@ -28,6 +28,6 @@ class Recover extends Operation {
   }
 }
 
-Recover.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+Restore.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = Recover;
+module.exports = Restore;

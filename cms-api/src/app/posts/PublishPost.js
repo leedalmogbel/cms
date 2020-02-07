@@ -68,6 +68,7 @@ class PublishPost extends Operation {
           ...data,
           placeId,
           isGeofence,
+          locations: null, // clear post locations
         };
 
         // set initial post id to first location
@@ -84,8 +85,8 @@ class PublishPost extends Operation {
           id = newPost.id;
         }
 
-        const post = await this.publish(id, data);
-        return post.id;
+        const res = await this.publish(id, data);
+        return res.id;
       }),
     ).then((ids) => {
       this.emit(SUCCESS, {
