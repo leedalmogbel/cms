@@ -32,7 +32,6 @@ class ScheduledPost extends Operation {
     // get scheduled posts
     const posts = await this.PostRepository.getAll({
       where: {
-        publishedAt: null,
         status: 'scheduled',
         scheduledAt: {
           [Op.ne]: null,
@@ -47,6 +46,17 @@ class ScheduledPost extends Operation {
     await Promise.all(
       posts.map(async (oldPost) => {
         oldPost = oldPost.toJSON();
+
+        // if updated scheduled post
+        if (oldPost.publishedAt) {
+          const post = await this.publish({
+            ...oldPost,
+            status: 'published',
+            publishedAt: new Date().toISOString(),
+          });
+
+          return post;
+        }
 
         if (!('locations' in oldPost) || !oldPost.locations || !oldPost.locations.length) {
           return;
@@ -64,6 +74,7 @@ class ScheduledPost extends Operation {
               isGeofence,
               status: 'published',
               publishedAt: new Date().toISOString(),
+              locations: null, // clear post locations
             };
 
             // set initial post id to first location
