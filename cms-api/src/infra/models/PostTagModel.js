@@ -14,7 +14,7 @@ module.exports = {
       },
       name: DataTypes.STRING,
     }, {
-      tableName: 'posttags',
+      tableName: 'postTags',
       timestamps: true,
     });
 
