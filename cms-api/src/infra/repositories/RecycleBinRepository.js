@@ -49,9 +49,6 @@ class RecycleBinRepository extends BaseRepository {
         "meta.tagsAdded": {
           [Op.like]:`%${data.keyword}%`,
         },
-        "meta.tagsOriginal": {
-          [Op.like]:`%${data.keyword}%`,
-        },
         "meta.tagsRetained": {
           [Op.like]:`%${data.keyword}%`,
         },
