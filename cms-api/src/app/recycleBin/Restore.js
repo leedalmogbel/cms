@@ -11,8 +11,25 @@ class Restore extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
+    let posts;
+
     try {
-      const ids = await this.RecycleBinRepository.restoreList(data.id);
+      if(typeof data.id !== 'number') {
+        posts = await Promise.all(data.id.map(async id => {
+          return await this.RecycleBinRepository.getById(id);
+        }));
+      } else {
+        posts = await this.RecycleBinRepository.getById(data.id);
+      }
+    } catch (error) {
+      return this.emit(
+        VALIDATION_ERROR,
+        new Error('Post/s not found'),
+      );
+    }
+
+    try {
+      const ids = await this.RecycleBinRepository.restoreList(data.id, posts);
 
       this.emit(SUCCESS, ids);
     } catch (error) {

@@ -146,22 +146,19 @@ class RecycleBinRepository extends BaseRepository {
     return this.model.count(this.buildListArgs(args));
   }
 
-  async restoreList(ids) {
+  async restoreList(ids, posts) {
     const transaction = await this.model.sequelize.transaction();
-    const posts = {};
 
     try {
       if(typeof ids !== 'number') {
-        await Promise.all(ids.map(async id => this.restore(id, transaction)));
+        await Promise.all(posts.map(async post => this.restore(post, transaction)));
       } else {
-        await this.restore(ids, transaction);
+        await this.restore(posts, transaction);
       }
-
-      posts.id = ids;
 
       await transaction.commit();
 
-      return posts;
+      return { id: ids };
     } catch(error) {
       await transaction.rollback();
 
@@ -169,22 +166,21 @@ class RecycleBinRepository extends BaseRepository {
     }
   }
 
-  async restore(id, transaction) {
-    const entity = await this._getById(id);
-    await entity.destroy(id, { transaction });
+  async restore(post, transaction) {
+    await post.destroy(post.id, { transaction });
 
-    entity.meta.status = 'draft';
+    post.meta.status = 'draft';
 
-    if('post' == entity.type) {
+    if('post' == post.type) {
       await this.PostModel.create({
-        ...entity.meta
+        ...post.meta
       }, { transaction });
     } 
     //else {
     //  // advisory
     //}
 
-    return entity.meta;
+    return post.meta;
   }
 }
 
