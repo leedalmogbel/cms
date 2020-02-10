@@ -107,10 +107,10 @@ class PostRepository extends BaseRepository {
       if (data.status === 'scheduled') {
         order = [['scheduledAt', 'ASC']];
       }
-    }
 
-    if ('isEmbargo' in data) {
-      args.where.isEmbargo = true;
+      if (data.status === 'embargo') {
+        order = [['updatedAt', 'ASC']];
+      }
     }
 
     args.order = order;

@@ -26,7 +26,7 @@ class PublishPost extends Operation {
     }
 
     // do not process multiple location if scheduled post
-    if ('scheduledAt' in data) {
+    if ('scheduledAt' in data || ('isEmbargo' in data && data.isEmbargo)) {
       if ('locations' in data && data.locations.length) {
         data = {
           ...data,
@@ -105,6 +105,10 @@ class PublishPost extends Operation {
 
       if (user.role.title === 'writer') {
         return 'for-approval';
+      }
+
+      if ('isEmbargo' in data && data.isEmbargo) {
+        return 'embargo';
       }
 
       if (data.scheduledAt && !data.publishedAt) {
