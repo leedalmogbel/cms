@@ -17,11 +17,17 @@ class PostTagRepository extends BaseRepository {
   }
 
   getPostIdByTagName(name) {
-    return this.model.findAll({
+    return this.model.findOne({
       where: {
-        name: {
-          [Op.like]: `%${name}%`,
-        },
+        name,
+      },
+    });
+  }
+
+  deletePostTagById(postTagId) {
+    return this.model.destroy({
+      where: {
+        id: postTagId,
       },
     });
   }
