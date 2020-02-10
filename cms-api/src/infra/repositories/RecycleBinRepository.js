@@ -173,7 +173,7 @@ class RecycleBinRepository extends BaseRepository {
     const entity = await this._getById(id);
     await entity.destroy(id, { transaction });
 
-    entity.status = 'draft';
+    entity.meta.status = 'draft';
 
     if('post' == entity.type) {
       await this.PostModel.create({
