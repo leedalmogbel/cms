@@ -109,6 +109,10 @@ class PostRepository extends BaseRepository {
       }
     }
 
+    if ('isEmbargo' in data) {
+      args.where.isEmbargo = true;
+    }
+
     args.order = order;
 
     // offset

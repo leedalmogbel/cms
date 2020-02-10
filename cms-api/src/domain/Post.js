@@ -26,6 +26,7 @@ const Post = attributes({
   assignedUserId: Number,
   status: String,
   isPublishedImmediately: Number,
+  isEmbargo: Number,
   isLocked: Number,
   lockUser: Object,
   scheduledAt: Date,

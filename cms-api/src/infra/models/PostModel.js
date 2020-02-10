@@ -37,6 +37,10 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
       },
+      isEmbargo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
       isLocked: {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
