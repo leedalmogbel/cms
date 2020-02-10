@@ -25,24 +25,20 @@ class PublishPost extends Operation {
       );
     }
 
-    // do not process multiple location if scheduled post
-    if ('scheduledAt' in data || ('isEmbargo' in data && data.isEmbargo)) {
+    data.status = await this.getStatus(data);
+
+    // do not process multiple locations on these statuses
+    if (data.status === 'scheduled'
+      || data.status === 'embargo'
+      || data.status === 'for-approval'
+      || (data.status === 'published' && post.publishedAt)) { // republish post
       if ('locations' in data && data.locations.length) {
         data = {
           ...data,
-          ...data.locations[0],
+          ...data.locations[0], // add placeid & geofence field based on locations
         };
       }
 
-      const res = await this.publish(id, data);
-      return this.emit(SUCCESS, {
-        results: { ids: [res.id] },
-        meta: {},
-      });
-    }
-
-    // if update post proceed to publish
-    if (post.publishedAt) {
       const res = await this.publish(id, data);
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
@@ -135,7 +131,6 @@ class PublishPost extends Operation {
       throw new Error('Post not found');
     }
 
-    data.status = await this.getStatus(data);
     if (data.status === 'published') {
       data.publishedAt = new Date().toISOString();
     }
@@ -144,6 +139,7 @@ class PublishPost extends Operation {
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
+    data.locations = null; // unset locations
     data = await this.PostUtils.build(data);
     data.validateData();
 
