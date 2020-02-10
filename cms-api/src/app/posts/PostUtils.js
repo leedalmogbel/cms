@@ -35,26 +35,8 @@ class PostUtils extends Operation {
       });
     }
 
-    if ('tagsOriginal' in data && data.tagsOriginal) {
-      await data.tagsOriginal.forEach((tag) => {
-        this.savePostTags({
-          postId: data.id,
-          name: tag[0],
-        });
-      });
-    }
-
     if ('tagsRetained' in data && data.tagsRetained) {
       await data.tagsRetained.forEach((tag) => {
-        this.savePostTags({
-          postId: data.id,
-          name: tag[0],
-        });
-      });
-    }
-
-    if ('tagsRemoved' in data && data.tagsRemoved) {
-      await data.tagsRemoved.forEach((tag) => {
         this.savePostTags({
           postId: data.id,
           name: tag[0],
