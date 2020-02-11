@@ -21,7 +21,7 @@ class RevisePost extends Operation {
     }
 
     try {
-      data = await this.PostUtils.build(data = {
+      data = await this.PostUtils.build({
         ...data,
         status: 'for-revision',
       });

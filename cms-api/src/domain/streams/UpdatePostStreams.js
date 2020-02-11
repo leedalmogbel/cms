@@ -20,6 +20,7 @@ module.exports = (post, oldPost) => {
 
   const loc = locations.length ? locations[0] : {};
   const {
+    address,
     placeId,
     location,
     countryId,
@@ -75,7 +76,7 @@ module.exports = (post, oldPost) => {
     oldPostRejectedKeywords: oldTagsRemoved,
     oldPostAddedKeywords: oldTagsAdded,
     postLocation: {
-      locationAddress: post.locationAddress,
+      locationAddress: address,
       lat,
       lng,
     },
