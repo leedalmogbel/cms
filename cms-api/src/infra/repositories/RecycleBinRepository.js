@@ -219,6 +219,25 @@ class RecycleBinRepository extends BaseRepository {
       });
     }
   }
+
+  async destroyList(posts) {
+    const transaction = await this.model.sequelize.transaction();
+    let id = [];
+    try {
+      await Promise.all(posts.map(async post => {
+        await post.destroy({ transaction });
+        id.push(post.id);
+      }));
+
+      await transaction.commit();
+
+      return id;
+    } catch(error) {
+      await transaction.rollback();
+
+      throw error;
+    }
+  }
 }
 
 module.exports = RecycleBinRepository;

@@ -10,7 +10,8 @@ class RecycleBinController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('RecycleBinListPosts'), this.index);
-    router.post('/restore', this.injector('Restore'), this.update);
+    router.post('/restore', this.injector('RecycleBinRestore'), this.update);
+    router.delete('/', this.injector('RecycleBinDelete'), this.update);
 
     return router;
   }
@@ -56,6 +57,27 @@ class RecycleBinController extends BaseController {
 
     operation.execute(req.body);
   }
+
+  delete(req, res, next) {
+    const { operation } = req;
+    const { SUCCESS, ERROR, NOT_FOUND } = operation.events;
+
+    operation
+      .on(SUCCESS, (result) => {
+        res
+          .status(Status.ACCEPTED)
+          .json(result);
+      })
+      .on(NOT_FOUND, (error) => {
+        res.status(Status.NOT_FOUND).json({
+          message: error.message,
+        });
+      })
+      .on(ERROR, next);
+
+    operation.execute(Number(req.params.id));
+  }
+
 }
 
 module.exports = RecycleBinController;

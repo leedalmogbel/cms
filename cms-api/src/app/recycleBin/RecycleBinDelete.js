@@ -1,6 +1,6 @@
 const { Operation } = require('../../infra/core/core');
 
-class Restore extends Operation {
+class RecycleBinDelete extends Operation {
   constructor({ RecycleBinRepository }) {
     super();
     this.RecycleBinRepository = RecycleBinRepository;
@@ -19,32 +19,28 @@ class Restore extends Operation {
           return await this.RecycleBinRepository.getById(id);
         }));
       } else {
-        posts = await this.RecycleBinRepository.getById(data.id);
+        posts = [ await this.RecycleBinRepository.getById(data.id) ];
       }
     } catch (error) {
       return this.emit(
-        VALIDATION_ERROR,
+        NOT_FOUND,
         new Error('Post/s not found'),
       );
     }
 
     try {
-      const ids = await this.RecycleBinRepository.restoreList(data.id, posts);
+      const id = await this.RecycleBinRepository.destroyList(posts);
 
-      this.emit(SUCCESS, ids);
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
     } catch (error) {
-      switch (error.message) {
-        case 'ValidationError':
-          return this.emit(VALIDATION_ERROR, error);
-        case 'NotFoundError':
-          return this.emit(NOT_FOUND, error);
-        default:
-          this.emit(ERROR, error);
-      }
+      this.emit(ERROR, error);
     }
   }
 }
 
-Restore.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+RecycleBinDelete.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = Restore;
+module.exports = RecycleBinDelete;
