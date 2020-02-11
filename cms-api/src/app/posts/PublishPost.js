@@ -19,10 +19,7 @@ class PublishPost extends Operation {
     try {
       post = await this.PostRepository.getById(id);
     } catch (error) {
-      return this.emit(
-        VALIDATION_ERROR,
-        new Error('Post not found'),
-      );
+      return this.emit(NOT_FOUND, new Error('Post not found'));
     }
 
     data.status = await this.getStatus(data);
@@ -30,8 +27,16 @@ class PublishPost extends Operation {
     // do not process multiple locations on these statuses
     if (data.status === 'scheduled'
       || data.status === 'embargo'
-      || data.status === 'for-approval'
-      || (data.status === 'published' && post.publishedAt)) { // republish post
+      || data.status === 'for-approval') {
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
+        meta: {},
+      });
+    }
+
+    // republish post
+    if (data.status === 'published' && post.publishedAt) {
       if ('locations' in data && data.locations.length) {
         data = {
           ...data,
@@ -95,6 +100,8 @@ class PublishPost extends Operation {
   }
 
   async getStatus(data) {
+    const { NOT_FOUND } = this.events;
+
     try {
       let user = await this.UserRepository.getUserById(data.userId);
       user = user.toJSON();
@@ -113,15 +120,11 @@ class PublishPost extends Operation {
 
       return 'published';
     } catch (error) {
-      throw new Error('User not found');
+      this.emit(NOT_FOUND, new Error('User not found'));
     }
   }
 
   async publish(id = null, data) {
-    const {
-      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
-    } = this.events;
-
     let oldPost;
 
     try {
@@ -139,7 +142,6 @@ class PublishPost extends Operation {
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
-    data.locations = null; // unset locations
     data = await this.PostUtils.build(data);
     data.validateData();
 
