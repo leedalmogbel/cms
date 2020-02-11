@@ -3,7 +3,6 @@ const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
 const PmsPost = require('src/domain/pms/Post');
 const Post = require('src/domain/Post');
 const AWS = require('aws-sdk');
-const uuidv1 = require('uuid/v1');
 const Sequelize = require('sequelize');
 const { Operation } = require('../../infra/core/core');
 
@@ -78,9 +77,10 @@ class ScheduledPost extends Operation {
 
             // set initial post id to first location
             if (index === 0) {
+              const uid = await this.PostUtils.generateUid();
               const newPostPayload = new Post({
                 status: 'initial',
-                postId: `kapp-cms-${uuidv1()}`,
+                postId: uid,
               });
 
               const newPost = await this.PostRepository.add(newPostPayload);

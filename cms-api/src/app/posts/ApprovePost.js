@@ -1,5 +1,4 @@
 const Post = require('src/domain/Post');
-const uuidv1 = require('uuid/v1');
 const { Operation } = require('../../infra/core/core');
 
 class ApprovePost extends Operation {
@@ -63,24 +62,26 @@ class ApprovePost extends Operation {
     await Promise.all(
       locations.map(async (loc, index) => {
         const { placeId, isGeofence } = loc;
+        let { postId } = post;
 
         // set initial post id to first location
         id = index > 0 ? null : id;
 
         // create initial post for succeeding locations
         if (!id) {
+          postId = await this.PostUtils.generateUid();
           const payload = new Post({
             status: 'initial',
-            postId: `kapp-cms-${uuidv1()}`,
+            postId,
           });
 
           const newPost = await this.PostRepository.add(payload);
-          data.postId = newPost.postId;
           id = newPost.id;
         }
 
         data = {
           ...data,
+          postId,
           placeId,
           isGeofence,
         };

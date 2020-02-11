@@ -3,6 +3,7 @@ const Post = require('src/domain/Post');
 const PmsPost = require('src/domain/pms/Post');
 const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
 const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
+const uuidv4 = require('uuid/v4');
 const { Operation } = require('../../infra/core/core');
 
 class PostUtils extends Operation {
@@ -249,6 +250,22 @@ class PostUtils extends Operation {
         },
       });
     }
+  }
+
+  async generateUid() {
+    const postId = `kapp-cms-${uuidv4()}`;
+
+    const posts = await this.PostRepository.getAll({
+      where: {
+        postId,
+      },
+    });
+
+    if (posts && posts.length) {
+      return this.generateUid();
+    }
+
+    return postId;
   }
 }
 

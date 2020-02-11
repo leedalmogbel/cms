@@ -1,20 +1,21 @@
 const Post = require('src/domain/Post');
-const uuidv1 = require('uuid/v1');
 const { Operation } = require('../../infra/core/core');
 
 class CreateInitialPost extends Operation {
-  constructor({ PostRepository }) {
+  constructor({ PostRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
+    this.PostUtils = PostUtils;
   }
 
   async execute() {
     const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
 
     try {
+      const postId = await this.PostUtils.generateUid();
       const data = {
         status: 'initial',
-        postId: `kapp-cms-${uuidv1()}`,
+        postId,
       };
 
       const payload = new Post(data);
