@@ -8,43 +8,46 @@ module.exports = (post) => {
   };
 
   const {
-    locationDetails: {
-      placeId,
-      location,
-      countryId,
-      country,
-      islandGroupId,
-      islandGroup,
-      megaRegionId,
-      megaRegion,
-      regionId,
-      region,
-      provinceId,
-      province,
-      municipalityId,
-      municipality,
-      barangayId,
-      barangay,
-      locationLevel,
-      areaName,
-      completeName,
-      type,
-      subType,
-      name,
-      street,
-      suburb,
-      lat,
-      lng,
-    },
+    locations = [],
+    tagsRetained = [],
+    tagsRemoved = [],
+    tagsAdded = [],
     user: {
       firstName,
       lastName,
     },
   } = post;
 
-  const tagsRetained = post.tagsRetained || [];
-  const tagsRemoved = post.tagsRemoved || [];
-  const tagsAdded = post.tagsAdded || [];
+  const loc = locations.length ? locations[0] : {};
+  const {
+    placeId,
+    location,
+    countryId,
+    country,
+    islandGroupId,
+    islandGroup,
+    megaRegionId,
+    megaRegion,
+    regionId,
+    region,
+    provinceId,
+    province,
+    municipalityId,
+    municipality,
+    barangayId,
+    barangay,
+    locationLevel,
+    areaName,
+    completeName,
+    type,
+    subType,
+    name,
+    street,
+    suburb,
+    lat,
+    lng,
+  } = loc;
+
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
 
   return {

@@ -55,10 +55,6 @@ const Post = attributes({
       if (!this.source || !this.source.length) {
         throw new Error('Source is required');
       }
-
-      if (!this.locationDetails) {
-        throw new Error('Location is required');
-      }
     }
   }
 });

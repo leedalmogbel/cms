@@ -57,15 +57,12 @@ class PostUtils extends Operation {
 
 
     if ('placeId' in data && data.placeId) {
-      const {
-        locationDetails,
-        locationAddress,
-      } = await this.BaseLocation.detail(data.placeId);
+      const loc = await this.BaseLocation.detail(data.placeId);
+      loc.isGeofence = data.isGeofence;
 
       data = {
         ...data,
-        locationDetails,
-        locationAddress,
+        locations: [loc],
         isActive: 1,
       };
     }

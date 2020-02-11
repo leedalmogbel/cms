@@ -74,7 +74,6 @@ class ScheduledPost extends Operation {
               isGeofence,
               status: 'published',
               publishedAt: new Date().toISOString(),
-              locations: null, // clear post locations
             };
 
             // set initial post id to first location

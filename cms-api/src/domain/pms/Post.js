@@ -6,10 +6,14 @@ module.exports = (post) => {
     category,
     subCategory,
     source,
-    locationAddress,
-    locationDetails,
     publishedAt,
+    locations = [],
   } = post;
+
+  const loc = locations.length ? locations[0] : {};
+  const {
+    address,
+  } = loc;
 
   return {
     postId,
@@ -18,8 +22,8 @@ module.exports = (post) => {
     category,
     subCategory: subCategory || 'n/a',
     source,
-    locationAddress,
-    locationDetails,
+    locationAddress: address,
+    locationDetails: loc,
     publishedAt: new Date(publishedAt).toISOString(),
   };
 };
