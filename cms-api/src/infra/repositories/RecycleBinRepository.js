@@ -5,11 +5,13 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class RecycleBinRepository extends BaseRepository {
-  constructor({ RecycleBinModel, UserModel, PostModel }) {
+  constructor({ RecycleBinModel, UserModel, PostModel, PostUtils, PostTagRepository }) {
     super(RecycleBinModel);
 
     this.UserModel = UserModel;
     this.PostModel = PostModel;
+    this.PostUtils = PostUtils;
+    this.PostTagRepository = PostTagRepository;
   }
 
   buildListArgs(data = {}) {
@@ -177,12 +179,45 @@ class RecycleBinRepository extends BaseRepository {
       await this.PostModel.create({
         ...post.meta
       }, { transaction });
+
+      await this.buildTags(post.meta);
     } 
     //else {
     //  // advisory
     //}
 
     return post.meta;
+  }
+
+  async buildTags(data) {
+    if ('tagsAdded' in data && data.tagsAdded) {
+      await data.tagsAdded.forEach((tag) => {
+        this.PostUtils.savePostTags({
+          postId: data.id,
+          name: tag,
+        });
+      });
+    }
+
+    if ('tagsRetained' in data && data.tagsRetained) {
+      await data.tagsRetained.forEach((tag) => {
+        this.PostUtils.savePostTags({
+          postId: data.id,
+          name: tag[0],
+        });
+      });
+    }
+
+    if ('tagsOriginal' in data && data.tagsOriginal) {
+      await data.tagsOriginal.forEach(async (tag) => {
+        let postTagId = await this.PostTagRepository.getPostIdByTagName(tag[0]);
+
+        if (postTagId) {
+          postTagId = postTagId.toJSON();
+          await this.PostTagRepository.deletePostTagById(postTagId.id);
+        }
+      });
+    }
   }
 }
 
