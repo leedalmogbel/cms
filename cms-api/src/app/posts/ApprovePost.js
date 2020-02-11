@@ -26,8 +26,16 @@ class ApprovePost extends Operation {
 
     // do not process multiple locations on these statuses
     if (data.status === 'scheduled'
-      || data.status === 'embargo'
-      || (data.status === 'published' && post.publishedAt)) { // republish post
+      || data.status === 'embargo') {
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
+        meta: {},
+      });
+    }
+
+    // republish post
+    if (data.status === 'published' && post.publishedAt) {
       if ('locations' in data && data.locations.length) {
         data = {
           ...data,
