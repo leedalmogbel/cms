@@ -31,6 +31,16 @@ class PostTagRepository extends BaseRepository {
       },
     });
   }
+
+  filterPostTagsByName(keyword) {
+    return this.model.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${keyword}%`
+        }
+      }
+    });
+  }
 }
 
 module.exports = PostTagRepository;

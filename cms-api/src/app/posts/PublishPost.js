@@ -142,6 +142,7 @@ class PublishPost extends Operation {
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
+    data.id = id;
     data = await this.PostUtils.build(data);
     data.validateData();
 

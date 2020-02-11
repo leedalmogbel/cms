@@ -17,15 +17,8 @@ class ListPosts extends Operation {
 
       if ('keyword' in args) {
         const postIds = posts.map((post) => post.id);
-        const postTags = await this.PostTagRepository.getPostIdByTagName(args.keyword);
-
-        const postTagIds = postTags.map((pTags) => {
-          pTags = {
-            ...pTags.toJSON(),
-          };
-
-          return pTags.postId;
-        });
+        const postTags = await this.PostTagRepository.filterPostTagsByName(args.keyword);
+        const postTagIds = postTags.map((pTags) => pTags.postId);
 
         posts = await this.PostRepository.getPosts({
           ...args,
