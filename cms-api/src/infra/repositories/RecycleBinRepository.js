@@ -170,6 +170,8 @@ class RecycleBinRepository extends BaseRepository {
     await post.destroy(post.id, { transaction });
 
     post.meta.status = 'draft';
+    post.meta.isLocked = false;
+    post.meta.lockUser = null;
 
     if('post' == post.type) {
       await this.PostModel.create({
