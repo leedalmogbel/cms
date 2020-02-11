@@ -65,13 +65,6 @@ class PublishPost extends Operation {
       locations.map(async (loc, index) => {
         const { placeId, isGeofence } = loc;
 
-        data = {
-          ...data,
-          placeId,
-          isGeofence,
-          locations: null, // clear post locations
-        };
-
         // set initial post id to first location
         id = index > 0 ? null : id;
 
@@ -83,8 +76,15 @@ class PublishPost extends Operation {
           });
 
           const newPost = await this.PostRepository.add(payload);
+          data.postId = newPost.postId;
           id = newPost.id;
         }
+
+        data = {
+          ...data,
+          placeId,
+          isGeofence,
+        };
 
         const res = await this.publish(id, data);
         return res.id;

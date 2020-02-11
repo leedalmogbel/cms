@@ -78,23 +78,20 @@ class ScheduledPost extends Operation {
 
             // set initial post id to first location
             if (index === 0) {
-              const post = await this.publish(publishPayload);
-              return post;
+              const newPostPayload = new Post({
+                status: 'initial',
+                postId: `kapp-cms-${uuidv1()}`,
+              });
+
+              const newPost = await this.PostRepository.add(newPostPayload);
+              const { id, postId } = newPost;
+
+              publishPayload = {
+                ...publishPayload,
+                id,
+                postId,
+              };
             }
-
-            const newPostPayload = new Post({
-              status: 'initial',
-              postId: `kapp-cms-${uuidv1()}`,
-            });
-
-            const newPost = await this.PostRepository.add(newPostPayload);
-
-            delete publishPayload.id;
-            publishPayload = {
-              ...publishPayload,
-              id: newPost.id,
-              postId: newPost.postId,
-            };
 
             const post = await this.publish(publishPayload);
             return post;
