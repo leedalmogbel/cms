@@ -60,13 +60,15 @@ class PublishPost extends Operation {
       );
     }
 
+    // add id to first location
+    locations[0].id = id;
+
     await Promise.all(
       locations.map(async (loc, index) => {
         const { placeId, isGeofence } = loc;
         let { postId } = post;
 
-        // set initial post id to first location
-        id = index > 0 ? null : id;
+        id = 'id' in loc ? loc.id : null;
 
         // create initial post for succeeding locations
         if (!id) {
@@ -125,7 +127,7 @@ class PublishPost extends Operation {
     }
   }
 
-  async publish(id = null, data) {
+  async publish(id, data) {
     let oldPost;
 
     try {
@@ -143,7 +145,6 @@ class PublishPost extends Operation {
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
-    data.id = id;
     data = await this.PostUtils.build(data);
     data.validateData();
 

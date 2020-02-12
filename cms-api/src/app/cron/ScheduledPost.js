@@ -76,7 +76,7 @@ class ScheduledPost extends Operation {
             };
 
             // set initial post id to first location
-            if (index === 0) {
+            if (index !== 0) {
               const uid = await this.PostUtils.generateUid();
               const newPostPayload = new Post({
                 status: 'initial',
