@@ -76,7 +76,7 @@ class PostUtils extends Operation {
     console.time('FIREHOSE INTEGRATION');
 
     let DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_ADD;
-    let payload = PublishPostStreams(post, oldPost);
+    let payload = PublishPostStreams(post);
 
     // if republished or update post send to updatepost-cms stream
     if (oldPost.publishedAt) {
@@ -103,7 +103,7 @@ class PostUtils extends Operation {
     if (data.status !== 'published') return;
     console.time('PMS INTEGRATION');
 
-    const payload = PmsPost(data);
+    const payload = PublishPostStreams(data);
     const pres = await this.httpClient.post(
       process.env.PMS_POST_ENDPOINT,
       payload,

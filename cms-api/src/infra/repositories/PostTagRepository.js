@@ -36,9 +36,9 @@ class PostTagRepository extends BaseRepository {
     return this.model.findAll({
       where: {
         name: {
-          [Op.like]: `%${keyword}%`
-        }
-      }
+          [Op.like]: `%${keyword}%`,
+        },
+      },
     });
   }
 }

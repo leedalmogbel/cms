@@ -47,6 +47,7 @@ module.exports = (post, oldPost) => {
     suburb,
     lat,
     lng,
+    isGeofence,
   } = loc;
 
   const {
@@ -104,6 +105,7 @@ module.exports = (post, oldPost) => {
     postLocName: nullable(name),
     postLocStreet: nullable(street),
     postLocSuburb: nullable(suburb),
+    postGeofencedFlag: nullable(isGeofence),
     postTimestampPosted: post.publishedAt,
     postTimestampEvent: null,
     postTimestampUpdated: post.updatedAt,
