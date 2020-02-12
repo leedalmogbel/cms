@@ -39,16 +39,23 @@ class PostRepository extends BaseRepository {
           id: data.ids,
         };
       } else {
-        args.where[Op.or] = {
-          title: {
-            [Op.like]:
-              `%${data.keyword}%`,
-          },
-          content: {
-            [Op.like]:
-              `%${data.keyword}%`,
-          },
-        };
+        data.keyword = data.keyword.toLowerCase();
+        args.where = {
+          [Op.or]:[
+            Sequelize.where(
+              Sequelize.fn('lower', Sequelize.col('title')),
+              {
+                [Op.like]: `%${data.keyword}%`
+              }
+            ),
+            Sequelize.where(
+              Sequelize.fn('lower', Sequelize.col('content')),
+              {
+                [Op.like]: `%${data.keyword}%`
+              }
+            )
+          ]
+        }
       }
     }
 

@@ -39,67 +39,39 @@ class RecycleBinRepository extends BaseRepository {
     // set keyword
     if ('keyword' in data
       && data.keyword) {
-      args.where[Op.or] = {
-        "meta.title": {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-        "meta.content": {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-        "meta.tagsAdded": {
-          [Op.like]:`%${data.keyword}%`,
-        },
-        "meta.tagsRetained": {
-          [Op.like]:`%${data.keyword}%`,
-        },
-      };
-    }
-
-    // set location
-    if ('location' in data) {
-      if (data.location) {
-        args.where.meta.locationAddress = {
-          [Op.like]:
-            `%${data.location}%`,
-        };
+      data.keyword = data.keyword.toLowerCase();
+      args.where = {
+        [Op.or]:[
+          Sequelize.where(
+            Sequelize.fn('lower', Sequelize.json('meta.title')),
+            {
+              [Op.like]: `%${data.keyword}%`
+            }
+          ),
+          Sequelize.where(
+            Sequelize.fn('lower', Sequelize.json('meta.content')),
+            {
+              [Op.like]: `%${data.keyword}%`
+            }
+          ),
+          Sequelize.where(
+            Sequelize.fn('lower', Sequelize.json('meta.tagsAdded')),
+            {
+              [Op.like]: `%${data.keyword}%`
+            }
+          ),
+          Sequelize.where(
+            Sequelize.fn('lower', Sequelize.json('meta.tagsRetained')),
+            {
+              [Op.like]: `%${data.keyword}%`
+            }
+          ),
+        ]
       }
     }
 
     if ('category' in data) {
       args.where.meta.category = data.category;
-    }
-
-    // set date
-    if ('date' in data && data.date) {
-      const date = new Date(data.date);
-      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
-      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
-
-      if ('status' in data && data.status === 'scheduled') {
-        args.where.meta.scheduledAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      } else if ('status' in data && data.status === 'published') {
-        args.where.meta.publishedAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      } else {
-        // default filter
-        args.where.meta.updatedAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      }
     }
 
     if ('status' in data) {
