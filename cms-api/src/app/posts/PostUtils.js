@@ -56,6 +56,17 @@ class PostUtils extends Operation {
       });
     }
 
+    if ('tagsRemoved' in data && data.tagsRemoved) {
+      await data.tagsRemoved.forEach(async (tag) => {
+        let postTagId = await this.PostTagRepository.getPostIdByTagName(tag[0]);
+
+        if (postTagId) {
+          postTagId = postTagId.toJSON();
+          this.PostTagRepository.deletePostTagById(postTagId.id);
+        }
+      });
+    }
+
 
     if ('placeId' in data && data.placeId) {
       const loc = await this.BaseLocation.detail(data.placeId);
