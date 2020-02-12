@@ -187,5 +187,14 @@
     "firstName": "Jonalyn",
     "lastName": "Palma",
     "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "jgang",
+    "email": "jgang@abs-cbn.com",
+    "password": "",
+    "firstName": "Jeevon",
+    "lastName": "Ang",
+    "active": 1
   }
 ]
