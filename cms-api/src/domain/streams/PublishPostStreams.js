@@ -47,6 +47,7 @@ module.exports = (post) => {
     suburb,
     lat,
     lng,
+    isGeofence,
   } = loc;
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
@@ -99,6 +100,7 @@ module.exports = (post) => {
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
     postSubCategory: post.subCategory,
+    postGeofencedFlag: nullable(isGeofence),
     sensitivityFlag: null,
     sensitivityType: null,
     sensitivityTypeTimestamp: null,
