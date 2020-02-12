@@ -196,5 +196,14 @@
     "firstName": "Jeevon",
     "lastName": "Ang",
     "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "ddtamayo",
+    "email": "DDTamayo@abs-cbn.com",
+    "password": "",
+    "firstName": "David",
+    "lastName": "Tamayo",
+    "active": 1
   }
 ]
