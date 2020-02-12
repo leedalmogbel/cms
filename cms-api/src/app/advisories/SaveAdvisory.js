@@ -41,17 +41,16 @@ class SaveAdvisory extends Operation {
 
   async build(data) {
     if ('placeId' in data) {
-      const {
-        locationDetails,
-        locationAddress,
-      } = await this.BaseLocation.detail(data.placeId);
+      const loc = await this.BaseLocation.detail(data.placeId);
 
       data = {
         ...data,
-        locationDetails,
-        locationAddress,
+        locationDetails: loc,
+        locationAddress: loc.address,
       };
     }
+
+    console.log(data);
 
     return new Advisory(data);
   }
