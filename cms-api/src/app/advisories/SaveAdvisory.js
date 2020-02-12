@@ -50,8 +50,6 @@ class SaveAdvisory extends Operation {
       };
     }
 
-    console.log(data);
-
     return new Advisory(data);
   }
 }

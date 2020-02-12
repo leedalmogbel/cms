@@ -51,7 +51,7 @@ class PostUtils extends Operation {
 
         if (postTagId) {
           postTagId = postTagId.toJSON();
-          await this.PostTagRepository.deletePostTagById(postTagId.id);
+          this.PostTagRepository.deletePostTagById(postTagId.id);
         }
       });
     }
