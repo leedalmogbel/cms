@@ -48,7 +48,9 @@ class ScheduledPost extends Operation {
 
         // format timestamps
         oldPost.scheduledAt = new Date(oldPost.scheduledAt).toISOString();
-        oldPost.expiredAt = new Date(oldPost.expiredAt).toISOString();
+        if (oldPost.expiredAt) {
+          oldPost.expiredAt = new Date(oldPost.expiredAt).toISOString();
+        }
 
         // if updated scheduled post
         if (oldPost.publishedAt) {
