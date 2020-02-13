@@ -31,7 +31,7 @@ class PostUtils extends Operation {
       await data.tagsAdded.forEach((tag) => {
         this.savePostTags({
           postId: data.id,
-          name: tag[0],
+          name: tag,
         });
       });
     }
