@@ -147,6 +147,7 @@ class RecycleBinRepository extends BaseRepository {
     post.meta.status = 'draft';
     post.meta.isLocked = false;
     post.meta.lockUser = null;
+    post.meta.expiredAt = null;
 
     if('post' == post.type) {
       await this.PostModel.create({
