@@ -1,0 +1,236 @@
+--- 
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cloud formation template for Big Data
+Parameters:
+  DBSGName:
+    Type: String
+    Default: kapp-cms-db
+  GroupDescription:
+    Type: String
+    Default: Kapp CMS security group
+  siteBucket:
+    Type: String
+    Default: kapp-cms-frontend-qa
+  attachmentBucket:
+    Type: String
+    Default: kapp-cms-attachments-qa
+  ProjectCode:
+    Type: String
+    Default: CMS
+  SupportContact:
+    Type: String
+    Default: Stratpoint
+  vpcId:
+    Type: String
+    Default: vpc-0776a1e45c9ae439b
+  cidrIp:
+    Type: String
+    Default: 221.121.187.253/32
+  cmsServerlessSG:
+    Type: String
+    Default: sg-097cb654f00b5af99
+  cmsLambdaSG:
+    Type: String
+    Default: sg-0df1b10259f7a5caf
+  dbName: 
+    Type: String
+    Default: kappcmsqa
+  dbUser:
+    Type: String
+    Default: kappcmsdev01
+  dbPass: 
+    Type: String
+    Default: kappcms123&&
+  #FirehoseBufferSize:
+  #  Type: Number
+  #  Default: '1'
+  #  MinValue: '1'
+  #  MaxValue: '128'
+  #  ConstraintDescription: must be between 1 and 128
+  #BucketDomain:
+  #  Type: String
+  #  Default: https://bigdata-cf-templates-dev.s3-ap-southeast-1.amazonaws.com
+
+Resources:
+
+  # Security Group
+  KappCMSDbSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Ref GroupDescription
+      VpcId: !Ref vpcId
+      GroupName: !Ref DBSGName
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: !Ref cidrIp
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref cmsServerlessSG
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref cmsLambdaSG
+      Tags: 
+        -
+          Key: "Name"
+          Value: !Ref DBSGName
+        - 
+          Key: "ProjectCode"
+          Value: !Ref ProjectCode
+        - 
+          Key: "SupportContact"
+          Value: !Ref SupportContact
+
+  MasterDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref dbName
+      AllocatedStorage: !Ref 'DBAllocatedStorage'
+      DBInstanceClass: !Ref 'DBInstanceClass'
+      Engine: MySQL
+      MasterUsername: !Ref dbUser
+      MasterUserPassword: !Ref dbPassword
+      MultiAZ: !Ref 'MultiAZ'
+      VPCSecurityGroups: !If [Is-EC2-VPC, [!GetAtt [DBEC2SecurityGroup, GroupId]],
+        !Ref 'AWS::NoValue']
+      DBSecurityGroups: !If [Is-EC2-Classic, [!Ref 'DBSecurityGroup'], !Ref 'AWS::NoValue']
+      Tags: 
+        -
+          Key: "Name"
+          Value: !Ref DBSGName
+        - 
+          Key: "ProjectCode"
+          Value: !Ref ProjectCode
+        - 
+          Key: "SupportContact"
+          Value: !Ref SupportContact
+    DeletionPolicy: Snapshot
+
+  # S3 Buckets
+  #WebsiteBucket:
+  #  Type: AWS::S3::Bucket
+  #  Properties:
+  #    BucketName: !Ref siteBucket
+  #    CorsConfiguration:
+  #      CorsRules:
+  #      - AllowedHeaders: ['Authorization']
+  #        AllowedMethods: [GET,HEAD]
+  #        AllowedOrigins: ['*']
+  #        MaxAge: '3000'
+  #    VersioningConfiguration:
+  #      Status: Suspended
+  #    WebsiteConfiguration:
+  #      IndexDocument: index.html
+  #      ErrorDocument: index.html
+  #    AccessControl: Private
+  #    BucketEncryption:
+  #      ServerSideEncryptionConfiguration:
+  #        - ServerSideEncryptionByDefault:
+  #            SSEAlgorithm: AES256
+  #    PublicAccessBlockConfiguration:
+  #      BlockPublicAcls : false
+  #      BlockPublicPolicy : false
+  #      IgnorePublicAcls : false
+  #      RestrictPublicBuckets : false
+  #    Tags: 
+  #      - 
+  #        Key: "Name"
+  #        Value: "CMS-frontend-website-s3-QA"
+  #      - 
+  #        Key: "ProjectCode"
+  #        Value: !Ref ProjectCode
+  #      - 
+  #        Key: "SupportContact"
+  #        Value: !Ref SupportContact
+
+  #AttachmentBucket:
+  #  Type: AWS::S3::Bucket
+  #  Properties:
+  #    BucketName: !Ref siteBucket
+  #    CorsConfiguration:
+  #      CorsRules:
+  #      - AllowedHeaders: ['Authorization']
+  #        AllowedMethods: [GET,HEAD]
+  #        AllowedOrigins: ['*']
+  #        MaxAge: '3000'
+  #    VersioningConfiguration:
+  #      Status: Suspended
+  #    WebsiteConfiguration:
+  #      IndexDocument: index.html
+  #      ErrorDocument: index.html
+  #    AccessControl: Private
+  #    BucketEncryption:
+  #      ServerSideEncryptionConfiguration:
+  #        - ServerSideEncryptionByDefault:
+  #            SSEAlgorithm: AES256
+  #    PublicAccessBlockConfiguration:
+  #      BlockPublicAcls : false
+  #      BlockPublicPolicy : false
+  #      IgnorePublicAcls : false
+  #      RestrictPublicBuckets : false
+  #    Tags: 
+  #      -
+  #        Key: "Name"
+  #        Value: "CMS-frontend-website-s3-QA"
+  #      - 
+  #        Key: "ProjectCode"
+  #        Value: !Ref ProjectCode
+  #      - 
+  #        Key: "SupportContact"
+  #        Value: !Ref SupportContact
+
+  #WebsiteCloudfront:
+  #  Type: AWS::CloudFront::Distribution
+  #  DependsOn:
+  #    - WebsiteBucket
+  #  Properties:
+  #    DistributionConfig:
+  #      Comment: Cloudfront Distribution pointing to S3 bucket
+  #      Origins:
+  #        - CustomOriginConfig:
+  #            HTTPPort: '80'
+  #            HTTPSPort: '443'
+  #            OriginProtocolPolicy: http-only
+  #          DomainName:
+  #            Fn::Select:
+  #              - 2
+  #              - Fn::Split:
+  #                - "/"
+  #                - Fn::GetAtt:
+  #                  - WebsiteBucket
+  #                  - WebsiteURL
+  #          Id: S3Origin
+  #      Enabled: true
+  #      HttpVersion: http2
+  #      DefaultRootObject: index.html
+  #      DefaultCacheBehavior:
+  #        AllowedMethods:
+  #          - GET
+  #          - HEAD
+  #        Compress: true
+  #        ForwardedValues:
+  #          QueryString: true
+  #          Cookies:
+  #            Forward: none
+  #        TargetOriginId: S3Origin
+  #        ViewerProtocolPolicy: redirect-to-https
+  #        DefaultTTL: '2.0'
+  #        MaxTTL: '2.0'
+  #        MinTTL: '2.0'
+  #      PriceClass: PriceClass_All
+  #    Tags:
+  #      - 
+  #        Key: Name
+  #        Value: CMS-Website-Cloudfront-QA
+  #      - 
+  #        Key: ProjectCode
+  #        Value: !Ref ProjectCode
+  #      - 
+  #        Key: SupportContact
+  #        Value: !Ref SupportContact
+
+  
