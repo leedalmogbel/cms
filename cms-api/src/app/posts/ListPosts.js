@@ -35,7 +35,11 @@ class ListPosts extends Operation {
         post = {
           ...post.toJSON(),
         };
-        post.expiredAt = post.expiredAt !== '1970-01-01 08:00:00' ? post.expiredAt : null;
+        const exprd = post.expiredAt;
+        if (exprd.includes('1970')) {
+          post.expiredAt = null;
+        }
+
         post.scheduledAt = post.scheduledAt !== '1970-01-01 08:00:00' ? post.scheduledAt : null;
 
         return post;
