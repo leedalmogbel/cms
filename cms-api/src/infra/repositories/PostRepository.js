@@ -41,21 +41,21 @@ class PostRepository extends BaseRepository {
       } else {
         data.keyword = data.keyword.toLowerCase();
         args.where = {
-          [Op.or]:[
+          [Op.or]: [
             Sequelize.where(
               Sequelize.fn('lower', Sequelize.col('title')),
               {
-                [Op.like]: `%${data.keyword}%`
-              }
+                [Op.like]: `%${data.keyword}%`,
+              },
             ),
             Sequelize.where(
               Sequelize.fn('lower', Sequelize.col('content')),
               {
-                [Op.like]: `%${data.keyword}%`
-              }
-            )
-          ]
-        }
+                [Op.like]: `%${data.keyword}%`,
+              },
+            ),
+          ],
+        };
       }
     }
 
@@ -116,7 +116,7 @@ class PostRepository extends BaseRepository {
       }
 
       if (data.status === 'embargo') {
-        order = [['updatedAt', 'ASC']];
+        order = [['updatedAt', 'DESC']];
       }
     }
 
