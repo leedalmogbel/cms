@@ -53,6 +53,10 @@ module.exports = {
         type: DataTypes.INTEGER,
         defaultValue: 1,
       },
+      isEmbargo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
     }, {
       tableName: 'posts',
       timestamps: true,

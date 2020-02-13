@@ -34,6 +34,7 @@ const Post = attributes({
   createdAt: Date,
   updatedAt: Date,
   isActive: Number,
+  isEmbargo: Boolean,
 })(class Post {
   // Add validation functions below
   // e.g.:
