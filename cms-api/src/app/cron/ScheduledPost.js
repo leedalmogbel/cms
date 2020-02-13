@@ -46,6 +46,10 @@ class ScheduledPost extends Operation {
       posts.map(async (oldPost) => {
         oldPost = oldPost.toJSON();
 
+        // format timestamps
+        oldPost.scheduledAt = new Date(oldPost.scheduledAt).toISOString();
+        oldPost.expiredAt = new Date(oldPost.expiredAt).toISOString();
+
         // if updated scheduled post
         if (oldPost.publishedAt) {
           const post = await this.publish({
