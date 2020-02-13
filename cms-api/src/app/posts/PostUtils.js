@@ -184,7 +184,7 @@ class PostUtils extends Operation {
     author.name = `${author.firstName} ${author.lastName}`;
 
     if (editor && Object.entries(editor).length !== 0) {
-      if (oldEditor && oldEditor.id !== editor.id) {
+      if (oldEditor && oldEditor.id && oldEditor.id !== editor.id) {
         // send notification to removed editor
         await this.saveNotification({
           userId: oldEditor.id,
@@ -207,7 +207,7 @@ class PostUtils extends Operation {
       }
 
       // send writer for approval notification
-      if (author.id !== editor.id && writers && writers.length) {
+      if (author.id !== editor.id && writers && writers.length && Object.entries(writers[0]).length !== 0) {
         const writerName = `${writers[0].firstName} ${writers[0].lastName}`;
         const message = `${writerName} submitted a post for approval ${updatedPost.title}`;
         meta.name = writerName;
@@ -220,8 +220,9 @@ class PostUtils extends Operation {
       }
     }
 
-    if (writers && writers.length) {
+    if (writers && writers.length && Object.entries(writers[0]).length !== 0) {
       const writer = writers[0];
+      const writerId = writer.id;
 
       // skip notification if writer is the author
       if (author.id === writer.id) return;
@@ -232,7 +233,7 @@ class PostUtils extends Operation {
         const oldWriter = oldWriters[0];
         oldWriterId = oldWriter.id;
 
-        if (oldWriterId !== writer.id) {
+        if (oldWriterId && oldWriterId !== writer.id) {
           this.saveNotification({
             userId: oldWriterId,
             message: `You are removed as a writer for Post "${updatedPost.title}"`,
@@ -252,14 +253,16 @@ class PostUtils extends Operation {
         editorName = `${editor.firstName} ${editor.lastName}`;
       }
 
-      await this.saveNotification({
-        userId: writer.id,
-        message: `${editorName} assigned you as a writer for post ${updatedPost.title}`,
-        meta: {
-          ...meta,
-          name: `${writer.firstName} ${writer.lastName}`,
-        },
-      });
+      if (writerId) {
+        await this.saveNotification({
+          userId: writerId,
+          message: `${editorName} assigned you as a writer for post ${updatedPost.title}`,
+          meta: {
+            ...meta,
+            name: `${writer.firstName} ${writer.lastName}`,
+          },
+        });
+      }
     }
   }
 
