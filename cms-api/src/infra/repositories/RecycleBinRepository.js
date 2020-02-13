@@ -70,8 +70,9 @@ class RecycleBinRepository extends BaseRepository {
       }
     }
 
+    console.log('payload', data);
     if ('category' in data) {
-      args.where.meta.category = data.category;
+      args.where.meta = { category: data.category };
     }
 
     if ('status' in data) {
