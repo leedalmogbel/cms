@@ -152,7 +152,7 @@ class PublishPost extends Operation {
     let post = await this.PostRepository.getPostById(id);
     post = post.toJSON();
 
-    if (post.scheduledAt) {
+    if (post.status === 'scheduled') {
       return post;
     }
 
