@@ -36,7 +36,7 @@ class ListPosts extends Operation {
           ...post.toJSON(),
         };
         const exprd = post.expiredAt;
-        if (exprd.includes('1970')) {
+        if (exprd.indexOf('1970') !== -1) {
           post.expiredAt = null;
         }
 
