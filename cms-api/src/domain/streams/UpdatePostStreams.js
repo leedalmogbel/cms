@@ -9,9 +9,9 @@ module.exports = (post, oldPost) => {
 
   const {
     locations = [],
-    tagsRetained = [],
-    tagsRemoved = [],
-    tagsAdded = [],
+    tagsRetained = [[]],
+    tagsRemoved = [[]],
+    tagsAdded = [[]],
     user: {
       firstName,
       lastName,
@@ -51,9 +51,9 @@ module.exports = (post, oldPost) => {
   } = loc;
 
   const {
-    oldTagsRetained = [],
-    oldTagsRemoved = [],
-    oldTagsAdded = [],
+    oldTagsRetained = [[]],
+    oldTagsRemoved = [[]],
+    oldTagsAdded = [[]],
   } = oldPost;
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
@@ -105,7 +105,6 @@ module.exports = (post, oldPost) => {
     postLocName: nullable(name),
     postLocStreet: nullable(street),
     postLocSuburb: nullable(suburb),
-    postGeofencedFlag: nullable(isGeofence),
     postTimestampPosted: post.publishedAt,
     postTimestampEvent: null,
     postTimestampUpdated: post.updatedAt,
@@ -115,6 +114,7 @@ module.exports = (post, oldPost) => {
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
     postSubCategory: post.subCategory,
+    postGeofencedFlag: nullable(isGeofence),
     sensitivityFlag: null,
     sensitivityType: null,
     sensitivityTypeTimestamp: null,
