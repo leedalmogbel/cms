@@ -1,4 +1,3 @@
-
 const Sequelize = require('sequelize');
 const { BaseRepository } = require('../../infra/core/core');
 

@@ -11,7 +11,7 @@ class AdvisoriesController extends BaseController {
 
     router.get('/', this.injector('ListAdvisories'), this.index);
     router.get('/:id', this.injector('ShowAdvisory'), this.show);
-    router.post('/', this.injector('CreateDraftAdvisory'), this.create);
+    router.post('/', this.injector('CreateInitialAdvisory'), this.create);
     router.put('/:id', this.injector('SaveAdvisory'), this.update);
     router.post('/:id/publish', this.injector('PublishAdvisory'), this.update);
     router.post('/:id/url', this.injector('AttachmentUrlAdvisory'), this.attach);

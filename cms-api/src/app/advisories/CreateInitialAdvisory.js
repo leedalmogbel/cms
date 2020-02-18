@@ -1,7 +1,7 @@
 const Advisory = require('src/domain/Advisory');
 const { Operation } = require('../../infra/core/core');
 
-class CreateDraftAdvisory extends Operation {
+class CreateInitialAdvisory extends Operation {
   constructor({ AdvisoryRepository }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
@@ -11,9 +11,8 @@ class CreateDraftAdvisory extends Operation {
     const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
 
     try {
-      // build data
       const advisory = new Advisory({
-        draft: true,
+        status: 'initial',
       });
 
       const { id } = await this.AdvisoryRepository.add(advisory);
@@ -31,6 +30,6 @@ class CreateDraftAdvisory extends Operation {
   }
 }
 
-CreateDraftAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+CreateInitialAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = CreateDraftAdvisory;
+module.exports = CreateInitialAdvisory;
