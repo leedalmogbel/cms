@@ -1,13 +1,11 @@
-
-const Sequelized = require('sequelize');
+const Sequelize = require('sequelize');
 const { BaseRepository } = require('../../infra/core/core');
 
-const { Op } = Sequelized;
+const { Op } = Sequelize;
 
 class AdvisoryRepository extends BaseRepository {
   constructor({ AdvisoryModel, UserModel }) {
     super(AdvisoryModel);
-
     this.UserModel = UserModel;
   }
 
@@ -17,7 +15,7 @@ class AdvisoryRepository extends BaseRepository {
       where: {
         status: {
           [Op.and]: [
-            { [Op.ne]: 'draft' },
+            { [Op.ne]: 'initial' },
           ],
         },
         isActive: 1,
@@ -26,6 +24,32 @@ class AdvisoryRepository extends BaseRepository {
     };
 
     const order = [['updatedAt', 'DESC']]; // set order by default descending
+
+    // search for keyword
+    if ('keyword' in data) {
+      const { keyword } = data;
+
+      args.where[Op.or] = [
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('title')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('content')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.json('tagsAdded')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+      ];
+    }
 
     // fetch verified
     if ('verified' in data) {
