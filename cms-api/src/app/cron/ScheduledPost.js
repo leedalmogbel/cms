@@ -1,6 +1,7 @@
 const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
 const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
 const PmsPost = require('src/domain/pms/Post');
+const Post = require('src/domain/Post');
 const AWS = require('aws-sdk');
 const Sequelize = require('sequelize');
 const { Operation } = require('../../infra/core/core');
@@ -8,10 +9,11 @@ const { Operation } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class ScheduledPost extends Operation {
-  constructor({ PostRepository, httpClient }) {
+  constructor({ PostRepository, PostUtils, httpClient }) {
     super();
 
     this.PostRepository = PostRepository;
+    this.PostUtils = PostUtils;
     this.httpClient = httpClient;
   }
 
@@ -19,16 +21,16 @@ class ScheduledPost extends Operation {
     // get current timestamp
     // and timestamp 30 minutes ago
     const now = new Date();
-    const thirtyMinutes = new Date().setMinutes(new Date().getMinutes() - 60);
-    const ago = new Date(thirtyMinutes);
+    const oneHour = new Date().setMinutes(new Date().getMinutes() - 60);
+    const ago = new Date(oneHour);
 
     console.log('Cron Started');
     console.log('Current Datetime', now);
+    console.log('Current Datetime ago', ago);
 
     // get scheduled posts
     const posts = await this.PostRepository.getAll({
       where: {
-        publishedAt: null,
         status: 'scheduled',
         scheduledAt: {
           [Op.ne]: null,
@@ -42,55 +44,116 @@ class ScheduledPost extends Operation {
 
     await Promise.all(
       posts.map(async (oldPost) => {
-        const payload = {
-          publishedAt: new Date().toISOString(),
-          status: 'published',
-        };
+        oldPost = oldPost.toJSON();
 
-        // publish post and fetch updated
-        await this.PostRepository.update(oldPost.id, payload);
-        const post = await this.PostRepository.getById(oldPost.id);
-
-        // publish to firehose
-        const firehose = new AWS.Firehose({
-          apiVersion: '2015-08-04',
-        });
-
-        let DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_ADD;
-        let streamPayload = PublishPostStreams(post, oldPost);
-
-        // if republished or update post send to updatepost-cms stream
-        if (oldPost.publishedAt) {
-          DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
-          streamPayload = UpdatePostStreams(post, oldPost);
+        // format timestamps
+        oldPost.scheduledAt = new Date(oldPost.scheduledAt).toISOString();
+        if (oldPost.expiredAt) {
+          oldPost.expiredAt = new Date(oldPost.expiredAt).toISOString();
         }
 
-        const firehoseRes = await firehose.putRecord({
-          DeliveryStreamName,
-          Record: {
-            Data: JSON.stringify(streamPayload),
-          },
-        }).promise();
+        // if updated scheduled post
+        if (oldPost.publishedAt) {
+          const post = await this.publish({
+            ...oldPost,
+            status: 'published',
+            publishedAt: new Date().toISOString(),
+          });
 
-        console.log(`Firehose response for postId: ${post.id}`, firehoseRes);
+          return post;
+        }
 
-        // publish to pms
-        const pmsRes = await this.httpClient.post(
-          process.env.PMS_POST_ENDPOINT,
-          PmsPost(post.toJSON()),
-          {
-            access_token: process.env.PMS_POST_TOKEN,
-          },
+        if (!('locations' in oldPost) || !oldPost.locations || !oldPost.locations.length) {
+          return;
+        }
+
+        const { locations } = oldPost;
+
+        return Promise.all(
+          locations.map(async (loc, index) => {
+            const { placeId, isGeofence } = loc;
+
+            let publishPayload = {
+              ...oldPost,
+              placeId,
+              isGeofence,
+              status: 'published',
+              publishedAt: new Date().toISOString(),
+            };
+
+            // set initial post id to first location
+            if (index !== 0) {
+              const uid = await this.PostUtils.generateUid();
+              const newPostPayload = new Post({
+                status: 'initial',
+                postId: uid,
+              });
+
+              const newPost = await this.PostRepository.add(newPostPayload);
+              const { id, postId } = newPost;
+
+              publishPayload = {
+                ...publishPayload,
+                id,
+                postId,
+              };
+            }
+
+            const post = await this.publish(publishPayload);
+            return post;
+          }),
         );
-
-        console.log(`PMS response for postId: ${post.id}`, pmsRes);
-        console.log(`PostId: ${post.id} was successfully published`);
-
-        return post;
       }),
     );
 
     console.log('Cron Ended');
+  }
+
+  async publish(data) {
+    data = await this.PostUtils.build(data);
+    data.validateData();
+
+    // publish post and fetch updated
+    await this.PostRepository.update(data.id, data);
+    let post = await this.PostRepository.getById(data.id);
+    post = post.toJSON();
+
+    // publish to firehose
+    const firehose = new AWS.Firehose({
+      apiVersion: '2015-08-04',
+    });
+
+    let DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_ADD;
+    let streamPayload = PublishPostStreams(post);
+
+    // if republished or update post send to updatepost-cms stream
+    if (data.publishedAt) {
+      DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
+      streamPayload = UpdatePostStreams(post, data);
+    }
+
+    const firehoseRes = await firehose.putRecord({
+      DeliveryStreamName,
+      Record: {
+        Data: JSON.stringify(streamPayload),
+      },
+    }).promise();
+
+    console.log(`Firehose response for postId: ${post.id}`, firehoseRes);
+
+    // publish to pms
+    const pmsRes = await this.httpClient.post(
+      process.env.PMS_POST_ENDPOINT,
+      PmsPost(post),
+      {
+        access_token: process.env.PMS_POST_TOKEN,
+      },
+    );
+
+    console.log(`PMS response for postId: ${post.id}`, pmsRes);
+    console.log(`PostId: ${post.id} was successfully published`);
+
+    return post;
   }
 }
 module.exports = ScheduledPost;

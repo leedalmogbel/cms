@@ -8,43 +8,48 @@ module.exports = (post) => {
   };
 
   const {
-    locationDetails: {
-      placeId,
-      location,
-      countryId,
-      country,
-      islandGroupId,
-      islandGroup,
-      megaRegionId,
-      megaRegion,
-      regionId,
-      region,
-      provinceId,
-      province,
-      municipalityId,
-      municipality,
-      barangayId,
-      barangay,
-      locationLevel,
-      areaName,
-      completeName,
-      type,
-      subType,
-      name,
-      street,
-      suburb,
-      lat,
-      lng,
-    },
+    locations = [[]],
+    tagsRetained = [[]],
+    tagsRemoved = [[]],
+    tagsAdded = [[]],
     user: {
       firstName,
       lastName,
     },
   } = post;
 
-  const tagsRetained = post.tagsRetained || [];
-  const tagsRemoved = post.tagsRemoved || [];
-  const tagsAdded = post.tagsAdded || [];
+  const loc = locations.length ? locations[0] : {};
+  const {
+    address,
+    placeId,
+    location,
+    countryId,
+    country,
+    islandGroupId,
+    islandGroup,
+    megaRegionId,
+    megaRegion,
+    regionId,
+    region,
+    provinceId,
+    province,
+    municipalityId,
+    municipality,
+    barangayId,
+    barangay,
+    locationLevel,
+    areaName,
+    completeName,
+    type,
+    subType,
+    name,
+    street,
+    suburb,
+    lat,
+    lng,
+    isGeofence,
+  } = loc;
+
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
 
   return {
@@ -59,7 +64,7 @@ module.exports = (post) => {
     postRejectedKeywords: tagsRemoved,
     postAddedKeywords: tagsAdded,
     postLocation: {
-      locationAddress: post.locationAddress,
+      locationAddress: address,
       lat,
       lng,
     },
@@ -95,6 +100,7 @@ module.exports = (post) => {
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
     postSubCategory: post.subCategory,
+    postGeofencedFlag: nullable(isGeofence),
     sensitivityFlag: null,
     sensitivityType: null,
     sensitivityTypeTimestamp: null,

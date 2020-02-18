@@ -4,20 +4,15 @@ const { Router } = require('express');
 const Status = require('http-status');
 const { BaseController } = require('../../../infra/core/core');
 
-class PostsController extends BaseController {
+class CategoriesController extends BaseController {
   constructor() {
     super();
     const router = Router();
 
-    router.get('/', this.injector('ListPosts'), this.index);
-    router.get('/:id', this.injector('ShowPost'), this.show);
-    router.post('/', this.injector('CreateInitialPost'), this.create);
-    router.post('/:id/save', this.injector('SavePost'), this.update);
-    router.post('/:id/approve', this.injector('ApprovePost'), this.update);
-    router.post('/:id/revise', this.injector('RevisePost'), this.update);
-    router.post('/:id/publish', this.injector('PublishPost'), this.update);
-    router.post('/:id/comment', this.injector('AddPostComment'), this.update);
-    router.delete('/:id', this.injector('RemovePost'), this.delete);
+    router.get('/', this.injector('ListCategories'), this.index);
+    router.get('/:id', this.injector('ShowCategory'), this.show);
+    router.post('/', this.injector('CreateCategory'), this.create);
+    router.put('/:id', this.injector('SaveCategory'), this.update);
 
     return router;
   }
@@ -103,26 +98,6 @@ class PostsController extends BaseController {
 
     operation.execute(Number(req.params.id), req.body);
   }
-
-  delete(req, res, next) {
-    const { operation } = req;
-    const { SUCCESS, ERROR, NOT_FOUND } = operation.events;
-
-    operation
-      .on(SUCCESS, (result) => {
-        res
-          .status(Status.ACCEPTED)
-          .json(result);
-      })
-      .on(NOT_FOUND, (error) => {
-        res.status(Status.NOT_FOUND).json({
-          message: error.message,
-        });
-      })
-      .on(ERROR, next);
-
-    operation.execute(Number(req.params.id));
-  }
 }
 
-module.exports = PostsController;
+module.exports = CategoriesController;

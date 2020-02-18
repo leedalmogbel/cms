@@ -8,49 +8,55 @@ module.exports = (post, oldPost) => {
   };
 
   const {
-    locationDetails: {
-      placeId,
-      location,
-      countryId,
-      country,
-      islandGroupId,
-      islandGroup,
-      megaRegionId,
-      megaRegion,
-      regionId,
-      region,
-      provinceId,
-      province,
-      municipalityId,
-      municipality,
-      barangayId,
-      barangay,
-      locationLevel,
-      areaName,
-      completeName,
-      type,
-      subType,
-      name,
-      street,
-      suburb,
-      lat,
-      lng,
-    },
+    locations = [],
+    tagsRetained = [[]],
+    tagsRemoved = [[]],
+    tagsAdded = [[]],
     user: {
       firstName,
       lastName,
     },
   } = post;
 
+  const loc = locations.length ? locations[0] : {};
+  const {
+    address,
+    placeId,
+    location,
+    countryId,
+    country,
+    islandGroupId,
+    islandGroup,
+    megaRegionId,
+    megaRegion,
+    regionId,
+    region,
+    provinceId,
+    province,
+    municipalityId,
+    municipality,
+    barangayId,
+    barangay,
+    locationLevel,
+    areaName,
+    completeName,
+    type,
+    subType,
+    name,
+    street,
+    suburb,
+    lat,
+    lng,
+    isGeofence,
+  } = loc;
+
+  const {
+    oldTagsRetained = [[]],
+    oldTagsRemoved = [[]],
+    oldTagsAdded = [[]],
+  } = oldPost;
+
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
-
-  const tagsRetained = post.tagsRetained || [];
-  const tagsRemoved = post.tagsRemoved || [];
-  const tagsAdded = post.tagsAdded || [];
-
-  const oldTagsRetained = oldPost.tagsRetained || [];
-  const oldTagsRemoved = oldPost.tagsRemoved || [];
-  const oldTagsAdded = oldPost.tagsAdded || [];
 
   return {
     postId: post.postId,
@@ -71,7 +77,7 @@ module.exports = (post, oldPost) => {
     oldPostRejectedKeywords: oldTagsRemoved,
     oldPostAddedKeywords: oldTagsAdded,
     postLocation: {
-      locationAddress: post.locationAddress,
+      locationAddress: address,
       lat,
       lng,
     },
@@ -108,6 +114,7 @@ module.exports = (post, oldPost) => {
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
     postSubCategory: post.subCategory,
+    postGeofencedFlag: nullable(isGeofence),
     sensitivityFlag: null,
     sensitivityType: null,
     sensitivityTypeTimestamp: null,

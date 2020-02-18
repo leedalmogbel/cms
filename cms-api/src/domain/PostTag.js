@@ -1,15 +1,14 @@
 const { attributes } = require('structure');
 
-const Agenda = attributes({
+const PostTag = attributes({
   // Add atttributes here
   id: Number,
-  userId: Number,
-  title: String,
-  isActive: Number,
+  postId: Number,
+  name: String,
   createdAt: Date,
   updatedAt: Date,
-})(class Agenda {
+})(class PostTag {
 });
 
 
-module.exports = Agenda;
+module.exports = PostTag;

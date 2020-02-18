@@ -3,6 +3,7 @@ const Post = require('src/domain/Post');
 const PmsPost = require('src/domain/pms/Post');
 const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
 const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
+const uuidv4 = require('uuid/v4');
 const { Operation } = require('../../infra/core/core');
 
 class PostUtils extends Operation {
@@ -13,6 +14,7 @@ class PostUtils extends Operation {
     BaseLocation,
     NotificationSocket,
     httpClient,
+    PostTagRepository,
   }) {
     super();
     this.PostRepository = PostRepository;
@@ -21,19 +23,58 @@ class PostUtils extends Operation {
     this.NotificationSocket = NotificationSocket;
     this.BaseLocation = BaseLocation;
     this.httpClient = httpClient;
+    this.PostTagRepository = PostTagRepository;
   }
 
   async build(data) {
+    if ('tagsAdded' in data && data.tagsAdded) {
+      await data.tagsAdded.forEach((tag) => {
+        this.savePostTags({
+          postId: data.id,
+          name: tag,
+        });
+      });
+    }
+
+    if ('tagsRetained' in data && data.tagsRetained) {
+      await data.tagsRetained.forEach((tag) => {
+        this.savePostTags({
+          postId: data.id,
+          name: tag[0],
+        });
+      });
+    }
+
+    if ('tagsOriginal' in data && data.tagsOriginal) {
+      await data.tagsOriginal.forEach(async (tag) => {
+        let postTagId = await this.PostTagRepository.getPostIdByTagName(tag[0]);
+
+        if (postTagId) {
+          postTagId = postTagId.toJSON();
+          this.PostTagRepository.deletePostTagById(postTagId.id);
+        }
+      });
+    }
+
+    if ('tagsRemoved' in data && data.tagsRemoved) {
+      await data.tagsRemoved.forEach(async (tag) => {
+        let postTagId = await this.PostTagRepository.getPostIdByTagName(tag[0]);
+
+        if (postTagId) {
+          postTagId = postTagId.toJSON();
+          this.PostTagRepository.deletePostTagById(postTagId.id);
+        }
+      });
+    }
+
+
     if ('placeId' in data && data.placeId) {
-      const {
-        locationDetails,
-        locationAddress,
-      } = await this.BaseLocation.detail(data.placeId);
+      const loc = await this.BaseLocation.detail(data.placeId);
+      loc.isGeofence = data.isGeofence;
 
       data = {
         ...data,
-        locationDetails,
-        locationAddress,
+        locations: [loc],
         isActive: 1,
       };
     }
@@ -46,7 +87,7 @@ class PostUtils extends Operation {
     console.time('FIREHOSE INTEGRATION');
 
     let DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_ADD;
-    let payload = PublishPostStreams(post, oldPost);
+    let payload = PublishPostStreams(post);
 
     // if republished or update post send to updatepost-cms stream
     if (oldPost.publishedAt) {
@@ -73,7 +114,7 @@ class PostUtils extends Operation {
     if (data.status !== 'published') return;
     console.time('PMS INTEGRATION');
 
-    const payload = PmsPost(data);
+    const payload = PublishPostStreams(data);
     const pres = await this.httpClient.post(
       process.env.PMS_POST_ENDPOINT,
       payload,
@@ -110,6 +151,17 @@ class PostUtils extends Operation {
     });
   }
 
+  async savePostTags({ postId, name }) {
+    const exists = await this.PostTagRepository.getTagByName(name);
+
+    if (!exists) {
+      await this.PostTagRepository.add({
+        postId,
+        name,
+      });
+    }
+  }
+
   async postNotifications(oldPost, updatedPost) {
     const {
       editor,
@@ -132,7 +184,7 @@ class PostUtils extends Operation {
     author.name = `${author.firstName} ${author.lastName}`;
 
     if (editor && Object.entries(editor).length !== 0) {
-      if (oldEditor && oldEditor.id !== editor.id) {
+      if (oldEditor && oldEditor.id && oldEditor.id !== editor.id) {
         // send notification to removed editor
         await this.saveNotification({
           userId: oldEditor.id,
@@ -155,7 +207,7 @@ class PostUtils extends Operation {
       }
 
       // send writer for approval notification
-      if (author.id !== editor.id && writers && writers.length) {
+      if (author.id !== editor.id && writers && writers.length && Object.entries(writers[0]).length !== 0) {
         const writerName = `${writers[0].firstName} ${writers[0].lastName}`;
         const message = `${writerName} submitted a post for approval ${updatedPost.title}`;
         meta.name = writerName;
@@ -168,8 +220,9 @@ class PostUtils extends Operation {
       }
     }
 
-    if (writers && writers.length) {
+    if (writers && writers.length && Object.entries(writers[0]).length !== 0) {
       const writer = writers[0];
+      const writerId = writer.id;
 
       // skip notification if writer is the author
       if (author.id === writer.id) return;
@@ -180,7 +233,7 @@ class PostUtils extends Operation {
         const oldWriter = oldWriters[0];
         oldWriterId = oldWriter.id;
 
-        if (oldWriterId !== writer.id) {
+        if (oldWriterId && oldWriterId !== writer.id) {
           this.saveNotification({
             userId: oldWriterId,
             message: `You are removed as a writer for Post "${updatedPost.title}"`,
@@ -200,15 +253,33 @@ class PostUtils extends Operation {
         editorName = `${editor.firstName} ${editor.lastName}`;
       }
 
-      await this.saveNotification({
-        userId: writer.id,
-        message: `${editorName} assigned you as a writer for post ${updatedPost.title}`,
-        meta: {
-          ...meta,
-          name: `${writer.firstName} ${writer.lastName}`,
-        },
-      });
+      if (writerId) {
+        await this.saveNotification({
+          userId: writerId,
+          message: `${editorName} assigned you as a writer for post ${updatedPost.title}`,
+          meta: {
+            ...meta,
+            name: `${writer.firstName} ${writer.lastName}`,
+          },
+        });
+      }
     }
+  }
+
+  async generateUid() {
+    const postId = `kapp-cms-${uuidv4()}`;
+
+    const posts = await this.PostRepository.getAll({
+      where: {
+        postId,
+      },
+    });
+
+    if (posts && posts.length) {
+      return this.generateUid();
+    }
+
+    return postId;
   }
 }
 

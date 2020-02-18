@@ -14,6 +14,8 @@ const Post = attributes({
   source: String,
   locationAddress: String,
   locationDetails: Object,
+  locations: Array,
+  isGeofence: Number,
   tagsOriginal: Array,
   tagsRetained: Array,
   tagsAdded: Array,
@@ -32,6 +34,7 @@ const Post = attributes({
   createdAt: Date,
   updatedAt: Date,
   isActive: Number,
+  isEmbargo: Boolean,
 })(class Post {
   // Add validation functions below
   // e.g.:
@@ -52,10 +55,6 @@ const Post = attributes({
 
       if (!this.source || !this.source.length) {
         throw new Error('Source is required');
-      }
-
-      if (!this.locationDetails) {
-        throw new Error('Location is required');
       }
     }
   }

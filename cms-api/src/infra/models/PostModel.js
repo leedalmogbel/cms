@@ -20,6 +20,11 @@ module.exports = {
       source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
       locationDetails: DataTypes.JSON,
+      locations: DataTypes.JSON,
+      isGeofence: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
       tagsOriginal: DataTypes.JSON,
       tagsRetained: DataTypes.JSON,
       tagsAdded: DataTypes.JSON,
@@ -48,15 +53,24 @@ module.exports = {
         type: DataTypes.INTEGER,
         defaultValue: 1,
       },
+      isEmbargo: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
     }, {
       tableName: 'posts',
       timestamps: true,
     });
 
-    PostModel.associate = function () {
+    PostModel.associate = () => {
       PostModel.belongsTo(datasource.models.UserModel, {
         foreignKey: 'userId',
         as: 'user',
+      });
+
+      PostModel.hasMany(datasource.models.PostTagModel, {
+        foreignKey: 'postId',
+        as: 'postTag',
       });
     };
 

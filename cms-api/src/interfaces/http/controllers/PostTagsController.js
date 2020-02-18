@@ -4,20 +4,16 @@ const { Router } = require('express');
 const Status = require('http-status');
 const { BaseController } = require('../../../infra/core/core');
 
-class PostsController extends BaseController {
+class TagsController extends BaseController {
   constructor() {
     super();
     const router = Router();
 
-    router.get('/', this.injector('ListPosts'), this.index);
-    router.get('/:id', this.injector('ShowPost'), this.show);
-    router.post('/', this.injector('CreateInitialPost'), this.create);
-    router.post('/:id/save', this.injector('SavePost'), this.update);
-    router.post('/:id/approve', this.injector('ApprovePost'), this.update);
-    router.post('/:id/revise', this.injector('RevisePost'), this.update);
-    router.post('/:id/publish', this.injector('PublishPost'), this.update);
-    router.post('/:id/comment', this.injector('AddPostComment'), this.update);
-    router.delete('/:id', this.injector('RemovePost'), this.delete);
+    router.get('/', this.injector('ListPostTags'), this.index);
+    router.get('/:id', this.injector('ShowPostTag'), this.show);
+    router.post('/', this.injector('CreatePostTag'), this.create);
+    router.put('/:id', this.injector('SavePostTag'), this.update);
+    router.delete('/:id', this.injector('DeletePostTag'), this.delete);
 
     return router;
   }
@@ -125,4 +121,4 @@ class PostsController extends BaseController {
   }
 }
 
-module.exports = PostsController;
+module.exports = TagsController;

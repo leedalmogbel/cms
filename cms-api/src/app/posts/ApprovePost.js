@@ -1,3 +1,4 @@
+const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class ApprovePost extends Operation {
@@ -13,74 +14,89 @@ class ApprovePost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
-    let oldPost;
+    let post;
     try {
-      oldPost = await this.PostRepository.getById(id);
-      oldPost = oldPost.toJSON();
+      post = await this.PostRepository.getById(id);
     } catch (error) {
-      error.message = 'Post not found';
-      return this.emit(NOT_FOUND, error);
+      return this.emit(NOT_FOUND, new Error('Post not found'));
     }
 
     data.status = await this.getStatus(data);
-    if ('scheduledAt' in data) {
-      data.status = 'scheduled';
-      data.scheduledAt = new Date(data.scheduledAt).toISOString();
-    }
 
-    if (data.status === 'published') {
-      data.publishedAt = new Date().toISOString();
-    }
-
-    try {
-      data = await this.PostUtils.build(data);
-      data.validateData();
-    } catch (error) {
-      return this.emit(VALIDATION_ERROR, error);
-    }
-
-    try {
-      await this.PostRepository.update(id, data);
-      let post = await this.PostRepository.getPostById(id);
-      post = post.toJSON();
-
-      if (post.status === 'scheduled') {
-        return this.emit(SUCCESS, {
-          results: { id },
-          meta: {},
-        });
-      }
-
-      const { postId, contributors } = post;
-      if ('writers' in contributors && contributors.writers.length) {
-        const writerId = contributors.writers[0].id;
-
-        // format message
-        let message = `Your Post "${post.title}" has been approved.`;
-        if (post.userId) {
-          const author = await this.UserRepository.getById(post.userId);
-          if (author) {
-            message = `${author.firstName} ${author.lastName} approve your post ${post.title}`;
-          }
-        }
-
-        await this.PostUtils.saveNotification({
-          userId: writerId,
-          message,
-          meta: { id, postId },
-        });
-      }
-
-      await this.PostUtils.firehoseIntegrate(oldPost, post);
-      await this.PostUtils.pmsIntegrate(post);
-
-      this.emit(SUCCESS, {
-        results: { id },
+    // do not process multiple locations on these statuses
+    if (data.status === 'scheduled'
+      || data.status === 'embargo') {
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
         meta: {},
       });
-    } catch (error) {
-      this.emit(ERROR, error);
     }
+
+    // republish post
+    if (data.status === 'published' && post.publishedAt) {
+      if ('locations' in data && data.locations.length) {
+        data = {
+          ...data,
+          ...data.locations[0], // add placeid & geofence field based on locations
+        };
+      }
+
+      const res = await this.publish(id, data);
+      return this.emit(SUCCESS, {
+        results: { ids: [res.id] },
+        meta: {},
+      });
+    }
+
+    // process publish multiple locations
+    const { locations } = data;
+
+    if (!locations || typeof locations === 'undefined') {
+      return this.emit(
+        VALIDATION_ERROR,
+        new Error('Invalid post location'),
+      );
+    }
+
+    await Promise.all(
+      locations.map(async (loc, index) => {
+        const { placeId, isGeofence } = loc;
+        let { postId } = post;
+
+        // set initial post id to first location
+        id = index > 0 ? null : id;
+
+        // create initial post for succeeding locations
+        if (!id) {
+          postId = await this.PostUtils.generateUid();
+          const payload = new Post({
+            status: 'initial',
+            postId,
+          });
+
+          const newPost = await this.PostRepository.add(payload);
+          id = newPost.id;
+        }
+
+        data = {
+          ...data,
+          postId,
+          placeId,
+          isGeofence,
+        };
+
+        const res = await this.publish(id, data);
+        return res.id;
+      }),
+    ).then((ids) => {
+      this.emit(SUCCESS, {
+        results: { ids },
+        meta: {},
+      });
+    }).catch((errors) => {
+      this.emit(VALIDATION_ERROR, errors);
+    });
   }
 
   async getStatus(data) {
@@ -94,15 +110,69 @@ class ApprovePost extends Operation {
         return 'for-approval';
       }
 
+      if ('isEmbargo' in data && data.isEmbargo) {
+        return 'embargo';
+      }
+
       if (data.scheduledAt && !data.publishedAt) {
         return 'scheduled';
       }
 
       return 'published';
     } catch (error) {
-      error.message = 'User not found';
-      this.emit(NOT_FOUND, error);
+      this.emit(NOT_FOUND, new Error('User not found'));
     }
+  }
+
+  async publish(id = null, data) {
+    let oldPost;
+
+    try {
+      oldPost = await this.PostRepository.getById(id);
+      oldPost = oldPost.toJSON();
+    } catch (error) {
+      throw new Error('Post not found');
+    }
+
+    if (data.status === 'published') {
+      data.publishedAt = new Date().toISOString();
+    }
+
+    if ('scheduledAt' in data) {
+      data.scheduledAt = new Date(data.scheduledAt).toISOString();
+    }
+
+    data = await this.PostUtils.build(data);
+    data.validateData();
+
+    await this.PostRepository.update(id, data);
+    let post = await this.PostRepository.getPostById(id);
+    post = post.toJSON();
+
+    if (post.scheduledAt) {
+      return post;
+    }
+
+    const { postId, contributors } = post;
+    if ('writers' in contributors && contributors.writers.length) {
+      const writerId = contributors.writers[0].id;
+
+      if (post.userId) {
+        const author = await this.UserRepository.getById(post.userId);
+        const message = `${author.firstName} ${author.lastName} approve your post ${post.title}`;
+
+        await this.PostUtils.saveNotification({
+          userId: writerId,
+          message,
+          meta: { id, postId },
+        });
+      }
+    }
+
+    await this.PostUtils.firehoseIntegrate(oldPost, post);
+    await this.PostUtils.pmsIntegrate(post);
+
+    return post;
   }
 }
 

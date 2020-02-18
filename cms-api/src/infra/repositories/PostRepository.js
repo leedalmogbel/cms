@@ -5,10 +5,14 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
-  constructor({ PostModel, UserModel }) {
+  constructor({
+    PostModel, UserModel, RecycleBinModel, PostTagModel,
+  }) {
     super(PostModel);
 
     this.UserModel = UserModel;
+    this.RecycleBinModel = RecycleBinModel;
+    this.PostTagModel = PostTagModel;
   }
 
   buildListArgs(data = {}) {
@@ -30,16 +34,29 @@ class PostRepository extends BaseRepository {
     // set keyword
     if ('keyword' in data
       && data.keyword) {
-      args.where[Op.or] = {
-        title: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-        content: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-      };
+      if ('ids' in data) {
+        args.where = {
+          id: data.ids,
+        };
+      } else {
+        data.keyword = data.keyword.toLowerCase();
+        args.where = {
+          [Op.or]: [
+            Sequelize.where(
+              Sequelize.fn('lower', Sequelize.col('title')),
+              {
+                [Op.like]: `%${data.keyword}%`,
+              },
+            ),
+            Sequelize.where(
+              Sequelize.fn('lower', Sequelize.col('content')),
+              {
+                [Op.like]: `%${data.keyword}%`,
+              },
+            ),
+          ],
+        };
+      }
     }
 
     // set location
@@ -97,6 +114,10 @@ class PostRepository extends BaseRepository {
       if (data.status === 'scheduled') {
         order = [['scheduledAt', 'ASC']];
       }
+
+      if (data.status === 'embargo') {
+        order = [['updatedAt', 'DESC']];
+      }
     }
 
     args.order = order;
@@ -148,6 +169,29 @@ class PostRepository extends BaseRepository {
 
   count(args) {
     return this.model.count(this.buildListArgs(args));
+  }
+
+  async moveToBin(id) {
+    const entity = await this._getById(id);
+    const transaction = await this.model.sequelize.transaction();
+
+    try {
+      const post = await this.RecycleBinModel.create({
+        userId: entity.userId,
+        type: 'post',
+        meta: entity,
+      }, { transaction });
+
+      await entity.destroy(id, { transaction });
+
+      await transaction.commit();
+
+      return post;
+    } catch (error) {
+      await transaction.rollback();
+
+      throw error;
+    }
   }
 }
 

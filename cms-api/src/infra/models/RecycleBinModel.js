@@ -1,30 +1,34 @@
+
 module.exports = {
-  name: 'TagModel',
+  name: 'RecycleBinModel',
   datasource: 'kapp-cms',
   definition(datasource, DataTypes) {
-    const TagModel = datasource.define('TagModel', {
+    const RecycleBinModel = datasource.define('RecycleBinModel', {
       id: {
         primaryKey: true,
         autoIncrement: true,
         type: DataTypes.INTEGER,
       },
       userId: DataTypes.INTEGER,
-      name: DataTypes.STRING,
-      meta: DataTypes.JSON,
-      isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: 1,
-      },
+      type: DataTypes.STRING,
+      meta: DataTypes.JSON
     }, {
-      tableName: 'tags',
+      tableName: 'recycleBin',
       timestamps: true,
     });
+
+    RecycleBinModel.associate = function () {
+      RecycleBinModel.belongsTo(datasource.models.UserModel, {
+        foreignKey: 'userId',
+        as: 'user',
+      });
+    };
 
     /**
      * Examples on how to associate or set relationship with other models
      *
-     *  TagModel.associate = function () {
-     *   TagModel.belongsTo(datasource.models.GroupModel, {
+     *  UserModel.associate = function () {
+     *   UserModel.belongsTo(datasource.models.GroupModel, {
      *     foreignKey: 'groupId',
      *     as: 'group',
      *   });
@@ -32,13 +36,7 @@ module.exports = {
      *
      * refer to sequelize documentation https://sequelize.org/master/manual/associations.html
      */
-    TagModel.associate = () => {
-      TagModel.belongsTo(datasource.models.UserModel, {
-        foreignKey: 'userId',
-        as: 'user',
-      });
-    };
 
-    return TagModel;
+    return RecycleBinModel;
   },
 };
