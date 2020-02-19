@@ -11,7 +11,6 @@ class CategoryRepository extends BaseRepository {
 
   buildListArgs(data = {}) {
     // init fetch arguments
-    console.log('dataasdasdasdasdasd', data);
     const args = {
       where: {
         parent: data,

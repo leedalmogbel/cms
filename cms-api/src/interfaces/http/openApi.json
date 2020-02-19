@@ -565,7 +565,7 @@
           }
         ],
         "requestBody": {
-          "description": "Post Draft new data",
+          "description": "Post new data",
           "required": true,
           "content": {
             "application/json": {
@@ -577,7 +577,7 @@
         },
         "responses": {
           "202": {
-            "description": "Post Draft updated successfully",
+            "description": "Post updated successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -1392,7 +1392,11 @@
             "format": "int32",
             "description": "Identifier representing an author"
           },
-          "categoryId": {
+          "contributors": {
+            "type": "object",
+            "description": "Identifier representing an contributors"
+          },
+          "category": {
             "type": "string"
           },
           "subCategory": {
@@ -1412,48 +1416,87 @@
           },  
            "priorityLevel": {
             "type": "string"
-          },"source": {
+          },
+          "source": {
             "type": "string"
-          },"locationAddress": {
+          },
+          "locationAddress": {
             "type": "string"
-          },"locationDetails": {
+          },
+          "locationDetails": {
             "type": "object"
-          },"tagsOriginal": {
+          },
+          "locations": {
+            "type": "array"
+          },
+          "isGeofence": {
+            "type": "boolean"
+          },
+          "tagsOriginal": {
             "type": "array",
             "items": {
               "type": "string"
             }
-          },"tagsRetained": {
+          },
+          "tagsRetained": {
             "type": "array",
             "items": {
               "type": "string"
             }
-          },"tagsAdded": {
+          },
+          "tagsAdded": {
             "type": "array",
             "items": {
               "type": "string"
             }
-          },"tagsRemoved": {
+          },
+          "tagsRemoved": {
             "type": "array",
             "items": {
               "type": "string"
             }
-          },"advisories": {
+          },
+          "advisories": {
             "type": "object"
-          },"attachments": {
+          },
+          "comments": {
             "type": "object"
-          },"assignedUserId": {
-            "type": "integer"
-          },"status": {
-            "type": "string"
-          },"scheduledAt": {
-            "type": "string"
-          },"expiredAt": {
-            "type": "string"
-          },"publishedAt": {
-            "type": "string"
-          }, "user": {
+          },
+          "attachments": {
             "type": "object"
+          },
+          "status": {
+            "type": "string"
+          },
+          "isPublishedImmediately": {
+            "type": "boolean"
+          },
+          "isLocked": {
+            "type": "boolean"
+          },
+          "lockedUser": {
+            "type": "object"
+          },
+          "scheduledAt": {
+            "type": "string"
+          },
+          "expiredAt": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isEmbargo": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
           }
         }
       },

@@ -72,6 +72,11 @@ module.exports = {
         foreignKey: 'postId',
         as: 'postTag',
       });
+
+      // PostModel.hasMany(datasource.models.PostAdvisoryModel, {
+      //   foreignKey: 'postId',
+      //   as: 'postAdvisory',
+      // });
     };
 
     /**
