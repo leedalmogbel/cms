@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const controller = require('./utils/createControllerRoutes');
 const path = require('path');
 const openApiDoc = require('./openApi.json');
+const authMiddleware = require('./middlewares/authMiddleware');
 
 module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler, openApiMiddleware }) => {
   const router = Router();
@@ -29,7 +30,8 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
     .use(cors())
     .use(bodyParser.json())
     .use(compression())
-    .use('/docs', openApiMiddleware(openApiDoc));
+    .use('/docs', openApiMiddleware(openApiDoc))
+    .use(authMiddleware);
 
   /*
    * Add your API routes here

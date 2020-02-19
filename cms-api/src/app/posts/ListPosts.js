@@ -8,7 +8,7 @@ class ListPosts extends Operation {
     this.PostTagRepository = PostTagRepository;
   }
 
-  async execute(args) {
+  async execute(args, session) {
     const { SUCCESS, ERROR } = this.events;
 
     try {
@@ -32,12 +32,23 @@ class ListPosts extends Operation {
       }
 
       posts = posts.map((post) => {
-        post = {
-          ...post.toJSON(),
-        };
+        post = post.toJSON();
+        const {
+          isLocked,
+          lockUser,
+          expiredAt,
+          scheduledAt,
+        } = post;
 
-        post.expiredAt = post.expiredAt !== '1970-01-01 08:00:00' ? post.expiredAt : null;
-        post.scheduledAt = post.scheduledAt !== '1970-01-01 08:00:00' ? post.scheduledAt : null;
+        post.expiredAt = expiredAt !== '1970-01-01 08:00:00' ? expiredAt : null;
+        post.scheduledAt = scheduledAt !== '1970-01-01 08:00:00' ? scheduledAt : null;
+
+        if (isLocked && lockUser && session) {
+          if (parseInt(lockUser.userId, 10) === session.id) {
+            post.isLocked = null;
+            post.lockUser = null;
+          }
+        }
 
         return post;
       });
