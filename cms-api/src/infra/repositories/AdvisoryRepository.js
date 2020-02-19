@@ -51,6 +51,31 @@ class AdvisoryRepository extends BaseRepository {
       ];
     }
 
+    if ('category' in data && data.category) {
+      const { category } = data;
+      args.where.category = category;
+    }
+
+    if ('location' in data && data.location) {
+      const { location } = data;
+      args.where.locationAddress = {
+        [Op.like]: `%${location}%`,
+      };
+    }
+
+    if ('date' in data && data.date) {
+      const date = new Date(data.date);
+      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
+      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
+
+      args.where.updatedAt = {
+        [Op.between]: [
+          startDate,
+          endDate,
+        ],
+      };
+    }
+
     // fetch verified
     if ('verified' in data) {
       if (data.verified) {
