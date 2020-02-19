@@ -14,7 +14,7 @@ class PublishAdvisory extends Operation {
     } = this.events;
 
     try {
-      await this.AdvisoryRepository.getById(id);
+      await this.AdvisoryRepository.getAdvisoryById(id);
     } catch (error) {
       error.message = 'Advisory not found';
       return this.emit(NOT_FOUND, error);

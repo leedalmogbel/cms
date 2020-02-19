@@ -1,9 +1,11 @@
 const { Operation } = require('../../infra/core/core');
 
 class ListAdvisories extends Operation {
-  constructor({ AdvisoryRepository }) {
+  constructor({ AdvisoryRepository, PostAdvisoryRepository }) {
     super();
+
     this.AdvisoryRepository = AdvisoryRepository;
+    this.PostAdvisoryRepository = PostAdvisoryRepository;
   }
 
   async execute(args) {

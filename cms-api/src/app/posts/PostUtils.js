@@ -15,6 +15,7 @@ class PostUtils extends Operation {
     NotificationSocket,
     httpClient,
     PostTagRepository,
+    PostAdvisoryRepository,
   }) {
     super();
     this.PostRepository = PostRepository;
@@ -24,9 +25,19 @@ class PostUtils extends Operation {
     this.BaseLocation = BaseLocation;
     this.httpClient = httpClient;
     this.PostTagRepository = PostTagRepository;
+    this.PostAdvisoryRepository = PostAdvisoryRepository;
   }
 
   async build(data) {
+    if ('advisories' in data && data.advisories) {
+      await data.advisories.forEach((advisory) => {
+        // this.savePostAdvisories({
+        //   postId: data.id,
+        //   advisoryId: advisory.id,
+        // });
+      });
+    }
+
     if ('tagsAdded' in data && data.tagsAdded) {
       await data.tagsAdded.forEach((tag) => {
         this.savePostTags({
@@ -158,6 +169,17 @@ class PostUtils extends Operation {
       await this.PostTagRepository.add({
         postId,
         name,
+      });
+    }
+  }
+
+  async savePostAdvisories({ postId, advisoryId }) {
+    const exists = await this.PostAdvisoryRepository.getPostAdvisoryById(postId, advisoryId);
+
+    if (!exists) {
+      await this.PostAdvisoryRepository.add({
+        postId,
+        advisoryId,
       });
     }
   }
