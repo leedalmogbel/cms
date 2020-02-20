@@ -111,7 +111,8 @@ class AdvisoryRepository extends BaseRepository {
         [Op.not]: '[]',
         [Op.ne]: 'undefined',
       };
-    } else {
+    } else if ('isAssigned' in data
+     && data.isAssigned === 'false') {
       args.where.users = {
         [Op.eq]: null,
       };
