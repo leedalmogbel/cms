@@ -16,6 +16,7 @@ class AdvisoriesController extends BaseController {
     router.post('/:id/publish', this.injector('PublishAdvisory'), this.update);
     router.post('/:id/url', this.injector('AttachmentUrlAdvisory'), this.attach);
     router.post('/:id/geturl', this.injector('GetS3Url'), this.attach);
+    router.delete('/:id', this.injector('RemoveAdvisory'), this.delete);
 
     return router;
   }
@@ -127,6 +128,26 @@ class AdvisoriesController extends BaseController {
       .on(ERROR, next);
 
     operation.execute(Number(req.params.id), req.body);
+  }
+
+  delete(req, res, next) {
+    const { operation } = req;
+    const { SUCCESS, ERROR, NOT_FOUND } = operation.events;
+
+    operation
+      .on(SUCCESS, (result) => {
+        res
+          .status(Status.ACCEPTED)
+          .json(result);
+      })
+      .on(NOT_FOUND, (error) => {
+        res.status(Status.NOT_FOUND).json({
+          message: error.message,
+        });
+      })
+      .on(ERROR, next);
+
+    operation.execute(Number(req.params.id));
   }
 }
 

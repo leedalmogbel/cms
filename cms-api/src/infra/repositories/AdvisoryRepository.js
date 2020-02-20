@@ -4,9 +4,10 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class AdvisoryRepository extends BaseRepository {
-  constructor({ AdvisoryModel, UserModel }) {
+  constructor({ AdvisoryModel, UserModel, RecycleBinModel }) {
     super(AdvisoryModel);
     this.UserModel = UserModel;
+    this.RecycleBinModel = RecycleBinModel;
   }
 
   buildListArgs(data) {
@@ -159,6 +160,29 @@ class AdvisoryRepository extends BaseRepository {
 
   count(args) {
     return this.model.count(this.buildListArgs(args));
+  }
+
+  async moveToBin(id) {
+    const entity = await this._getById(id);
+    const transaction = await this.model.sequelize.transaction();
+
+    try {
+      const advisory = await this.RecycleBinModel.create({
+        userId: entity.userId,
+        type: 'advisory',
+        meta: entity,
+      }, { transaction });
+
+      await entity.destroy(id, { transaction });
+
+      await transaction.commit();
+
+      return advisory;
+    } catch (error) {
+      await transaction.rollback();
+
+      throw error;
+    }
   }
 }
 
