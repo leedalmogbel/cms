@@ -24,7 +24,6 @@ class PublishAdvisory extends Operation {
       data = await this.SaveAdvisory.build({
         ...data,
         status: 'published',
-        verified: false,
         publishedAt: new Date().toISOString(),
       });
 
