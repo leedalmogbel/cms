@@ -1,6 +1,6 @@
 const { Operation } = require('../../infra/core/core');
 
-class RemovePost extends Operation {
+class RemoveAdvisory extends Operation {
   constructor({ AdvisoryRepository }) {
     super();
     this.AdvisoryRepository = AdvisoryRepository;
@@ -18,8 +18,25 @@ class RemovePost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
+    let entity;
+
     try {
-      await this.AdvisoryRepository.moveToBin(id);
+      entity = await this.AdvisoryRepository.getAttachedPost(id);
+
+      if(entity.published.length) {
+        console.log('ERROR DAPAT')
+        return this.emit(
+          VALIDATION_ERROR, 
+          new Error('Advisory is attached to a published post'),
+        );
+      }
+    } catch (error) {
+      error.message = 'Advisory is attached to a published post';
+      return this.emit(VALIDATION_ERROR, error);
+    }
+
+    try {
+      await this.AdvisoryRepository.moveToBin(id, entity.result);
 
       this.emit(SUCCESS, {
         results: { id },
@@ -31,6 +48,6 @@ class RemovePost extends Operation {
   }
 }
 
-RemovePost.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
+RemoveAdvisory.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
-module.exports = RemovePost;
+module.exports = RemoveAdvisory;

@@ -132,13 +132,18 @@ class AdvisoriesController extends BaseController {
 
   delete(req, res, next) {
     const { operation } = req;
-    const { SUCCESS, ERROR, NOT_FOUND } = operation.events;
+    const { SUCCESS, ERROR, NOT_FOUND, VALIDATION_ERROR } = operation.events;
 
     operation
       .on(SUCCESS, (result) => {
         res
           .status(Status.ACCEPTED)
           .json(result);
+      })
+      .on(VALIDATION_ERROR, (error) => {
+        res.status(Status.BAD_REQUEST).json({
+          message: error.message,
+        });
       })
       .on(NOT_FOUND, (error) => {
         res.status(Status.NOT_FOUND).json({

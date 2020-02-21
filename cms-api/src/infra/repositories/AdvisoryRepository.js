@@ -4,10 +4,11 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class AdvisoryRepository extends BaseRepository {
-  constructor({ AdvisoryModel, UserModel, RecycleBinModel }) {
+  constructor({ AdvisoryModel, UserModel, RecycleBinModel, PostModel }) {
     super(AdvisoryModel);
     this.UserModel = UserModel;
     this.RecycleBinModel = RecycleBinModel;
+    this.PostModel = PostModel;
   }
 
   buildListArgs(data) {
@@ -162,7 +163,7 @@ class AdvisoryRepository extends BaseRepository {
     return this.model.count(this.buildListArgs(args));
   }
 
-  async moveToBin(id) {
+  async moveToBin(id, posts) {
     const entity = await this._getById(id);
     const transaction = await this.model.sequelize.transaction();
 
@@ -172,6 +173,14 @@ class AdvisoryRepository extends BaseRepository {
         type: 'advisory',
         meta: entity,
       }, { transaction });
+
+      await Promise.all(
+        posts.map(async (post) => {
+          await post.update({
+            advisories: post.advisories.filter(advisory => advisory != id),
+          }, { transaction });
+        }),
+      );
 
       await entity.destroy(id, { transaction });
 
@@ -183,6 +192,22 @@ class AdvisoryRepository extends BaseRepository {
 
       throw error;
     }
+  }
+
+  async getAttachedPost(id) {
+    try {
+      const entity = await this.PostModel.findAll({
+        where:{ advisories : Sequelize.literal(' CONCAT(advisories) REGEXP "(' + id + ')"') }
+      })
+
+      return {
+        published: entity.filter(post => post.status == 'published'),
+        result: entity
+      }
+    } catch (error) {
+      throw error;
+    }
+    
   }
 }
 
