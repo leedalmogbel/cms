@@ -40,8 +40,14 @@ class ListPosts extends Operation {
           scheduledAt,
         } = post;
 
-        post.expiredAt = expiredAt !== '1970-01-01 08:00:00' ? expiredAt : null;
-        post.scheduledAt = scheduledAt !== '1970-01-01 08:00:00' ? scheduledAt : null;
+        if (scheduledAt !== null) {
+          post.scheduledAt = scheduledAt.includes('1970-01-01') ? null : scheduledAt;
+        }
+
+        if (expiredAt !== null) {
+          post.expiredAt = expiredAt.includes('1970-01-01') ? null : expiredAt;
+        }
+
 
         if (isLocked && lockUser && session) {
           if (parseInt(lockUser.userId, 10) === session.id) {

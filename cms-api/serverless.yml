@@ -3,7 +3,7 @@ service: kapp-cms-api
 plugins:
   - serverless-offline
   - serverless-mocha-plugin
-
+  - serverless-domain-manager
 provider:
   region: ap-southeast-1
   name: aws
@@ -27,6 +27,13 @@ provider:
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  customDomain:
+    domainName: ${file(env.yml):${self:custom.stage}.API_DOMAIN_NAME}
+    stage: ${opt:stage, self:provider.stage}
+    certificateName: ${file(env.yml):${self:custom.stage}.CERTIFICATE_NAME}
+    createRoute53Record: true
+    endpointType: 'edge'
+    securityPolicy: tls_1_2
 
 functions:
   app:
@@ -72,19 +79,19 @@ functions:
     events:
       - websocket:
           route: $connect
-    #reservedConcurrency: 5
+    reservedConcurrency: 5
   socketDisconnect:
     handler: src/socket.disconnect
     events:
       - websocket:
           route: $disconnect
-    #reservedConcurrency: 5
+    reservedConcurrency: 5
   socketDefault:
     handler: src/socket.default
     events:
       - websocket:
           route: $default
-    #reservedConcurrency: 5
+    reservedConcurrency: 5
   notify:
     handler: src/socket.notify
     events:

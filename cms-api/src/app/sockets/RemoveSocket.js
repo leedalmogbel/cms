@@ -25,6 +25,7 @@ class RemoveSocket extends Operation {
 
     try {
       const { connectionId } = event.requestContext;
+      console.log('Websocket disconnect', connectionId, event);
 
       await this.SocketRepository.model.destroy({
         where: {
@@ -87,6 +88,8 @@ class RemoveSocket extends Operation {
         Data: JSON.stringify(data),
       }).promise();
     } catch (err) {
+      console.log('Websocket disconnect error', connectionId, err);
+
       // remove stale connection
       if (err.statusCode === 410) {
         await this.SocketRepository.model.destroy({

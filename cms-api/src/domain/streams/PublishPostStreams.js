@@ -8,7 +8,7 @@ module.exports = (post) => {
   };
 
   const {
-    locations = [[]],
+    locations = [],
     tagsRetained = [[]],
     tagsRemoved = [[]],
     tagsAdded = [[]],

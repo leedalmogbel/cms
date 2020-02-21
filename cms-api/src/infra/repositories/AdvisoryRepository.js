@@ -105,15 +105,15 @@ class AdvisoryRepository extends BaseRepository {
       args.limit = Number(data.limit);
     }
 
-    if ('assigned' in data) {
+    if ('isAssigned' in data
+      && data.isAssigned === 'true') {
       args.where.users = {
         [Op.ne]: null,
         [Op.not]: '[]',
         [Op.ne]: 'undefined',
       };
-    }
-
-    if ('unassigned' in data) {
+    } else if ('isAssigned' in data
+     && data.isAssigned === 'false') {
       args.where.users = {
         [Op.eq]: null,
       };
