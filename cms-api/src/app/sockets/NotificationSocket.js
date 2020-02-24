@@ -57,7 +57,7 @@ class NotificationSocket extends Operation {
         Data: JSON.stringify(data),
       }).promise();
     } catch (err) {
-      console.log('Websocket error: ', err);
+      console.log('Websocket notify error', connectionId, err);
 
       // remove stale connection
       if (err.statusCode === 410) {
