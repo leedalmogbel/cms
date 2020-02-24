@@ -1,19 +1,36 @@
 const { Operation } = require('../../infra/core/core');
 
 class ListAdvisories extends Operation {
-  constructor({ AdvisoryRepository, PostAdvisoryRepository }) {
+  constructor({ AdvisoryRepository, AdvisoryUserRepository }) {
     super();
 
     this.AdvisoryRepository = AdvisoryRepository;
-    this.PostAdvisoryRepository = PostAdvisoryRepository;
+    this.AdvisoryUserRepository = AdvisoryUserRepository;
   }
 
   async execute(args) {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      const advisories = await this.AdvisoryRepository.getAdvisories(args);
-      const total = await this.AdvisoryRepository.count(args);
+      let advisories = await this.AdvisoryRepository.getAdvisories(args);
+      let total = await this.AdvisoryRepository.count(args);
+
+      if ('taggedUser' in args) {
+        const advisoryUsers = await this.AdvisoryUserRepository.filterAdvisoryUserByUserId(
+          Number(args.taggedUser),
+        );
+        const advisoryUserIds = advisoryUsers.map((aUsers) => aUsers.advisoryId);
+
+        advisories = await this.AdvisoryRepository.getAdvisories({
+          ...args,
+          ids: advisoryUserIds,
+        });
+
+        total = await this.AdvisoryRepository.count({
+          ...args,
+          ids: advisoryUserIds,
+        });
+      }
 
       this.emit(SUCCESS, {
         results: await advisories.map((advisory) => {

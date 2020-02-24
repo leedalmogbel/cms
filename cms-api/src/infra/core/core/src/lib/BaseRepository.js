@@ -32,7 +32,7 @@ class BaseRepository {
       await transaction.commit();
 
       return updatedEntity;
-    } catch(error) {
+    } catch (error) {
       await transaction.rollback();
 
       throw error;
@@ -49,8 +49,8 @@ class BaseRepository {
     options.rejectOnEmpty = true;
     try {
       return this.model.findByPk(id, options);
-    } catch(error) {
-      if(error.name === 'SequelizeEmptyResultError') {
+    } catch (error) {
+      if (error.name === 'SequelizeEmptyResultError') {
         const notFoundError = new Error('NotFoundError');
         notFoundError.details = `${this.model.name} with id ${id} can't be found.`;
 

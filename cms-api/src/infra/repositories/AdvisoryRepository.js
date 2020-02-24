@@ -118,6 +118,12 @@ class AdvisoryRepository extends BaseRepository {
       args.where.status = data.status;
     }
 
+    if ('ids' in data) {
+      args.where[Op.and] = {
+        id: data.ids,
+      };
+    }
+
     // offset
     if ('offset' in data) {
       args.offset = Number(data.offset);
