@@ -50,6 +50,13 @@ class SaveAdvisory extends Operation {
       };
     }
 
+    if ('users' in data) {
+      data = {
+        ...data,
+        taggedUsers: data.users,
+      };
+    }
+
     return new Advisory(data);
   }
 }
