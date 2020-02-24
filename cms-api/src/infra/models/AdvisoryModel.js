@@ -10,7 +10,7 @@ module.exports = {
         type: DataTypes.INTEGER,
       },
       userId: DataTypes.INTEGER,
-      users: DataTypes.JSON,
+      taggedUsers: DataTypes.JSON,
       category: DataTypes.STRING,
       title: DataTypes.STRING,
       content: DataTypes.TEXT,
