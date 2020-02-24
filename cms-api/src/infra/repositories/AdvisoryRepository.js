@@ -4,7 +4,9 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class AdvisoryRepository extends BaseRepository {
-  constructor({ AdvisoryModel, UserModel, RecycleBinModel, PostModel }) {
+  constructor({
+    AdvisoryModel, UserModel, RecycleBinModel, PostModel,
+  }) {
     super(AdvisoryModel);
     this.UserModel = UserModel;
     this.RecycleBinModel = RecycleBinModel;
@@ -52,6 +54,27 @@ class AdvisoryRepository extends BaseRepository {
         ),
       ];
     }
+
+    // if ('taggedUser' in data) {
+    //   let { taggedUser } = data;
+    //   taggedUser = Number(taggedUser);
+
+    //   // args.where[Op.and] = {
+    //   //   taggedUsers: {
+    //   //     id: {
+    //   //       [Op.eq]: { taggedUser },
+    //   //     },
+    //   //   },
+    //   args.where[Op.and] = [
+    //     Sequelize.where(
+    //       Sequelize.fn('lower', Sequelize.json('taggedUsers.id')),
+    //       {
+    //         [Op.contains]: taggedUser,
+    //       },
+    //     ),
+    //   ];
+    //   console.log(args.where);
+    // }
 
     if ('category' in data && data.category) {
       const { category } = data;
@@ -107,14 +130,14 @@ class AdvisoryRepository extends BaseRepository {
 
     if ('isAssigned' in data
       && data.isAssigned === 'true') {
-      args.where.users = {
+      args.where.taggedUsers = {
         [Op.ne]: null,
         [Op.not]: '[]',
         [Op.ne]: 'undefined',
       };
     } else if ('isAssigned' in data
      && data.isAssigned === 'false') {
-      args.where.users = {
+      args.where.taggedUsers = {
         [Op.eq]: null,
       };
     }
@@ -139,6 +162,7 @@ class AdvisoryRepository extends BaseRepository {
           ],
         },
       ],
+      logging: console.log,
     });
   }
 
@@ -177,7 +201,7 @@ class AdvisoryRepository extends BaseRepository {
       await Promise.all(
         posts.map(async (post) => {
           await post.update({
-            advisories: post.advisories.filter(advisory => advisory != id),
+            advisories: post.advisories.filter((advisory) => advisory != id),
           }, { transaction });
         }),
       );
@@ -197,17 +221,16 @@ class AdvisoryRepository extends BaseRepository {
   async getAttachedPost(id) {
     try {
       const entity = await this.PostModel.findAll({
-        where:{ advisories : Sequelize.literal(' CONCAT(advisories) REGEXP "(' + id + ')"') }
-      })
+        where: { advisories: Sequelize.literal(` CONCAT(advisories) REGEXP "(${id})"`) },
+      });
 
       return {
-        published: entity.filter(post => post.status == 'published'),
-        result: entity
-      }
+        published: entity.filter((post) => post.status == 'published'),
+        result: entity,
+      };
     } catch (error) {
       throw error;
     }
-    
   }
 }
 
