@@ -51,7 +51,7 @@ class SaveAdvisory extends Operation {
       };
     }
 
-    if ('users' in data) {
+    if ('taggedUsers' in data) {
       data = {
         ...data,
         taggedUsers: data.users,
