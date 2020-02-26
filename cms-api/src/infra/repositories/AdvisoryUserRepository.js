@@ -9,7 +9,7 @@ class AdvisoryUserRepository extends BaseRepository {
   }
 
   getAdvisoryUserById(advisoryId, userId) {
-    return this.model.findOne({
+    return this.model.findAll({
       where: {
         userId,
         advisoryId,

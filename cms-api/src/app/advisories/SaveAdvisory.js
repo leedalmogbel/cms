@@ -51,13 +51,13 @@ class SaveAdvisory extends Operation {
       };
     }
 
-    if ('users' in data) {
+    if ('taggedUsers' in data) {
       data = {
         ...data,
-        taggedUsers: data.users,
+        taggedUsers: data.taggedUsers,
       };
 
-      await data.users.forEach((user) => {
+      await data.taggedUsers.forEach((user) => {
         this.saveAdvisoryUsers({
           advisoryId: data.id,
           userId: user.id,
@@ -70,14 +70,14 @@ class SaveAdvisory extends Operation {
   }
 
   async saveAdvisoryUsers({ advisoryId, userId }) {
-    const exists = await this.AdvisoryUserRepository.getAdvisoryUserById(advisoryId, userId);
+    // const exists = await this.AdvisoryUserRepository.getAdvisoryUserById(advisoryId, userId);
 
-    if (!exists) {
-      await this.AdvisoryUserRepository.add({
-        advisoryId,
-        userId,
-      });
-    }
+    // if (!exists) {
+    await this.AdvisoryUserRepository.add({
+      advisoryId,
+      userId,
+    });
+    // }
   }
 }
 
