@@ -17,6 +17,8 @@ class RegisterSocket extends Operation {
       const { connectionId } = event.requestContext;
       const { userId } = event.queryStringParameters;
 
+      console.log('Websocket connect:', connectionId);
+
       // remove any existing socket by userId
       const exists = await this.SocketRepository.getByUserId(userId);
       if (exists) {
