@@ -31,10 +31,10 @@ class PostUtils extends Operation {
   async build(data) {
     if ('advisories' in data && data.advisories) {
       await data.advisories.forEach((advisory) => {
-        // this.savePostAdvisories({
-        //   postId: data.id,
-        //   advisoryId: advisory.id,
-        // });
+        this.savePostAdvisories({
+          postId: data.id,
+          advisoryId: advisory.id,
+        });
       });
     }
 
