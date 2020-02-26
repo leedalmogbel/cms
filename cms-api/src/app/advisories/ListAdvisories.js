@@ -16,9 +16,12 @@ class ListAdvisories extends Operation {
       let total = await this.AdvisoryRepository.count(args);
 
       if ('taggedUser' in args) {
+        console.log('taggedUser args', args);
         const advisoryUsers = await this.AdvisoryUserRepository.filterAdvisoryUserByUserId(
           Number(args.taggedUser),
         );
+
+        console.log('advisoryUsers', advisoryUsers);
         const advisoryUserIds = advisoryUsers.map((aUsers) => aUsers.advisoryId);
 
         advisories = await this.AdvisoryRepository.getAdvisories({
