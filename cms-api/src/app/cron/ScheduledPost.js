@@ -79,6 +79,7 @@ class ScheduledPost extends Operation {
               isGeofence,
               status: 'published',
               publishedAt: new Date().toISOString(),
+              scheduledAt: new Date(oldPost.scheduledAt).toISOString(),
             };
 
             // set initial post id to first location
@@ -144,7 +145,7 @@ class ScheduledPost extends Operation {
     // publish to pms
     const pmsRes = await this.httpClient.post(
       process.env.PMS_POST_ENDPOINT,
-      PmsPost(post),
+      PublishPostStreams(post),
       {
         access_token: process.env.PMS_POST_TOKEN,
       },
