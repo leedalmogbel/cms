@@ -54,10 +54,10 @@ class SaveAdvisory extends Operation {
     if ('taggedUsers' in data) {
       data = {
         ...data,
-        taggedUsers: data.users,
+        taggedUsers: data.taggedUsers,
       };
 
-      await data.users.forEach((user) => {
+      await data.taggedUsers.forEach((user) => {
         this.saveAdvisoryUsers({
           advisoryId: data.id,
           userId: user.id,
