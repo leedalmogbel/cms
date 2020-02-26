@@ -70,14 +70,14 @@ class SaveAdvisory extends Operation {
   }
 
   async saveAdvisoryUsers({ advisoryId, userId }) {
-    const exists = await this.AdvisoryUserRepository.getAdvisoryUserById(advisoryId, userId);
+    // const exists = await this.AdvisoryUserRepository.getAdvisoryUserById(advisoryId, userId);
 
-    if (!exists) {
-      await this.AdvisoryUserRepository.add({
-        advisoryId,
-        userId,
-      });
-    }
+    // if (!exists) {
+    await this.AdvisoryUserRepository.add({
+      advisoryId,
+      userId,
+    });
+    // }
   }
 }
 
