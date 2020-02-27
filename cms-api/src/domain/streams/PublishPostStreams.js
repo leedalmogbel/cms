@@ -1,5 +1,6 @@
 module.exports = (post) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
+  const tagEmpty = (value) => (value.length ? value: [[]]);
 
   post = {
     ...post,
@@ -56,10 +57,10 @@ module.exports = (post) => {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
-    postKeywords: [
+    postKeywords: tagEmpty([
       ...tagsRetained,
       ...tagsAdded,
-    ],
+    ]),
     postAcceptedKeywords: tagsRetained,
     postRejectedKeywords: tagsRemoved,
     postAddedKeywords: tagsAdded,
@@ -128,5 +129,16 @@ module.exports = (post) => {
     postStatus: 'Active',
     reportedFlag: null,
     postScore: null,
+    ConnectivityType: null,
+    Longitude: null,
+    Latitude: null,
+    SessionID: null,
+    KAPPUserId: null,
+    IPAddress: null,
+    ActionTaken: null,
+    ClickedContent: null,
+    EventTimeStamp: nullable(post.publishedAt),
+    PostTechnicalTags: null,
+    PostOperationalTags: null
   };
 };
