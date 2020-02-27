@@ -66,7 +66,6 @@ class RecycleBinRepository extends BaseRepository {
       }
     }
 
-    console.log('payload', data);
     if ('category' in data) {
       args.where.meta = { category: data.category };
     }
@@ -97,6 +96,7 @@ class RecycleBinRepository extends BaseRepository {
 
     if ('type' in data && data.type) {
       args.where = {
+        ...args.where,
         [Op.and]:[
           { type: data.type }
         ]
