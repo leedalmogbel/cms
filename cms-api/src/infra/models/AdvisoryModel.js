@@ -48,10 +48,10 @@ module.exports = {
         as: 'user',
       });
 
-      AdvisoryModel.hasMany(datasource.models.PostAdvisoryModel, {
-        foreignKey: 'advisoryId',
-        as: 'postAdvisory',
-      });
+      // AdvisoryModel.hasMany(datasource.models.PostAdvisoryModel, {
+      //   foreignKey: 'advisoryId',
+      //   as: 'postAdvisory',
+      // });
     };
 
     return AdvisoryModel;
