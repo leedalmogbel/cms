@@ -5,12 +5,13 @@ const { Op } = Sequelize;
 
 class AdvisoryRepository extends BaseRepository {
   constructor({
-    AdvisoryModel, UserModel, RecycleBinModel, PostModel,
+    AdvisoryModel, UserModel, RecycleBinModel, PostModel, PostAdvisoryModel
   }) {
     super(AdvisoryModel);
     this.UserModel = UserModel;
     this.RecycleBinModel = RecycleBinModel;
     this.PostModel = PostModel;
+    this.PostAdvisoryModel = PostAdvisoryModel;
   }
 
   buildListArgs(data) {
@@ -207,10 +208,16 @@ class AdvisoryRepository extends BaseRepository {
       await Promise.all(
         posts.map(async (post) => {
           await post.update({
-            advisories: post.advisories.filter((advisory) => advisory != id),
+            advisories: post.advisories.filter((advisory) => advisory.id != id),
           }, { transaction });
         }),
       );
+
+      await this.PostAdvisoryModel.destroy({
+        where: {
+          advisoryId: id
+        }
+      });
 
       await entity.destroy(id, { transaction });
 
@@ -226,13 +233,25 @@ class AdvisoryRepository extends BaseRepository {
 
   async getAttachedPost(id) {
     try {
-      const entity = await this.PostModel.findAll({
-        where: { advisories: Sequelize.literal(` CONCAT(advisories) REGEXP "(${id})"`) },
+      const postsPivot = await this.PostAdvisoryModel.findAll({
+        where: {
+          advisoryId: id
+        }
+      });
+
+      const ids = [...new Set(postsPivot.map(post => post.postId))];
+
+      const posts = await this.PostModel.findAll({
+        where: {
+          id: {
+            [Op.in]: ids
+          }
+        }
       });
 
       return {
-        published: entity.filter((post) => post.status == 'published'),
-        result: entity,
+        published: posts.filter((post) => post.status == 'published'),
+        result: posts,
       };
     } catch (error) {
       throw error;

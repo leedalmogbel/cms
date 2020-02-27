@@ -2,7 +2,7 @@ const Socket = require('src/domain/Socket');
 const { Operation } = require('../../infra/core/core');
 
 class RegisterSocket extends Operation {
-  constructor({ SocketRepository }) {
+  constructor({ SocketRepository, UserRepository }) {
     super();
     this.SocketRepository = SocketRepository;
   }

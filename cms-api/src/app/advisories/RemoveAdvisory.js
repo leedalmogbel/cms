@@ -24,7 +24,6 @@ class RemoveAdvisory extends Operation {
       entity = await this.AdvisoryRepository.getAttachedPost(id);
 
       if(entity.published.length) {
-        console.log('ERROR DAPAT')
         return this.emit(
           VALIDATION_ERROR, 
           new Error('Advisory is attached to a published post'),

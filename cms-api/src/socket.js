@@ -23,6 +23,12 @@ module.exports.default = async (event, context) => {
   return Container.resolve('DefaultSocket').execute(event);
 };
 
+module.exports.auth = async (event, context) => {
+  console.log('test 123123');
+  const Container = await getContainer();
+  return Container.resolve('AuthSocket').execute(event, context);
+};
+
 module.exports.notify = async (event, context) => {
   const Container = await getContainer();
   return Container.resolve('NotificationSocket').execute(event);

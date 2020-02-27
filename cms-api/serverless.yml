@@ -73,11 +73,17 @@ functions:
       - schedule:
           rate: rate(30 minutes)
           enabled: true
+  socketAuth:
+    handler: src/socket.auth
   socketConnect:
     handler: src/socket.connect
     events:
       - websocket:
           route: $connect
+          authorizer:
+            name: socketAuth
+            identitySource:
+              - 'route.request.querystring.Authorizer'
   socketDisconnect:
     handler: src/socket.disconnect
     events:
