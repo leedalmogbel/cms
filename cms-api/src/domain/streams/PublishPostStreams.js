@@ -63,9 +63,9 @@ module.exports = (post) => {
       ...tagsRetained,
       ...tagsAdded,
     ]),
-    postAcceptedKeywords: tagsRetained,
-    postRejectedKeywords: tagsRemoved,
-    postAddedKeywords: tagsAdded,
+    postAcceptedKeywords: tagEmpty(tagsRetained),
+    postRejectedKeywords: tagEmpty(tagsRemoved),
+    postAddedKeywords: tagEmpty(tagsAdded),
     postLocation: {
       locationAddress: address,
       lat,
