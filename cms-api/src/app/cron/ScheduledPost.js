@@ -111,6 +111,15 @@ class ScheduledPost extends Operation {
   }
 
   async publish(data) {
+    let oldPost;
+
+    try {
+      oldPost = await this.PostRepository.getById(data.id);
+      oldPost = oldPost.toJSON();
+    } catch (error) {
+      throw new Error('Post not found');
+    }
+
     data = await this.PostUtils.build(data);
     data.validateData();
 
@@ -128,7 +137,7 @@ class ScheduledPost extends Operation {
     let streamPayload = PublishPostStreams(post);
 
     // if republished or update post send to updatepost-cms stream
-    if (data.publishedAt) {
+    if (oldPost.publishedAt) {
       DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
       streamPayload = UpdatePostStreams(post, data);
     }
