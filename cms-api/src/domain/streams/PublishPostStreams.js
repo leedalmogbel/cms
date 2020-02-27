@@ -57,6 +57,8 @@ module.exports = (post) => {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
+    PostTechnicalTags: null,
+    PostOperationalTags: null,
     postKeywords: tagEmpty([
       ...tagsRetained,
       ...tagsAdded,
@@ -98,6 +100,7 @@ module.exports = (post) => {
     postTimestampUpdated: null,
     postCommunityID: null,
     postExpirationDate: null,
+    postCategoryId: null,
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
     postSubCategory: post.subCategory,
@@ -128,17 +131,6 @@ module.exports = (post) => {
     postOtherRestriction: null,
     postStatus: 'Active',
     reportedFlag: null,
-    postScore: null,
-    ConnectivityType: null,
-    Longitude: null,
-    Latitude: null,
-    SessionID: null,
-    KAPPUserId: null,
-    IPAddress: null,
-    ActionTaken: null,
-    ClickedContent: null,
-    EventTimeStamp: nullable(post.publishedAt),
-    PostTechnicalTags: null,
-    PostOperationalTags: null
+    postScore: null
   };
 };
