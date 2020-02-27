@@ -25,7 +25,7 @@ class RemoveSocket extends Operation {
 
     try {
       const { connectionId } = event.requestContext;
-      console.log('Websocket disconnect', connectionId, event);
+      console.log('Websocket disconnect', connectionId);
 
       await this.SocketRepository.model.destroy({
         where: {
