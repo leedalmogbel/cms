@@ -185,6 +185,8 @@ class PostUtils extends Operation {
   }
 
   async postNotifications(oldPost, updatedPost) {
+    if (updatedPost.status === 'draft') return;
+
     const {
       editor,
       writers,
