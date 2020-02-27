@@ -147,13 +147,6 @@ class AdvisoryRepository extends BaseRepository {
             'lastname',
           ],
         },
-        {
-          model: this.PostAdvisoryModel,
-          as: 'postAdvisory',
-          attributes: [
-            'postId',
-          ],
-        },
       ],
     });
   }

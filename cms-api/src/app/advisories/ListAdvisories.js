@@ -34,14 +34,14 @@ class ListAdvisories extends Operation {
         });
       }
 
-      // advisories.map(async(advisory) => {
+      // advisories.map((advisory) => {
       //   advisory = advisory.toJSON();
-      //   const posts = await this.PostAdvisoryRepository.getPostsByAdvisoryId(advisory.id);
+      //   let posts = this.PostAdvisoryRepository.getPostsByAdvisoryId(advisory.id);
 
-      //   console.log(posts);
+      //   console.log(advisory.id);
 
       //   return '';
-      });
+      // });
 
       this.emit(SUCCESS, {
         results: await advisories.map((advisory) => {
