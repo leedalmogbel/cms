@@ -47,6 +47,11 @@ module.exports = {
         foreignKey: 'userId',
         as: 'user',
       });
+
+      AdvisoryModel.hasMany(datasource.models.PostAdvisoryModel, {
+        foreignKey: 'advisoryId',
+        as: 'postAdvisory',
+      });
     };
 
     return AdvisoryModel;

@@ -5,7 +5,7 @@ const { Op } = Sequelize;
 
 class AdvisoryRepository extends BaseRepository {
   constructor({
-    AdvisoryModel, UserModel, RecycleBinModel, PostModel, PostAdvisoryModel
+    AdvisoryModel, UserModel, RecycleBinModel, PostModel, PostAdvisoryModel,
   }) {
     super(AdvisoryModel);
     this.UserModel = UserModel;
@@ -55,27 +55,6 @@ class AdvisoryRepository extends BaseRepository {
         ),
       ];
     }
-
-    // if ('taggedUser' in data) {
-    //   let { taggedUser } = data;
-    //   taggedUser = Number(taggedUser);
-
-    //   // args.where[Op.and] = {
-    //   //   taggedUsers: {
-    //   //     id: {
-    //   //       [Op.eq]: { taggedUser },
-    //   //     },
-    //   //   },
-    //   args.where[Op.and] = [
-    //     Sequelize.where(
-    //       Sequelize.fn('lower', Sequelize.json('taggedUsers.id')),
-    //       {
-    //         [Op.contains]: taggedUser,
-    //       },
-    //     ),
-    //   ];
-    //   console.log(args.where);
-    // }
 
     if ('category' in data && data.category) {
       const { category } = data;
@@ -168,8 +147,14 @@ class AdvisoryRepository extends BaseRepository {
             'lastname',
           ],
         },
+        {
+          model: this.PostAdvisoryModel,
+          as: 'postAdvisory',
+          attributes: [
+            'postId',
+          ],
+        },
       ],
-      logging: console.log,
     });
   }
 
@@ -215,8 +200,8 @@ class AdvisoryRepository extends BaseRepository {
 
       await this.PostAdvisoryModel.destroy({
         where: {
-          advisoryId: id
-        }
+          advisoryId: id,
+        },
       });
 
       await entity.destroy(id, { transaction });
@@ -235,18 +220,18 @@ class AdvisoryRepository extends BaseRepository {
     try {
       const postsPivot = await this.PostAdvisoryModel.findAll({
         where: {
-          advisoryId: id
-        }
+          advisoryId: id,
+        },
       });
 
-      const ids = [...new Set(postsPivot.map(post => post.postId))];
+      const ids = [...new Set(postsPivot.map((post) => post.postId))];
 
       const posts = await this.PostModel.findAll({
         where: {
           id: {
-            [Op.in]: ids
-          }
-        }
+            [Op.in]: ids,
+          },
+        },
       });
 
       return {

@@ -21,12 +21,12 @@ module.exports = {
       timestamps: true,
     });
 
-    // PostAdvisoryModel.associate = () => {
-    //   PostAdvisoryModel.belongsTo(datasource.models.PostModel, {
-    //     foreignKey: 'postId',
-    //     as: 'postAdvisory',
-    //   });
-    // };
+    PostAdvisoryModel.associate = () => {
+      PostAdvisoryModel.belongsTo(datasource.models.PostModel, {
+        foreignKey: 'postId',
+        as: 'post',
+      });
+    };
 
     return PostAdvisoryModel;
   },
