@@ -164,6 +164,7 @@ class AdvisoryRepository extends BaseRepository {
                 'id',
                 'postId',
                 'title',
+                'status',
               ],
             },
           ],
