@@ -57,8 +57,8 @@ module.exports = (post) => {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
-    PostTechnicalTags: null,
-    PostOperationalTags: null,
+    postTechnicalTags: null,
+    postOperationalTags: null,
     postKeywords: tagEmpty([
       ...tagsRetained,
       ...tagsAdded,
