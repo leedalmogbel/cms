@@ -48,7 +48,7 @@ class GetS3Url extends Operation {
         Key,
         ContentType: fileType,
         Expires: 604800,
-        ACL: 'public-read',
+        // ACL: 'public-read',
       });
 
       return putUrl;

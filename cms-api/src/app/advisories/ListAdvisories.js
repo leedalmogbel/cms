@@ -41,7 +41,6 @@ class ListAdvisories extends Operation {
           posts = [];
 
           if (advisory.advisoryPosts) {
-            console.log('taetaetaetaetaetaetae');
             const postDetails = advisory.advisoryPosts;
 
             postDetails.forEach((detail) => {
