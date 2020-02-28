@@ -1,6 +1,5 @@
 const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
 const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
-const PmsPost = require('src/domain/pms/Post');
 const Post = require('src/domain/Post');
 const AWS = require('aws-sdk');
 const Sequelize = require('sequelize');
@@ -43,42 +42,43 @@ class ScheduledPost extends Operation {
     console.log(`List of posts to be published: ${posts.length}`);
 
     await Promise.all(
-      posts.map(async (oldPost) => {
-        oldPost = oldPost.toJSON();
-
-        // format timestamps
-        if (oldPost.expiredAt) {
-          oldPost.expiredAt = new Date(oldPost.expiredAt).toISOString();
-        }
+      posts.map(async (post) => {
+        post = post.toJSON();
 
         // if updated scheduled post
-        if (oldPost.publishedAt) {
-          const post = await this.publish({
-            ...oldPost,
+        if (post.publishedAt) {
+          if ('locations' in post && post.locations.length) {
+            post = {
+              ...post,
+              ...post.locations[0], // add placeid & geofence field based on locations
+            };
+          }
+
+          const res = await this.publish({
+            ...post,
             status: 'published',
             publishedAt: new Date().toISOString(),
           });
 
-          return post;
+          return res;
         }
 
-        if (!('locations' in oldPost) || !oldPost.locations || !oldPost.locations.length) {
+        if (!('locations' in post) || !post.locations || !post.locations.length) {
           return;
         }
 
-        const { locations } = oldPost;
+        const { locations } = post;
 
         return Promise.all(
           locations.map(async (loc, index) => {
             const { placeId, isGeofence } = loc;
 
             let publishPayload = {
-              ...oldPost,
+              ...post,
               placeId,
               isGeofence,
               status: 'published',
               publishedAt: new Date().toISOString(),
-              scheduledAt: new Date(oldPost.scheduledAt).toISOString(),
             };
 
             // set initial post id to first location
@@ -99,8 +99,8 @@ class ScheduledPost extends Operation {
               };
             }
 
-            const post = await this.publish(publishPayload);
-            return post;
+            const res = await this.publish(publishPayload);
+            return res;
           }),
         );
       }),
@@ -119,8 +119,11 @@ class ScheduledPost extends Operation {
       throw new Error('Post not found');
     }
 
-    data = await this.PostUtils.build(data);
-    data.validateData();
+    // build only if not republish post
+    if (!oldPost.publishedAt) {
+      data = await this.PostUtils.build(data);
+      data.validateData();
+    }
 
     // publish post and fetch updated
     await this.PostRepository.update(data.id, data);
@@ -138,7 +141,7 @@ class ScheduledPost extends Operation {
     // if republished or update post send to updatepost-cms stream
     if (oldPost.publishedAt) {
       DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
-      streamPayload = UpdatePostStreams(post, data);
+      streamPayload = UpdatePostStreams(post, oldPost);
     }
 
     const firehoseRes = await firehose.putRecord({
