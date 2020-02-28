@@ -45,18 +45,6 @@ class ScheduledPost extends Operation {
       posts.map(async (post) => {
         post = post.toJSON();
 
-        // format expiredAt
-        if (post.expiredAt) {
-          const expiredAt = post.expiredAt.split(/[- :]/); // split datetime to array
-          expiredAt[1] -= 1;
-          post.expiredAt = new Date(...expiredAt).toISOString();
-        }
-
-        // format scheduledAt
-        const scheduledAt = post.scheduledAt.split(/[- :]/); // split datetime to array
-        scheduledAt[1] -= 1;
-        post.scheduledAt = new Date(...scheduledAt).toISOString();
-
         // if updated scheduled post
         if (post.publishedAt) {
           if ('locations' in post && post.locations.length) {
@@ -84,8 +72,6 @@ class ScheduledPost extends Operation {
         return Promise.all(
           locations.map(async (loc, index) => {
             const { placeId, isGeofence } = loc;
-
-            console.log('isgeofence', isGeofence);
 
             let publishPayload = {
               ...post,
