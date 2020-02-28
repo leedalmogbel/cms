@@ -34,38 +34,34 @@ class ListAdvisories extends Operation {
         });
       }
 
-      // advisories.map((advisory) => {
-      //   advisory = advisory.toJSON();
-      //   let posts = this.PostAdvisoryRepository.getPostsByAdvisoryId(advisory.id);
+      let posts = [];
+      await Promise.all(
+        advisories.map(async (advisory) => {
+          advisory = advisory.toJSON();
+          posts = [];
 
-      //   console.log(advisory.id);
+          if (advisory.advisoryPosts) {
+            console.log('taetaetaetaetaetaetae');
+            const postDetails = advisory.advisoryPosts;
 
-      //   return '';
-      // });
-
-      this.emit(SUCCESS, {
-        results: await advisories.map((advisory) => {
-          // check if theres attachments
-          if (advisory.attachments && advisory.attachments.length) {
-            const promises = [];
-            const { attachments } = advisory.attachments || [];
-
-            if (attachments !== undefined) {
-              attachments.forEach(async (attachment) => {
-                promises.push({
-                  filename: attachment.fileName,
-                  filetype: attachment.filetype,
-                  url: attachment.url,
-                  size: attachment.size,
-                });
-
-                Promise.all(promises).then(() => { attachment = promises; });
-              });
-            }
+            postDetails.forEach((detail) => {
+              posts.push(detail.post);
+            });
           }
 
-          return advisory.toJSON();
+          return advisory;
         }),
+
+      ).then((advisory) => {
+        // advisory = {
+        //   ...advisory,
+        //   linkedPosts: posts,
+        // };
+        // console.log(advisory);
+      }).catch(() => {});
+
+      this.emit(SUCCESS, {
+        results: advisories,
         meta: {
           total,
         },

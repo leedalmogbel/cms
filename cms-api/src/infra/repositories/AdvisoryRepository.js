@@ -147,6 +147,27 @@ class AdvisoryRepository extends BaseRepository {
             'lastname',
           ],
         },
+        {
+          model: this.PostAdvisoryModel,
+          as: 'advisoryPosts',
+          attributes: [
+            'postId',
+            'createdAt',
+            'updatedAt',
+          ],
+          include: [
+            {
+              model: this.PostModel,
+              as: 'post',
+              required: true,
+              attributes: [
+                'id',
+                'postId',
+                'title',
+              ],
+            },
+          ],
+        },
       ],
     });
   }
