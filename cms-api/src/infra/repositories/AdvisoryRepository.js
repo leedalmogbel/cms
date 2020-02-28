@@ -159,7 +159,7 @@ class AdvisoryRepository extends BaseRepository {
             {
               model: this.PostModel,
               as: 'post',
-              required: true,
+              required: false,
               attributes: [
                 'id',
                 'postId',

@@ -35,7 +35,7 @@ class ListAdvisories extends Operation {
       }
 
       let posts = [];
-      await Promise.all(
+      const linked = await Promise.all(
         advisories.map(async (advisory) => {
           advisory = advisory.toJSON();
           posts = [];
@@ -53,11 +53,10 @@ class ListAdvisories extends Operation {
         }),
 
       ).then((advisory) => {
-        // advisory = {
-        //   ...advisory,
-        //   linkedPosts: posts,
-        // };
-        // console.log(advisory);
+        advisory = {
+          ...advisory,
+          linkedPosts: posts,
+        };
       }).catch(() => {});
 
       this.emit(SUCCESS, {
