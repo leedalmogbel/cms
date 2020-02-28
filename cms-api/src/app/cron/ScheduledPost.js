@@ -3,17 +3,21 @@ const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
 const Post = require('src/domain/Post');
 const AWS = require('aws-sdk');
 const Sequelize = require('sequelize');
+const moment = require('moment');
 const { Operation } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
 class ScheduledPost extends Operation {
-  constructor({ PostRepository, PostUtils, httpClient }) {
+  constructor({
+    PostRepository, PostUtils, httpClient, UserModel,
+  }) {
     super();
 
     this.PostRepository = PostRepository;
     this.PostUtils = PostUtils;
     this.httpClient = httpClient;
+    this.UserModel = UserModel;
   }
 
   async execute() {
@@ -37,6 +41,15 @@ class ScheduledPost extends Operation {
           [Op.gte]: ago,
         },
       },
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
     });
 
     console.log(`List of posts to be published: ${posts.length}`);
@@ -44,6 +57,12 @@ class ScheduledPost extends Operation {
     await Promise.all(
       posts.map(async (post) => {
         post = post.toJSON();
+
+        // format timestamps
+        post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours');
+        if (post.expiredAt) {
+          post.expiredAt = moment(post.expiredAt).toISOString();
+        }
 
         // if updated scheduled post
         if (post.publishedAt) {
