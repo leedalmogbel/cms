@@ -58,6 +58,7 @@ module.exports = (post, oldPost) => {
   } = oldPost;
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
+  const locMegaRegionId = megaRegion ? JSON.parse(JSON.stringify(megaRegionId)) : null;
 
   return {
     postId: post.postId,
@@ -90,7 +91,7 @@ module.exports = (post, oldPost) => {
     postLocCountry: nullable(country),
     postLocIslandGroupId: nullable(islandGroupId),
     postLocIslandGroup: nullable(islandGroup),
-    postLocMegaRegionId: nullable(megaRegionId),
+    postLocMegaRegionId: nullable(locMegaRegionId),
     postLocMegaRegion: nullable(megaRegion),
     postLocRegionId: nullable(regionId),
     postLocRegion: nullable(region),
