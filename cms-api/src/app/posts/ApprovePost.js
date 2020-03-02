@@ -61,7 +61,7 @@ class ApprovePost extends Operation {
 
     await Promise.all(
       locations.map(async (loc, index) => {
-        const { placeId, isGeofence } = loc;
+        const { placeId, isGeofence, address } = loc;
         let { postId } = post;
 
         // set initial post id to first location
@@ -83,6 +83,7 @@ class ApprovePost extends Operation {
           ...data,
           postId,
           placeId,
+          address,
           isGeofence,
         };
 

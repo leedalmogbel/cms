@@ -78,9 +78,9 @@ class PostUtils extends Operation {
       });
     }
 
-
-    if ('placeId' in data && data.placeId) {
-      const loc = await this.BaseLocation.detail(data.placeId);
+    console.log('address ', data);
+    if ('address' in data && data.address) {
+      const loc = await this.BaseLocation.detail(data.address);
       loc.isGeofence = data.isGeofence;
 
       data = {

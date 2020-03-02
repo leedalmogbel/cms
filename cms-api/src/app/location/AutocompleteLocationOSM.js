@@ -20,22 +20,28 @@ class AutocompleteLocationOSM extends Operation {
     };
 
     try {
-      const osmResponse = await this.httpClient.get(process.env.OSM_AUTOSUGGEST_ENDPOINT, {
-        q: location_string,
-        suggester: 'autocomplete_suggester_cms',
-        size: 25,
+      const osmResponse = await this.httpClient.post(process.env.OSM_AUTOSUGGEST_ENDPOINT, {
+        // q: location_string,
+        size: 20,
+        query: {
+          multi_match: {
+            fields: ['complete_name', 'name'],
+            type: 'phrase',
+            query: location_string,
+          },
+        },
       });
 
-      if (osmResponse && 'suggest' in osmResponse) {
-        const { suggestions } = osmResponse.suggest;
+      if (osmResponse && 'hits' in osmResponse) {
+        const { hits } = osmResponse.hits;
         const places = [];
 
-        Object.keys(suggestions).forEach((i) => {
-          const place = suggestions[i];
+        Object.keys(hits).forEach((i) => {
+          const { _id, _source } = hits[i];
 
           places.push({
-            place: place.suggestion,
-            place_id: place.id,
+            place: _source.complete_name,
+            place_id: _id,
           });
         });
 

@@ -1,6 +1,6 @@
 module.exports = (post, oldPost) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
-  const tagEmpty = (value) => (value.length ? value: [[]]);
+  const tagEmpty = (value) => (value.length ? value : [[]]);
 
   post = {
     ...post,

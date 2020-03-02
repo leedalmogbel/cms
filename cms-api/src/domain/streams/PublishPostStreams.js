@@ -1,6 +1,6 @@
 module.exports = (post) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
-  const tagEmpty = (value) => (value.length ? value: [[]]);
+  const tagEmpty = (value) => (value.length ? value : [[]]);
 
   post = {
     ...post,
@@ -131,6 +131,6 @@ module.exports = (post) => {
     postOtherRestriction: null,
     postStatus: 'Active',
     reportedFlag: null,
-    postScore: null
+    postScore: null,
   };
 };

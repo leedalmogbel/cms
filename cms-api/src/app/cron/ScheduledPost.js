@@ -90,11 +90,12 @@ class ScheduledPost extends Operation {
 
         return Promise.all(
           locations.map(async (loc, index) => {
-            const { placeId, isGeofence } = loc;
+            const { placeId, isGeofence, address } = loc;
 
             let publishPayload = {
               ...post,
               placeId,
+              address,
               isGeofence,
               status: 'published',
               publishedAt: new Date().toISOString(),

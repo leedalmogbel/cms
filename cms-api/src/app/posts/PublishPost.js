@@ -65,7 +65,7 @@ class PublishPost extends Operation {
 
     await Promise.all(
       locations.map(async (loc, index) => {
-        const { placeId, isGeofence } = loc;
+        const { placeId, isGeofence, address } = loc;
         let { postId } = post;
 
         id = 'id' in loc ? loc.id : null;
@@ -86,6 +86,7 @@ class PublishPost extends Operation {
           ...data,
           postId,
           placeId,
+          address,
           isGeofence,
         };
 

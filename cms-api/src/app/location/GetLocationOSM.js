@@ -6,16 +6,21 @@ class GetLocationOSM extends Operation {
     this.httpClient = httpClient;
   }
 
-  async execute(placeId) {
-    const osmResponse = await this.httpClient.get(process.env.OSM_DETAIL_ENDPOINT, {
-      q: `_id:'${placeId}'`,
-      'q.parser': 'structured',
-      return: '_all_fields',
+  async execute(loc) {
+    const osmResponse = await this.httpClient.post(process.env.OSM_AUTOSUGGEST_ENDPOINT, {
+      size: 20,
+      query: {
+        multi_match: {
+          query: loc,
+        },
+      },
     });
 
-    if (osmResponse && 'hits' in osmResponse && osmResponse.hits.found) {
-      const place = osmResponse.hits.hit[0];
-      const { fields } = place;
+    console.log('123123', osmResponse);
+
+    if (osmResponse && 'hits' in osmResponse) {
+      const { hits } = osmResponse.hits;
+      const { _id, _source } = hits[0];
 
       const {
         location = null,
@@ -31,7 +36,7 @@ class GetLocationOSM extends Operation {
         province = null,
         municipality_id = null,
         municipality = null,
-        barangayId = null,
+        barangay_id = null,
         barangay = null,
         location_level = null,
         area_name = null,
@@ -41,14 +46,14 @@ class GetLocationOSM extends Operation {
         name = null,
         street = null,
         suburb = null,
-      } = fields;
+      } = _source;
 
       // get longitude and latitude
       const latlng = location.split(',');
 
       return {
-        address: fields.complete_name,
-        placeId: place.id,
+        address: complete_name,
+        placeId: _id,
         location,
         countryId: country_id,
         country,
@@ -62,7 +67,7 @@ class GetLocationOSM extends Operation {
         province,
         municipalityId: municipality_id,
         municipality,
-        barangayId,
+        barangayId: barangay_id,
         barangay,
         locationLevel: location_level,
         areaName: area_name,
