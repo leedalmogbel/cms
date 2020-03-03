@@ -1,0 +1,394 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09T00:00:00.000Z",
+    "Description": "RDS CloudFormation Template",
+    "Parameters": {
+       "dbClusterName": {
+          "Type": "String",
+          "Default": "kapp-cms-db"
+       },
+       "dbInstanceName": {
+          "Type": "String",
+          "Default": "kapp-cms-db-instance"
+       },
+       "VpcId": {
+          "Type": "AWS::EC2::VPC::Id",
+          "Description": "VpcId of your existing Virtual Private Cloud (VPC)",
+          "Default": "vpc-0776a1e45c9ae439b"
+       },
+       "DBSubnets": {
+          "Type": "List<AWS::EC2::Subnet::Id>",
+          "Description": "Choose available private subnets",
+          "Default": "subnet-00af53cefa7cc985e,subnet-01b9d165efad48507"
+       },
+       "DBName": {
+          "Default": "kappcmsqa",
+          "Description": "Name for the Aurora-MySQL database.",
+          "Type": "String",
+          "MinLength": 1,
+          "MaxLength": 64,
+          "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*"
+       },
+       "DBUser": {
+          "Default": "kappcmsdev01",
+          "Description": "Username for Aurora-MySQL database access",
+          "Type": "String",
+          "MinLength": 1,
+          "MaxLength": 16,
+          "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+          "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
+       },
+       "DBPassword": {
+          "Default": "kappcms123&&",
+          "NoEcho": true,
+          "Description": "Password for the Aurora-MySQL database access",
+          "Type": "String",
+          "ConstraintDescription": "must contain only alphanumeric characters."
+       },
+       "DBInstanceClass": {
+          "Description": "The database instance type",
+          "Type": "String",
+          "Default": "db.t2.small",
+          "AllowedValues": [
+             "db.t1.micro",
+             "db.m1.small",
+             "db.m1.medium",
+             "db.m1.large",
+             "db.m1.xlarge",
+             "db.m2.xlarge",
+             "db.m2.2xlarge",
+             "db.m2.4xlarge",
+             "db.m3.medium",
+             "db.m3.large",
+             "db.m3.xlarge",
+             "db.m3.2xlarge",
+             "db.m4.large",
+             "db.m4.xlarge",
+             "db.m4.2xlarge",
+             "db.m4.4xlarge",
+             "db.m4.10xlarge",
+             "db.r3.large",
+             "db.r3.xlarge",
+             "db.r3.2xlarge",
+             "db.r3.4xlarge",
+             "db.r3.8xlarge",
+             "db.m2.xlarge",
+             "db.m2.2xlarge",
+             "db.m2.4xlarge",
+             "db.cr1.8xlarge",
+             "db.t2.micro",
+             "db.t2.small",
+             "db.t2.medium",
+             "db.t2.large"
+          ],
+          "ConstraintDescription": "must select a valid database instance type."
+       },
+       "MultiAZ": {
+          "Description": "Multi-AZ master database",
+          "Type": "String",
+          "Default": "false",
+          "AllowedValues": [
+             "true",
+             "false"
+          ],
+          "ConstraintDescription": "must be true or false."
+       },
+       "engineVer": {
+          "Type": "String",
+          "Default": "5.7.mysql_aurora.2.04.6"
+       },
+       "siteBucket": {
+          "Type": "String",
+          "Default": "kapp-cms-frontend-qa"
+       },
+       "attachmentBucket": {
+          "Type": "String",
+          "Default": "kapp-cms-attachments-qa"
+       },
+       "ProjectCode": {
+          "Type": "String",
+          "Default": "CMS"
+       },
+       "SupportContact": {
+          "Type": "String",
+          "Default": "Stratpoint"
+       }
+    },
+    "Resources": {
+       "AuroraMySQLDatabase": {
+          "Type": "AWS::RDS::DBCluster",
+          "Properties": {
+             "DBClusterIdentifier": null,
+             "Engine": "aurora-mysql",
+             "EngineVersion": null,
+             "DatabaseName": null,
+             "MasterUsername": null,
+             "MasterUserPassword": null,
+             "DBClusterParameterGroupName": "allowawsaccess",
+             "DBSubnetGroupName": null,
+             "PreferredBackupWindow": "16:32-17:02",
+             "PreferredMaintenanceWindow": "sun:18:23-sun:18:53",
+             "VpcSecurityGroupIds": [
+                null
+             ]
+          },
+          "DependsOn": [
+             "DBEC2SecurityGroup"
+          ]
+       },
+       "dbCMS": {
+          "Type": "AWS::RDS::DBInstance",
+          "Properties": {
+             "DBClusterIdentifier": null,
+             "DBInstanceClass": null,
+             "Engine": "aurora-mysql",
+             "DBInstanceIdentifier": null,
+             "EngineVersion": null,
+             "MultiAZ": null,
+             "DBSubnetGroupName": null
+          },
+          "DependsOn": [
+             "AuroraMySQLDatabase",
+             "DBEC2SecurityGroup"
+          ]
+       },
+       "DBEC2SecurityGroup": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+             "GroupDescription": "Open database for access",
+             "SecurityGroupIngress": [
+                {
+                   "IpProtocol": "tcp",
+                   "FromPort": 3306,
+                   "ToPort": 3306,
+                   "CidrIpv6": "::/0"
+                },
+                {
+                   "IpProtocol": "tcp",
+                   "FromPort": 3306,
+                   "ToPort": 3306,
+                   "CidrIp": "0.0.0.0/0"
+                }
+             ],
+             "VpcId": null
+          }
+       },
+       "AuroraMySQLSubnetGroup": {
+          "Type": "AWS::RDS::DBSubnetGroup",
+          "Properties": {
+             "DBSubnetGroupDescription": "Aurora-MySQL Subnet Group",
+             "SubnetIds": null
+          }
+       },
+       "WebsiteBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+             "BucketName": null,
+             "CorsConfiguration": {
+                "CorsRules": [
+                   {
+                      "AllowedHeaders": [
+                         "Authorization"
+                      ],
+                      "AllowedMethods": [
+                         "GET",
+                         "HEAD"
+                      ],
+                      "AllowedOrigins": [
+                         "*"
+                      ],
+                      "MaxAge": "3000"
+                   }
+                ]
+             },
+             "VersioningConfiguration": {
+                "Status": "Suspended"
+             },
+             "WebsiteConfiguration": {
+                "IndexDocument": "index.html",
+                "ErrorDocument": "index.html"
+             },
+             "AccessControl": "Private",
+             "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                   {
+                      "ServerSideEncryptionByDefault": {
+                         "SSEAlgorithm": "AES256"
+                      }
+                   }
+                ]
+             },
+             "PublicAccessBlockConfiguration": {
+                "BlockPublicAcls": false,
+                "BlockPublicPolicy": false,
+                "IgnorePublicAcls": false,
+                "RestrictPublicBuckets": false
+             },
+             "Tags": [
+                {
+                   "Key": "Name",
+                   "Value": "CMS-frontend-website-s3-QA"
+                },
+                {
+                   "Key": "ProjectCode",
+                   "Value": null
+                },
+                {
+                   "Key": "SupportContact",
+                   "Value": null
+                }
+             ]
+          }
+       },
+       "AttachmentBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+             "BucketName": null,
+             "CorsConfiguration": {
+                "CorsRules": [
+                   {
+                      "AllowedHeaders": [
+                         "Authorization"
+                      ],
+                      "AllowedMethods": [
+                         "GET",
+                         "HEAD"
+                      ],
+                      "AllowedOrigins": [
+                         "*"
+                      ],
+                      "MaxAge": "3000"
+                   }
+                ]
+             },
+             "VersioningConfiguration": {
+                "Status": "Suspended"
+             },
+             "WebsiteConfiguration": {
+                "IndexDocument": "index.html",
+                "ErrorDocument": "index.html"
+             },
+             "AccessControl": "Private",
+             "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                   {
+                      "ServerSideEncryptionByDefault": {
+                         "SSEAlgorithm": "AES256"
+                      }
+                   }
+                ]
+             },
+             "PublicAccessBlockConfiguration": {
+                "BlockPublicAcls": false,
+                "BlockPublicPolicy": false,
+                "IgnorePublicAcls": false,
+                "RestrictPublicBuckets": false
+             },
+             "Tags": [
+                {
+                   "Key": "Name",
+                   "Value": "CMS-frontend-website-s3-QA"
+                },
+                {
+                   "Key": "ProjectCode",
+                   "Value": null
+                },
+                {
+                   "Key": "SupportContact",
+                   "Value": null
+                }
+             ]
+          }
+       },
+       "WebsiteCloudfront": {
+          "Type": "AWS::CloudFront::Distribution",
+          "DependsOn": [
+             "WebsiteBucket"
+          ],
+          "Properties": {
+             "DistributionConfig": {
+                "Comment": "Cloudfront Distribution pointing to S3 bucket",
+                "Origins": [
+                   {
+                      "CustomOriginConfig": {
+                         "HTTPPort": "80",
+                         "HTTPSPort": "443",
+                         "OriginProtocolPolicy": "http-only"
+                      },
+                      "DomainName": {
+                         "Fn::Select": [
+                            2,
+                            {
+                               "Fn::Split": [
+                                  "/",
+                                  {
+                                     "Fn::GetAtt": [
+                                        "WebsiteBucket",
+                                        "WebsiteURL"
+                                     ]
+                                  }
+                               ]
+                            }
+                         ]
+                      },
+                      "Id": "S3Origin"
+                   }
+                ],
+                "Enabled": true,
+                "HttpVersion": "http2",
+                "DefaultRootObject": "index.html",
+                "DefaultCacheBehavior": {
+                   "AllowedMethods": [
+                      "GET",
+                      "HEAD"
+                   ],
+                   "Compress": true,
+                   "ForwardedValues": {
+                      "QueryString": true,
+                      "Cookies": {
+                         "Forward": "none"
+                      }
+                   },
+                   "TargetOriginId": "S3Origin",
+                   "ViewerProtocolPolicy": "redirect-to-https",
+                   "DefaultTTL": "2.0",
+                   "MaxTTL": "2.0",
+                   "MinTTL": "2.0"
+                },
+                "PriceClass": "PriceClass_All"
+             },
+             "Tags": [
+                {
+                   "Key": "Name",
+                   "Value": "CMS-Website-Cloudfront-QA"
+                },
+                {
+                   "Key": "ProjectCode",
+                   "Value": null
+                },
+                {
+                   "Key": "SupportContact",
+                   "Value": null
+                }
+             ]
+          }
+       }
+    },
+    "Outputs": {
+       "DatabaseEndpoint": {
+          "Description": "The database endpoint",
+          "Value": null
+       },
+       "DatabasePort": {
+          "Description": "The database port",
+          "Value": null
+       },
+       "DatabaseName": {
+          "Description": "The database name",
+          "Value": null
+       },
+       "DatabaseUsername": {
+          "Description": "The database username",
+          "Value": null
+       }
+    }
+ }

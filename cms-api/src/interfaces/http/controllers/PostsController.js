@@ -34,7 +34,7 @@ class PostsController extends BaseController {
       })
       .on(ERROR, next);
 
-    operation.execute(req.query);
+    operation.execute(req.query, req.session);
   }
 
   show(req, res, next) {

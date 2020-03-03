@@ -1,5 +1,7 @@
 module.exports = (post, oldPost) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
+  const tagEmpty = (value) => (value.length ? value : [[]]);
+  const stringToArray = (value) => (value ? JSON.parse(value.replace(/'/g, '"')) : []);
 
   post = {
     ...post,
@@ -62,20 +64,22 @@ module.exports = (post, oldPost) => {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
-    postKeywords: [
+    postTechnicalTags: null,
+    postOperationalTags: null,
+    postKeywords: tagEmpty([
       ...tagsRetained,
       ...tagsAdded,
-    ],
-    postAcceptedKeywords: tagsRetained,
-    postRejectedKeywords: tagsRemoved,
-    postAddedKeywords: tagsAdded,
-    oldPostKeywords: [
+    ]),
+    postAcceptedKeywords: tagEmpty(tagsRetained),
+    postRejectedKeywords: tagEmpty(tagsRemoved),
+    postAddedKeywords: tagEmpty(tagsAdded),
+    oldPostKeywords: tagEmpty([
       ...oldTagsRetained,
       ...oldTagsAdded,
-    ],
-    oldPostAcceptedKeywords: oldTagsRetained,
-    oldPostRejectedKeywords: oldTagsRemoved,
-    oldPostAddedKeywords: oldTagsAdded,
+    ]),
+    oldPostAcceptedKeywords: tagEmpty(oldTagsRetained),
+    oldPostRejectedKeywords: tagEmpty(oldTagsRemoved),
+    oldPostAddedKeywords: tagEmpty(oldTagsAdded),
     postLocation: {
       locationAddress: address,
       lat,
@@ -87,8 +91,8 @@ module.exports = (post, oldPost) => {
     postLocCountry: nullable(country),
     postLocIslandGroupId: nullable(islandGroupId),
     postLocIslandGroup: nullable(islandGroup),
-    postLocMegaRegionId: nullable(megaRegionId),
-    postLocMegaRegion: nullable(megaRegion),
+    postLocMegaRegionId: stringToArray(megaRegionId),
+    postLocMegaRegion: stringToArray(megaRegion),
     postLocRegionId: nullable(regionId),
     postLocRegion: nullable(region),
     postLocProvinceId: nullable(provinceId),
@@ -111,6 +115,7 @@ module.exports = (post, oldPost) => {
     version: null,
     postCommunityID: null,
     postExpirationDate: null,
+    postCategoryId: null,
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
     postSubCategory: post.subCategory,

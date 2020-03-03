@@ -1,5 +1,7 @@
 module.exports = (post) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
+  const tagEmpty = (value) => (value.length ? value : [[]]);
+  const stringToArray = (value) => (value ? JSON.parse(value.replace(/'/g, '"')) : []);
 
   post = {
     ...post,
@@ -8,7 +10,7 @@ module.exports = (post) => {
   };
 
   const {
-    locations = [[]],
+    locations = [],
     tagsRetained = [[]],
     tagsRemoved = [[]],
     tagsAdded = [[]],
@@ -56,13 +58,15 @@ module.exports = (post) => {
     postId: post.postId,
     postTitle: post.title,
     postFullContent: post.content,
-    postKeywords: [
+    postTechnicalTags: null,
+    postOperationalTags: null,
+    postKeywords: tagEmpty([
       ...tagsRetained,
       ...tagsAdded,
-    ],
-    postAcceptedKeywords: tagsRetained,
-    postRejectedKeywords: tagsRemoved,
-    postAddedKeywords: tagsAdded,
+    ]),
+    postAcceptedKeywords: tagEmpty(tagsRetained),
+    postRejectedKeywords: tagEmpty(tagsRemoved),
+    postAddedKeywords: tagEmpty(tagsAdded),
     postLocation: {
       locationAddress: address,
       lat,
@@ -74,8 +78,8 @@ module.exports = (post) => {
     postLocCountry: nullable(country),
     postLocIslandGroupId: nullable(islandGroupId),
     postLocIslandGroup: nullable(islandGroup),
-    postLocMegaRegionId: nullable(megaRegionId),
-    postLocMegaRegion: nullable(megaRegion),
+    postLocMegaRegionId: stringToArray(megaRegionId),
+    postLocMegaRegion: stringToArray(megaRegion),
     postLocRegionId: nullable(regionId),
     postLocRegion: nullable(region),
     postLocProvinceId: nullable(provinceId),
@@ -97,6 +101,7 @@ module.exports = (post) => {
     postTimestampUpdated: null,
     postCommunityID: null,
     postExpirationDate: null,
+    postCategoryId: null,
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
     postSubCategory: post.subCategory,

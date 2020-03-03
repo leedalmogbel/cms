@@ -2,7 +2,7 @@ const Socket = require('src/domain/Socket');
 const { Operation } = require('../../infra/core/core');
 
 class RegisterSocket extends Operation {
-  constructor({ SocketRepository }) {
+  constructor({ SocketRepository, UserRepository }) {
     super();
     this.SocketRepository = SocketRepository;
   }
@@ -16,6 +16,8 @@ class RegisterSocket extends Operation {
     try {
       const { connectionId } = event.requestContext;
       const { userId } = event.queryStringParameters;
+
+      console.log('Websocket connect:', connectionId);
 
       // remove any existing socket by userId
       const exists = await this.SocketRepository.getByUserId(userId);

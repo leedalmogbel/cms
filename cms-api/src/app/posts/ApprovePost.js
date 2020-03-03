@@ -61,7 +61,7 @@ class ApprovePost extends Operation {
 
     await Promise.all(
       locations.map(async (loc, index) => {
-        const { placeId, isGeofence } = loc;
+        const { placeId, isGeofence, address } = loc;
         let { postId } = post;
 
         // set initial post id to first location
@@ -83,6 +83,7 @@ class ApprovePost extends Operation {
           ...data,
           postId,
           placeId,
+          address,
           isGeofence,
         };
 
@@ -124,7 +125,7 @@ class ApprovePost extends Operation {
     }
   }
 
-  async publish(id = null, data) {
+  async publish(id, data) {
     let oldPost;
 
     try {
@@ -153,20 +154,49 @@ class ApprovePost extends Operation {
       return post;
     }
 
-    const { postId, contributors } = post;
-    if ('writers' in contributors && contributors.writers.length) {
-      const writerId = contributors.writers[0].id;
+    const {
+      postId,
+      userId,
+      title,
+      contributors,
+      status,
+    } = post;
 
-      if (post.userId) {
-        const author = await this.UserRepository.getById(post.userId);
-        const message = `${author.firstName} ${author.lastName} approve your post ${post.title}`;
+    const {
+      writers,
+      editor,
+    } = contributors;
 
-        await this.PostUtils.saveNotification({
-          userId: writerId,
-          message,
-          meta: { id, postId },
-        });
-      }
+    const author = await this.UserRepository.getById(userId);
+    const authorName = `${author.firstName} ${author.lastName}`;
+
+    // approved post notification
+    if (status === 'published'
+      && userId
+      && writers
+      && writers.length) {
+      const writerId = writers[0].id;
+      const message = `${authorName} approve your post ${title}`;
+
+      await this.PostUtils.saveNotification({
+        userId: writerId,
+        message,
+        meta: { id, postId },
+      });
+    }
+
+    // if writer revised the post resend approval notification
+    if (status === 'for-approval'
+      && editor
+      && Object.entries(editor).length !== 0) {
+      const editorId = editor.id;
+      const message = `${authorName} re-submitted a post for approval ${title}`;
+
+      await this.PostUtils.saveNotification({
+        userId: editorId,
+        message,
+        meta: { id, postId },
+      });
     }
 
     await this.PostUtils.firehoseIntegrate(oldPost, post);

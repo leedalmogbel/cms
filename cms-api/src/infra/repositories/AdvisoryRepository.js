@@ -1,14 +1,17 @@
-
-const Sequelized = require('sequelize');
+const Sequelize = require('sequelize');
 const { BaseRepository } = require('../../infra/core/core');
 
-const { Op } = Sequelized;
+const { Op } = Sequelize;
 
 class AdvisoryRepository extends BaseRepository {
-  constructor({ AdvisoryModel, UserModel }) {
+  constructor({
+    AdvisoryModel, UserModel, RecycleBinModel, PostModel, PostAdvisoryModel,
+  }) {
     super(AdvisoryModel);
-
     this.UserModel = UserModel;
+    this.RecycleBinModel = RecycleBinModel;
+    this.PostModel = PostModel;
+    this.PostAdvisoryModel = PostAdvisoryModel;
   }
 
   buildListArgs(data) {
@@ -17,7 +20,7 @@ class AdvisoryRepository extends BaseRepository {
       where: {
         status: {
           [Op.and]: [
-            { [Op.ne]: 'draft' },
+            { [Op.ne]: 'initial' },
           ],
         },
         isActive: 1,
@@ -26,6 +29,57 @@ class AdvisoryRepository extends BaseRepository {
     };
 
     const order = [['updatedAt', 'DESC']]; // set order by default descending
+
+    // search for keyword
+    if ('keyword' in data) {
+      const { keyword } = data;
+
+      args.where[Op.or] = [
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('title')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('content')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.json('tagsAdded')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+      ];
+    }
+
+    if ('category' in data && data.category) {
+      const { category } = data;
+      args.where.category = category;
+    }
+
+    if ('location' in data && data.location) {
+      const { location } = data;
+      args.where.locationAddress = {
+        [Op.like]: `%${location}%`,
+      };
+    }
+
+    if ('date' in data && data.date) {
+      const date = new Date(data.date);
+      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
+      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
+
+      args.where.updatedAt = {
+        [Op.between]: [
+          startDate,
+          endDate,
+        ],
+      };
+    }
 
     // fetch verified
     if ('verified' in data) {
@@ -44,6 +98,12 @@ class AdvisoryRepository extends BaseRepository {
       args.where.status = data.status;
     }
 
+    if ('ids' in data) {
+      args.where[Op.and] = {
+        id: data.ids,
+      };
+    }
+
     // offset
     if ('offset' in data) {
       args.offset = Number(data.offset);
@@ -52,6 +112,20 @@ class AdvisoryRepository extends BaseRepository {
     // limit
     if ('limit' in data) {
       args.limit = Number(data.limit);
+    }
+
+    if ('isAssigned' in data
+      && data.isAssigned === 'true') {
+      args.where.taggedUsers = {
+        [Op.ne]: null,
+        [Op.not]: '[]',
+        [Op.ne]: 'undefined',
+      };
+    } else if ('isAssigned' in data
+     && data.isAssigned === 'false') {
+      args.where.taggedUsers = {
+        [Op.eq]: null,
+      };
     }
 
     // order
@@ -71,6 +145,28 @@ class AdvisoryRepository extends BaseRepository {
             'id',
             'firstname',
             'lastname',
+          ],
+        },
+        {
+          model: this.PostAdvisoryModel,
+          as: 'advisoryPosts',
+          attributes: [
+            'postId',
+            'createdAt',
+            'updatedAt',
+          ],
+          include: [
+            {
+              model: this.PostModel,
+              as: 'post',
+              required: false,
+              attributes: [
+                'id',
+                'postId',
+                'title',
+                'status',
+              ],
+            },
           ],
         },
       ],
@@ -96,6 +192,70 @@ class AdvisoryRepository extends BaseRepository {
 
   count(args) {
     return this.model.count(this.buildListArgs(args));
+  }
+
+  async moveToBin(id, posts) {
+    const entity = await this._getById(id);
+    const transaction = await this.model.sequelize.transaction();
+
+    try {
+      const advisory = await this.RecycleBinModel.create({
+        userId: entity.userId,
+        type: 'advisory',
+        meta: entity,
+      }, { transaction });
+
+      await Promise.all(
+        posts.map(async (post) => {
+          await post.update({
+            advisories: post.advisories.filter((advisory) => advisory.id != id),
+          }, { transaction });
+        }),
+      );
+
+      await this.PostAdvisoryModel.destroy({
+        where: {
+          advisoryId: id,
+        },
+      });
+
+      await entity.destroy(id, { transaction });
+
+      await transaction.commit();
+
+      return advisory;
+    } catch (error) {
+      await transaction.rollback();
+
+      throw error;
+    }
+  }
+
+  async getAttachedPost(id) {
+    try {
+      const postsPivot = await this.PostAdvisoryModel.findAll({
+        where: {
+          advisoryId: id,
+        },
+      });
+
+      const ids = [...new Set(postsPivot.map((post) => post.postId))];
+
+      const posts = await this.PostModel.findAll({
+        where: {
+          id: {
+            [Op.in]: ids,
+          },
+        },
+      });
+
+      return {
+        published: posts.filter((post) => post.status == 'published'),
+        result: posts,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

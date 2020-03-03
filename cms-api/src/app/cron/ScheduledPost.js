@@ -1,20 +1,23 @@
 const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
 const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
-const PmsPost = require('src/domain/pms/Post');
 const Post = require('src/domain/Post');
 const AWS = require('aws-sdk');
 const Sequelize = require('sequelize');
+const moment = require('moment');
 const { Operation } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
 class ScheduledPost extends Operation {
-  constructor({ PostRepository, PostUtils, httpClient }) {
+  constructor({
+    PostRepository, PostUtils, httpClient, UserModel,
+  }) {
     super();
 
     this.PostRepository = PostRepository;
     this.PostUtils = PostUtils;
     this.httpClient = httpClient;
+    this.UserModel = UserModel;
   }
 
   async execute() {
@@ -38,44 +41,61 @@ class ScheduledPost extends Operation {
           [Op.gte]: ago,
         },
       },
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
     });
 
     console.log(`List of posts to be published: ${posts.length}`);
 
     await Promise.all(
-      posts.map(async (oldPost) => {
-        oldPost = oldPost.toJSON();
+      posts.map(async (post) => {
+        post = post.toJSON();
 
         // format timestamps
-        oldPost.scheduledAt = new Date(oldPost.scheduledAt).toISOString();
-        if (oldPost.expiredAt) {
-          oldPost.expiredAt = new Date(oldPost.expiredAt).toISOString();
+        post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours');
+        if (post.expiredAt) {
+          post.expiredAt = moment(post.expiredAt).toISOString();
         }
 
         // if updated scheduled post
-        if (oldPost.publishedAt) {
-          const post = await this.publish({
-            ...oldPost,
+        if (post.publishedAt) {
+          if ('locations' in post && post.locations.length) {
+            post = {
+              ...post,
+              ...post.locations[0], // add placeid & geofence field based on locations
+            };
+          }
+
+          const res = await this.publish({
+            ...post,
             status: 'published',
             publishedAt: new Date().toISOString(),
           });
 
-          return post;
+          return res;
         }
 
-        if (!('locations' in oldPost) || !oldPost.locations || !oldPost.locations.length) {
+        if (!('locations' in post) || !post.locations || !post.locations.length) {
           return;
         }
 
-        const { locations } = oldPost;
+        const { locations } = post;
 
         return Promise.all(
           locations.map(async (loc, index) => {
-            const { placeId, isGeofence } = loc;
+            const { placeId, isGeofence, address } = loc;
 
             let publishPayload = {
-              ...oldPost,
+              ...post,
               placeId,
+              address,
               isGeofence,
               status: 'published',
               publishedAt: new Date().toISOString(),
@@ -99,8 +119,8 @@ class ScheduledPost extends Operation {
               };
             }
 
-            const post = await this.publish(publishPayload);
-            return post;
+            const res = await this.publish(publishPayload);
+            return res;
           }),
         );
       }),
@@ -110,8 +130,20 @@ class ScheduledPost extends Operation {
   }
 
   async publish(data) {
-    data = await this.PostUtils.build(data);
-    data.validateData();
+    let oldPost;
+
+    try {
+      oldPost = await this.PostRepository.getById(data.id);
+      oldPost = oldPost.toJSON();
+    } catch (error) {
+      throw new Error('Post not found');
+    }
+
+    // build only if not republish post
+    if (!oldPost.publishedAt) {
+      data = await this.PostUtils.build(data);
+      data.validateData();
+    }
 
     // publish post and fetch updated
     await this.PostRepository.update(data.id, data);
@@ -127,9 +159,9 @@ class ScheduledPost extends Operation {
     let streamPayload = PublishPostStreams(post);
 
     // if republished or update post send to updatepost-cms stream
-    if (data.publishedAt) {
+    if (oldPost.publishedAt) {
       DeliveryStreamName = process.env.FIREHOSE_POST_STREAM_UPDATE;
-      streamPayload = UpdatePostStreams(post, data);
+      streamPayload = UpdatePostStreams(post, oldPost);
     }
 
     const firehoseRes = await firehose.putRecord({
@@ -144,7 +176,7 @@ class ScheduledPost extends Operation {
     // publish to pms
     const pmsRes = await this.httpClient.post(
       process.env.PMS_POST_ENDPOINT,
-      PmsPost(post),
+      PublishPostStreams(post),
       {
         access_token: process.env.PMS_POST_TOKEN,
       },

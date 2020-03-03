@@ -1,41 +1,65 @@
 const { Operation } = require('../../infra/core/core');
 
 class ListAdvisories extends Operation {
-  constructor({ AdvisoryRepository }) {
+  constructor({ AdvisoryRepository, AdvisoryUserRepository, PostAdvisoryRepository }) {
     super();
+
     this.AdvisoryRepository = AdvisoryRepository;
+    this.AdvisoryUserRepository = AdvisoryUserRepository;
+    this.PostAdvisoryRepository = PostAdvisoryRepository;
   }
 
   async execute(args) {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      const advisories = await this.AdvisoryRepository.getAdvisories(args);
-      const total = await this.AdvisoryRepository.count(args);
+      let advisories = await this.AdvisoryRepository.getAdvisories(args);
+      let total = await this.AdvisoryRepository.count(args);
 
-      this.emit(SUCCESS, {
-        results: await advisories.map((advisory) => {
-          // check if theres attachments
-          if (advisory.attachments && advisory.attachments.length) {
-            const promises = [];
-            const { attachments } = advisory.attachments || [];
+      if ('taggedUser' in args) {
+        const advisoryUsers = await this.AdvisoryUserRepository.filterAdvisoryUserByUserId(
+          Number(args.taggedUser),
+        );
 
-            if (attachments !== undefined) {
-              attachments.forEach(async (attachment) => {
-                promises.push({
-                  filename: attachment.fileName,
-                  filetype: attachment.filetype,
-                  url: attachment.url,
-                  size: attachment.size,
-                });
+        const advisoryUserIds = advisoryUsers.map((aUsers) => aUsers.advisoryId);
 
-                Promise.all(promises).then(() => { attachment = promises; });
-              });
-            }
+        advisories = await this.AdvisoryRepository.getAdvisories({
+          ...args,
+          ids: advisoryUserIds,
+        });
+
+        total = await this.AdvisoryRepository.count({
+          ...args,
+          ids: advisoryUserIds,
+        });
+      }
+
+      let posts = [];
+      const linked = await Promise.all(
+        advisories.map(async (advisory) => {
+          advisory = advisory.toJSON();
+          posts = [];
+
+          if (advisory.advisoryPosts) {
+            const postDetails = advisory.advisoryPosts;
+
+            postDetails.forEach((detail) => {
+              posts.push(detail.post);
+            });
           }
 
-          return advisory.toJSON();
+          return advisory;
         }),
+
+      ).then((advisory) => {
+        advisory = {
+          ...advisory,
+          linkedPosts: posts,
+        };
+      }).catch(() => {});
+
+      this.emit(SUCCESS, {
+        results: advisories,
         meta: {
           total,
         },

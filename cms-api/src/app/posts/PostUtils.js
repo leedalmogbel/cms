@@ -15,6 +15,7 @@ class PostUtils extends Operation {
     NotificationSocket,
     httpClient,
     PostTagRepository,
+    PostAdvisoryRepository,
   }) {
     super();
     this.PostRepository = PostRepository;
@@ -24,14 +25,24 @@ class PostUtils extends Operation {
     this.BaseLocation = BaseLocation;
     this.httpClient = httpClient;
     this.PostTagRepository = PostTagRepository;
+    this.PostAdvisoryRepository = PostAdvisoryRepository;
   }
 
   async build(data) {
+    if ('advisories' in data && data.advisories) {
+      await data.advisories.forEach((advisory) => {
+        this.savePostAdvisories({
+          postId: data.id,
+          advisoryId: advisory.id,
+        });
+      });
+    }
+
     if ('tagsAdded' in data && data.tagsAdded) {
       await data.tagsAdded.forEach((tag) => {
         this.savePostTags({
           postId: data.id,
-          name: tag,
+          name: tag[0],
         });
       });
     }
@@ -67,9 +78,8 @@ class PostUtils extends Operation {
       });
     }
 
-
-    if ('placeId' in data && data.placeId) {
-      const loc = await this.BaseLocation.detail(data.placeId);
+    if ('address' in data && data.address) {
+      const loc = await this.BaseLocation.detail(data.address);
       loc.isGeofence = data.isGeofence;
 
       data = {
@@ -162,7 +172,20 @@ class PostUtils extends Operation {
     }
   }
 
+  async savePostAdvisories({ postId, advisoryId }) {
+    const exists = await this.PostAdvisoryRepository.getPostAdvisoryById(postId, advisoryId);
+
+    if (!exists) {
+      await this.PostAdvisoryRepository.add({
+        postId,
+        advisoryId,
+      });
+    }
+  }
+
   async postNotifications(oldPost, updatedPost) {
+    if (updatedPost.status === 'draft') return;
+
     const {
       editor,
       writers,

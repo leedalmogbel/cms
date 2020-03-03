@@ -16,7 +16,7 @@ module.exports = {
       postId: DataTypes.STRING,
       title: DataTypes.STRING(500),
       content: DataTypes.TEXT,
-      priorityLevel: DataTypes.STRING,
+      priorityLevel: DataTypes.INTEGER,
       source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
       locationDetails: DataTypes.JSON,
@@ -71,6 +71,11 @@ module.exports = {
       PostModel.hasMany(datasource.models.PostTagModel, {
         foreignKey: 'postId',
         as: 'postTag',
+      });
+
+      PostModel.hasMany(datasource.models.PostAdvisoryModel, {
+        foreignKey: 'postId',
+        as: 'postAdvisories',
       });
     };
 

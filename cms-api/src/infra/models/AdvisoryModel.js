@@ -9,25 +9,20 @@ module.exports = {
         autoIncrement: true,
         type: DataTypes.INTEGER,
       },
-      advisoryId: DataTypes.STRING,
       userId: DataTypes.INTEGER,
-      categoryId: DataTypes.INTEGER,
+      taggedUsers: DataTypes.JSON,
       category: DataTypes.STRING,
       title: DataTypes.STRING,
       content: DataTypes.TEXT,
       source: DataTypes.STRING,
       locationAddress: DataTypes.STRING,
       locationDetails: DataTypes.JSON,
-      verified: DataTypes.BOOLEAN,
-      draft: {
+      verified: {
         type: DataTypes.BOOLEAN,
-        defaultValue: '0',
+        defaultValue: 0,
       },
       status: DataTypes.STRING,
-      tagsOriginal: DataTypes.JSON,
-      tagsRetained: DataTypes.JSON,
       tagsAdded: DataTypes.JSON,
-      tagsRemoved: DataTypes.JSON,
       attachments: {
         type: DataTypes.JSON,
         allowNull: true,
@@ -51,6 +46,11 @@ module.exports = {
       AdvisoryModel.belongsTo(datasource.models.UserModel, {
         foreignKey: 'userId',
         as: 'user',
+      });
+
+      AdvisoryModel.hasMany(datasource.models.PostAdvisoryModel, {
+        foreignKey: 'advisoryId',
+        as: 'advisoryPosts',
       });
     };
 

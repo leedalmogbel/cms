@@ -32,10 +32,6 @@ class RecycleBinRepository extends BaseRepository {
 
     let order = [['updatedAt', 'DESC']];
 
-    if ('type' in data && data.type) {
-      args.where.type = data.type;
-    }
-
     // set keyword
     if ('keyword' in data
       && data.keyword) {
@@ -70,7 +66,6 @@ class RecycleBinRepository extends BaseRepository {
       }
     }
 
-    console.log('payload', data);
     if ('category' in data) {
       args.where.meta = { category: data.category };
     }
@@ -97,6 +92,15 @@ class RecycleBinRepository extends BaseRepository {
     // limit
     if ('limit' in data) {
       args.limit = Number(data.limit);
+    }
+
+    if ('type' in data && data.type) {
+      args.where = {
+        ...args.where,
+        [Op.and]:[
+          { type: data.type }
+        ]
+      }
     }
 
     return args;
