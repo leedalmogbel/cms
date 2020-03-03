@@ -1,6 +1,7 @@
 module.exports = (post, oldPost) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
   const tagEmpty = (value) => (value.length ? value : [[]]);
+  const stringToArray = (value) => (value ? JSON.parse(value.replace(/'/g, '"')) : []);
 
   post = {
     ...post,
@@ -58,7 +59,6 @@ module.exports = (post, oldPost) => {
   } = oldPost;
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
-  const locMegaRegionId = megaRegion ? JSON.parse(JSON.stringify(megaRegionId)) : [];
 
   return {
     postId: post.postId,
@@ -91,8 +91,8 @@ module.exports = (post, oldPost) => {
     postLocCountry: nullable(country),
     postLocIslandGroupId: nullable(islandGroupId),
     postLocIslandGroup: nullable(islandGroup),
-    postLocMegaRegionId: nullable(locMegaRegionId),
-    postLocMegaRegion: nullable(megaRegion),
+    postLocMegaRegionId: stringToArray(megaRegionId),
+    postLocMegaRegion: stringToArray(megaRegion),
     postLocRegionId: nullable(regionId),
     postLocRegion: nullable(region),
     postLocProvinceId: nullable(provinceId),
