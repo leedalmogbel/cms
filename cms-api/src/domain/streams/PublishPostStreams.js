@@ -52,7 +52,7 @@ module.exports = (post) => {
   } = loc;
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
-  const locMegaRegionId = megaRegion ? JSON.parse(JSON.stringify(megaRegionId)) : null;
+  const locMegaRegionId = megaRegion ? JSON.parse(JSON.stringify(megaRegionId)) : [];
 
   return {
     postId: post.postId,

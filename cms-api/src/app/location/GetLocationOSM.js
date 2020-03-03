@@ -16,8 +16,6 @@ class GetLocationOSM extends Operation {
       },
     });
 
-    console.log('123123', osmResponse);
-
     if (osmResponse && 'hits' in osmResponse) {
       const { hits } = osmResponse.hits;
       const { _id, _source } = hits[0];
