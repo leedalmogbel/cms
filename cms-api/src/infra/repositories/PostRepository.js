@@ -119,8 +119,6 @@ class PostRepository extends BaseRepository {
       }
     }
 
-    args.order = order;
-
     // offset
     if ('offset' in data) {
       args.offset = Number(data.offset);
@@ -130,6 +128,13 @@ class PostRepository extends BaseRepository {
     if ('limit' in data) {
       args.limit = Number(data.limit);
     }
+
+    if ('order' in data) {
+      // customized sorting via date
+      order = [['publishedAt', data.order.publishedAt]];
+    }
+
+    args.order = order;
 
     return args;
   }
