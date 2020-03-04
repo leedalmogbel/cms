@@ -131,9 +131,8 @@ class AdvisoryRepository extends BaseRepository {
     if ('order' in data) {
       const sorting = data.order.updatedAt !== undefined ? 'updatedAt' : 'createdAt';
 
+      // customized sorting via date
       order = [[sorting, data.order[sorting]]];
-
-      console.log(order);
     }
 
     // order
