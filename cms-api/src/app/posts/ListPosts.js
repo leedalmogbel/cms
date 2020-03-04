@@ -41,11 +41,11 @@ class ListPosts extends Operation {
         } = post;
 
         if (scheduledAt !== null) {
-          post.scheduledAt = scheduledAt.includes('1970-01-01') ? null : scheduledAt;
+          post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
         }
 
         if (expiredAt !== null) {
-          post.expiredAt = expiredAt.includes('1970-01-01') ? null : expiredAt;
+          post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
         }
 
 
