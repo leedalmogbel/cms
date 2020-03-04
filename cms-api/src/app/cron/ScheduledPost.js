@@ -147,7 +147,7 @@ class ScheduledPost extends Operation {
 
     // publish post and fetch updated
     await this.PostRepository.update(data.id, data);
-    let post = await this.PostRepository.getById(data.id);
+    let post = await this.PostRepository.getPostById(data.id);
     post = post.toJSON();
 
     // publish to firehose
