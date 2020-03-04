@@ -6,20 +6,21 @@ class GetLocationOSM extends Operation {
     this.httpClient = httpClient;
   }
 
-  async execute(loc) {
+  async execute(placeId, address) {
     const osmResponse = await this.httpClient.post(process.env.OSM_AUTOSUGGEST_ENDPOINT, {
       size: 20,
       query: {
         multi_match: {
-          query: loc,
+          query: address,
         },
       },
     });
 
     if (osmResponse && 'hits' in osmResponse) {
       const { hits } = osmResponse.hits;
-      const { _id, _source } = hits[0];
+      const loc = hits.filter((hit) => hit._id === placeId);
 
+      const { _id, _source } = loc[0];
       const {
         location = null,
         country_id = null,
