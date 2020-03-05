@@ -1,3 +1,4 @@
+const moment = require('moment');
 const { Operation } = require('../../infra/core/core');
 
 class ListPosts extends Operation {
@@ -42,6 +43,8 @@ class ListPosts extends Operation {
 
         if (scheduledAt !== null) {
           post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
+          // format timestamps
+          post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours');
         }
 
         if (expiredAt !== null) {
