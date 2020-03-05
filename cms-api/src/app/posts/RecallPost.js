@@ -16,9 +16,15 @@ class RecallPost extends Operation {
     let post;
     try {
       post = await this.PostRepository.getById(id);
-    } catch (error) {
-      error.message = 'Post not found';
-      return this.emit(NOT_FOUND, error);
+    } catch (error) {}
+
+    if (!post) {
+      try {
+        post = await this.PostRepository.getByGeneratedPostId(id);
+      } catch (error) {
+        error.message = 'Post not found';
+        return this.emit(NOT_FOUND, error);
+      }
     }
 
     try {
@@ -42,11 +48,12 @@ class RecallPost extends Operation {
         },
       };
 
-      await this.PostRepository.update(id, payload);
+      await this.PostRepository.update(post.id, payload);
       await this.pmsIntegrate(postId, data);
 
       this.emit(SUCCESS, {
         results: { id },
+        message: 'Post successfully recalled.',
         meta: {},
       });
     } catch (error) {
