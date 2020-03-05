@@ -1,9 +1,16 @@
 const { Operation } = require('../../infra/core/core');
 
 class SavePost extends Operation {
-  constructor({ PostRepository, PostUtils }) {
+  constructor({
+    PostRepository,
+    UserRepository,
+    SocketRepository,
+    PostUtils,
+  }) {
     super();
     this.PostRepository = PostRepository;
+    this.UserRepository = UserRepository;
+    this.SocketRepository = SocketRepository;
     this.PostUtils = PostUtils;
   }
 
@@ -25,8 +32,15 @@ class SavePost extends Operation {
     data = await this.PostUtils.build(data);
 
     try {
-      // if autosave use silent update
+      // if autosave use silent update and auto lock post
       if (autosave) {
+        const lockPost = await this.lockPost(data);
+        if (lockPost) {
+          const { isLocked, lockUser } = lockPost;
+          data.isLocked = isLocked;
+          data.lockUser = lockUser;
+        }
+
         oldPost.update(data, {
           silent: true,
         });
@@ -38,9 +52,11 @@ class SavePost extends Operation {
       post = post.toJSON();
       oldPost = oldPost.toJSON();
 
-      await this.PostUtils.postNotifications(oldPost, post);
-      await this.PostUtils.firehoseIntegrate(oldPost, post);
-      await this.PostUtils.pmsIntegrate(post);
+      if (!autosave) {
+        await this.PostUtils.postNotifications(oldPost, post);
+        await this.PostUtils.firehoseIntegrate(oldPost, post);
+        await this.PostUtils.pmsIntegrate(post);
+      }
 
       this.emit(SUCCESS, {
         results: { id },
@@ -49,6 +65,29 @@ class SavePost extends Operation {
     } catch (error) {
       this.emit(ERROR, error);
     }
+  }
+
+  async lockPost(data) {
+    if (!('userId' in data)) return false;
+
+    // validate userId
+    const user = await this.UserRepository.getUserById(data.userId);
+    if (!user) return false;
+
+    const name = `${user.firstName} ${user.lastName}`;
+
+    // get connection by user id
+    const socket = await this.SocketRepository.getByUserId(user.id);
+    if (!socket) return false;
+
+    return {
+      isLocked: true,
+      lockUser: {
+        connectionId: socket.connectionId,
+        userId: user.id,
+        name,
+      },
+    };
   }
 }
 
