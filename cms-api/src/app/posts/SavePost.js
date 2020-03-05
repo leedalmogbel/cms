@@ -5,12 +5,14 @@ class SavePost extends Operation {
     PostRepository,
     UserRepository,
     SocketRepository,
+    LockPostSocket,
     PostUtils,
   }) {
     super();
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
     this.SocketRepository = SocketRepository;
+    this.LockPostSocket = LockPostSocket;
     this.PostUtils = PostUtils;
   }
 
@@ -29,21 +31,34 @@ class SavePost extends Operation {
       return this.emit(NOT_FOUND, error);
     }
 
+    const { postId } = oldPost;
     data = await this.PostUtils.build(data);
 
     try {
       // if autosave use silent update and auto lock post
       if (autosave) {
         const lockPost = await this.lockPost(data);
+
         if (lockPost) {
           const { isLocked, lockUser } = lockPost;
-          data.isLocked = isLocked;
-          data.lockUser = lockUser;
+          data = {
+            ...data.toJSON(),
+            isLocked,
+            lockUser,
+          };
         }
 
         oldPost.update(data, {
           silent: true,
         });
+
+        if (lockPost) {
+          await this.broadcastLockPost({
+            ...data,
+            id,
+            postId,
+          });
+        }
       } else {
         await this.PostRepository.update(id, data);
       }
@@ -88,6 +103,36 @@ class SavePost extends Operation {
         name,
       },
     };
+  }
+
+  async broadcastLockPost(data) {
+    const {
+      id,
+      postId,
+      userId,
+      lockUser,
+    } = data;
+
+    // send post lock broadcast to all connections
+    const sockets = await this.SocketRepository.getAll();
+
+    await Promise.all(
+      sockets.map(async (socket) => {
+        // skip same connectionId to prevent sending to self
+        if (socket.connectionId === lockUser.connectionId) return;
+
+        await this.LockPostSocket.send(socket.connectionId, {
+          type: 'BROADCAST_LOCK',
+          message: '',
+          meta: {
+            id,
+            postId,
+            userId,
+            name: lockUser.name,
+          },
+        });
+      }),
+    );
   }
 }
 
