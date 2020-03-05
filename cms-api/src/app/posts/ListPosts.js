@@ -39,6 +39,8 @@ class ListPosts extends Operation {
           lockUser,
           expiredAt,
           scheduledAt,
+          status,
+          publishedAt,
         } = post;
 
         if (scheduledAt !== null) {
@@ -51,6 +53,9 @@ class ListPosts extends Operation {
           post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
         }
 
+        if (publishedAt !== null && status === 'draft') {
+          post.publishedAt = moment(post.publishedAt).subtract(8, 'hours');
+        }
 
         if (isLocked && lockUser && session) {
           if (parseInt(lockUser.userId, 10) === session.id) {
