@@ -102,7 +102,7 @@ class PostsController extends BaseController {
       })
       .on(ERROR, next);
 
-    operation.execute(Number(req.params.id), req.body);
+    operation.execute(req.params.id, req.body);
   }
 
   delete(req, res, next) {
