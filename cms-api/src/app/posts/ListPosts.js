@@ -43,18 +43,19 @@ class ListPosts extends Operation {
           publishedAt,
         } = post;
 
-        if (scheduledAt !== null) {
-          post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
-          // format timestamps
-          post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours');
-        }
-
         if (expiredAt !== null) {
           post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
         }
 
         if (publishedAt !== null && status === 'draft') {
           post.publishedAt = moment(post.publishedAt).subtract(8, 'hours');
+        }
+
+        if (scheduledAt !== null) {
+          post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
+          // format timestamps
+          post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours');
+          if (status === 'draft') { post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours'); }
         }
 
         if (isLocked && lockUser && session) {
