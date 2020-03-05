@@ -4,6 +4,7 @@ const PmsPost = require('src/domain/pms/Post');
 const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
 const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
 const uuidv4 = require('uuid/v4');
+const moment = require('moment');
 const { Operation } = require('../../infra/core/core');
 
 class PostUtils extends Operation {
@@ -76,6 +77,10 @@ class PostUtils extends Operation {
           this.PostTagRepository.deletePostTagById(postTagId.id);
         }
       });
+    }
+
+    if ('scheduledAt' in data && data.scheduledAt !== null) {
+      data.scheduledAt = moment(data.scheduledAt).utc().format('YYYY-MM-DD HH:mm:ss');
     }
 
     if ('address' in data

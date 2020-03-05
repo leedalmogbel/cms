@@ -1,4 +1,3 @@
-const moment = require('moment');
 const { Operation } = require('../../infra/core/core');
 
 class ListPosts extends Operation {
@@ -39,24 +38,16 @@ class ListPosts extends Operation {
           lockUser,
           expiredAt,
           scheduledAt,
-          status,
-          publishedAt,
         } = post;
+
+        if (scheduledAt !== null) {
+          post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
+        }
 
         if (expiredAt !== null) {
           post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
         }
 
-        if (publishedAt !== null && status === 'draft') {
-          post.publishedAt = moment(post.publishedAt).subtract(8, 'hours');
-        }
-
-        if (scheduledAt !== null) {
-          post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
-          // format timestamps
-          post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours');
-          if (status === 'draft') { post.scheduledAt = moment(post.scheduledAt).subtract(8, 'hours'); }
-        }
 
         if (isLocked && lockUser && session) {
           if (parseInt(lockUser.userId, 10) === session.id) {
