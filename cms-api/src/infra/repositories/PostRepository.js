@@ -171,6 +171,15 @@ class PostRepository extends BaseRepository {
     });
   }
 
+  getByGeneratedPostId(postId) {
+    console.log(postId);
+    return this.model.findOne({
+      where: {
+        postId,
+      },
+    });
+  }
+
   count(args) {
     return this.model.count(this.buildListArgs(args));
   }
