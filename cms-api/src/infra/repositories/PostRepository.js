@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const moment = require('moment');
 const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
@@ -187,6 +188,14 @@ class PostRepository extends BaseRepository {
   async moveToBin(id) {
     const entity = await this._getById(id);
     const transaction = await this.model.sequelize.transaction();
+
+    if ('scheduledAt' in entity && entity.scheduledAt !== null) {
+      entity.scheduledAt = moment(entity.scheduledAt).utc().format('YYYY-MM-DD HH:mm:ss');
+    }
+
+    if ('publishedAt' in entity && entity.publishedAt !== null) {
+      entity.publishedAt = moment(entity.publishedAt).utc().format('YYYY-MM-DD HH:mm:ss');
+    }
 
     try {
       const post = await this.RecycleBinModel.create({
