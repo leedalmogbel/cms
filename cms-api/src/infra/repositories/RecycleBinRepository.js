@@ -1,5 +1,6 @@
 
 const Sequelize = require('sequelize');
+const moment = require('moment');
 const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
@@ -154,6 +155,10 @@ class RecycleBinRepository extends BaseRepository {
     post.meta.isLocked = false;
     post.meta.lockUser = null;
     post.meta.expiredAt = null;
+
+    if ('publishedAt' in post.meta.publishedAt && post.meta.publishedAt !== null) {
+      post.meta.publishedAt = moment(post.meta.publishedAt).utc().format('YYYY-MM-DD HH:mm:ss');
+    }
 
     if (post.type === 'post') {
       await this.PostModel.create({

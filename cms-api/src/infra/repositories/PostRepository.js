@@ -189,13 +189,9 @@ class PostRepository extends BaseRepository {
     const entity = await this._getById(id);
     const transaction = await this.model.sequelize.transaction();
 
-    if ('scheduledAt' in entity && entity.scheduledAt !== null) {
-      entity.scheduledAt = moment(entity.scheduledAt).utc().format('YYYY-MM-DD HH:mm:ss');
-    }
-
-    if ('publishedAt' in entity && entity.publishedAt !== null) {
-      entity.publishedAt = moment(entity.publishedAt).utc().format('YYYY-MM-DD HH:mm:ss');
-    }
+    // if ('scheduledAt' in entity && entity.scheduledAt !== null) {
+    //   entity.scheduledAt = moment(entity.scheduledAt).utc().format('YYYY-MM-DD HH:mm:ss');
+    // }
 
     try {
       const post = await this.RecycleBinModel.create({
