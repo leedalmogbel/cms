@@ -11,6 +11,8 @@ class GetLocationOSM extends Operation {
       size: 20,
       query: {
         multi_match: {
+          fields: ['complete_name', 'name'],
+          type: 'phrase',
           query: address,
         },
       },
