@@ -12,8 +12,9 @@ class GetLocationOSM extends Operation {
       query: {
         multi_match: {
           fields: ['complete_name', 'name'],
-          type: 'phrase',
+          minimum_should_match: '100%',
           query: address,
+          // type: 'phrase',
         },
       },
     });

@@ -19,11 +19,9 @@ class RecallPost extends Operation {
     } catch (error) {}
 
     if (!post) {
-      try {
-        post = await this.PostRepository.getByGeneratedPostId(id);
-      } catch (error) {
-        error.message = 'Post not found';
-        return this.emit(NOT_FOUND, error);
+      post = await this.PostRepository.getByGeneratedPostId(id);
+      if (!post) {
+        throw new Error('Post not found');
       }
     }
 

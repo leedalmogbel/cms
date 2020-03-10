@@ -173,7 +173,6 @@ class PostRepository extends BaseRepository {
   }
 
   getByGeneratedPostId(postId) {
-    console.log(postId);
     return this.model.findOne({
       where: {
         postId,
