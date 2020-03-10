@@ -157,7 +157,8 @@ class RecycleBinRepository extends BaseRepository {
     post.meta.expiredAt = null;
 
     if (post.meta.publishedAt !== null) {
-      post.meta.publishedAt = moment(post.meta.publishedAt).utc().format('YYYY-MM-DD HH:mm:ss');
+      post.meta.publishedAt = moment(post.meta.publishedAt).unix();
+      // post.meta.publishedAt = moment(post.meta.publishedAt).utc().format('YYYY-MM-DD HH:mm:ss');
     }
 
     if (post.type === 'post') {
