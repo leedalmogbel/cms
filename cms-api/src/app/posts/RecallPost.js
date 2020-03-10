@@ -45,6 +45,8 @@ class RecallPost extends Operation {
         status: 'recalled',
         recall: {
           ...data,
+          userId: 'userId' in data ? data.userId : null,
+          name: 'name' in data ? data.name : 'PMW Administrator',
         },
       };
 
