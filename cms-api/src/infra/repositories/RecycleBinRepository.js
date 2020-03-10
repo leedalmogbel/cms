@@ -160,6 +160,10 @@ class RecycleBinRepository extends BaseRepository {
       post.meta.publishedAt = moment(post.meta.publishedAt).subtract(8, 'hours');
     }
 
+    if (post.meta.scheduledAt) {
+      post.meta.scheduledAt = moment(post.meta.scheduledAt).subtract(8, 'hours');
+    }
+
     if (post.type === 'post') {
       await this.PostModel.create({
         ...post.meta,
