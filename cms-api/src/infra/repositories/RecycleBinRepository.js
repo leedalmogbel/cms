@@ -7,7 +7,7 @@ const { Op } = Sequelize;
 
 class RecycleBinRepository extends BaseRepository {
   constructor({
-    RecycleBinModel, UserModel, PostModel, PostUtils, PostTagRepository,
+    RecycleBinModel, UserModel, PostModel, PostUtils, PostTagRepository, PostRepository,
   }) {
     super(RecycleBinModel);
 
@@ -15,6 +15,7 @@ class RecycleBinRepository extends BaseRepository {
     this.PostModel = PostModel;
     this.PostUtils = PostUtils;
     this.PostTagRepository = PostTagRepository;
+    this.PostRepository = PostRepository;
   }
 
   buildListArgs(data = {}) {
@@ -157,14 +158,11 @@ class RecycleBinRepository extends BaseRepository {
     post.meta.expiredAt = null;
 
     if (post.meta.publishedAt !== null) {
-      post.meta.publishedAt = moment(post.meta.publishedAt).unix();
-      // post.meta.publishedAt = moment(post.meta.publishedAt).utc().format('YYYY-MM-DD HH:mm:ss');
+      post.meta.publishedAt = moment(post.meta.publishedAt).utc().format('YYYY-MM-DD HH:mm:ss');
     }
 
     if (post.type === 'post') {
-      await this.PostModel.create({
-        ...post.meta,
-      }, { transaction });
+      await this.PostRepository.add({ ...post.meta });
 
       await this.buildTags(post.meta);
     }
