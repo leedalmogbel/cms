@@ -30,6 +30,13 @@ class PostAdvisoryRepository extends BaseRepository {
     });
   }
 
+  getPostAdvisories(postId) {
+    return this.model.findAll({
+      where: { postId },
+      raw: true,
+    });
+  }
+
   getAdvisoryIds() {
     return this.model.findAll({
       group: ['advisoryId'],

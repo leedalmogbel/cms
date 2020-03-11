@@ -6,13 +6,14 @@ const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
   constructor({
-    PostModel, UserModel, RecycleBinModel, PostTagModel,
+    PostModel, UserModel, RecycleBinModel, PostTagModel, PostAdvisoryRepository,
   }) {
     super(PostModel);
 
     this.UserModel = UserModel;
     this.RecycleBinModel = RecycleBinModel;
     this.PostTagModel = PostTagModel;
+    this.PostAdvisoryRepository = PostAdvisoryRepository;
   }
 
   buildListArgs(data = {}) {
@@ -188,10 +189,6 @@ class PostRepository extends BaseRepository {
     const entity = await this._getById(id);
     const transaction = await this.model.sequelize.transaction();
 
-    // if ('scheduledAt' in entity && entity.scheduledAt !== null) {
-    //   entity.scheduledAt = moment(entity.scheduledAt).utc().format('YYYY-MM-DD HH:mm:ss');
-    // }
-
     try {
       const post = await this.RecycleBinModel.create({
         userId: entity.userId,
@@ -209,6 +206,18 @@ class PostRepository extends BaseRepository {
 
       throw error;
     }
+  }
+
+  async deletePostAdvisory(postId) {
+    const postAdvisories = await this.PostAdvisoryRepository.getPostAdvisories(postId);
+
+    postAdvisories.map(async (pAdv) => {
+      await this.PostAdvisoryRepository.destroy({
+        where: {
+          id: pAdv.id,
+        },
+      });
+    });
   }
 }
 
