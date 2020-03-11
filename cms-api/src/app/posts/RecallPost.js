@@ -21,7 +21,7 @@ class RecallPost extends Operation {
     if (!post) {
       post = await this.PostRepository.getByGeneratedPostId(id);
       if (!post) {
-        throw new Error('Post not found');
+        return this.emit(NOT_FOUND, new Error('Post not found'));
       }
     }
 
