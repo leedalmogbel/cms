@@ -29,6 +29,14 @@ module.exports.handler = (event, context, callback) => {
 
         const app = await brewed.getServerless();
         const res = await app(event, context);
+        
+        res.headers = {
+          ...res.headers,
+          'strict-transport-security': 'max-age=63072000; includeSubdomains; preload',
+          'cache-control': 'no-store',
+          'pragma': 'no-cache'
+        }
+        
         callback(null, res);
       }
 
