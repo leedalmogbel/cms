@@ -27,15 +27,13 @@ class PostAdvisoryRepository extends BaseRepository {
       attributes: {
         exclude: ['id', 'advisoryId', 'createdAt', 'updatedAt'],
       },
-      // include: [
-      //   {
-      //     model: this.PostModel,
-      //     as: 'post',
-      //     // attributes: {
-      //     //   exclude: ['password'],
-      //     // },
-      //   },
-      // ],
+    });
+  }
+
+  getPostAdvisories(postId) {
+    return this.model.findAll({
+      where: { postId },
+      raw: true,
     });
   }
 

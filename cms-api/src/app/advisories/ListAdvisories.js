@@ -34,29 +34,29 @@ class ListAdvisories extends Operation {
         });
       }
 
-      let posts = [];
-      const linked = await Promise.all(
-        advisories.map(async (advisory) => {
-          advisory = advisory.toJSON();
-          posts = [];
+      // let posts = [];
+      // const linked = await Promise.all(
+      //   advisories.map(async (advisory) => {
+      //     advisory = advisory.toJSON();
+      //     posts = [];
 
-          if (advisory.advisoryPosts) {
-            const postDetails = advisory.advisoryPosts;
+      //     if (advisory.advisoryPosts) {
+      //       const postDetails = advisory.advisoryPosts;
 
-            postDetails.forEach((detail) => {
-              posts.push(detail.post);
-            });
-          }
+      //       postDetails.forEach((detail) => {
+      //         posts.push(detail.post);
+      //       });
+      //     }
 
-          return advisory;
-        }),
+      //     return advisory;
+      //   }),
 
-      ).then((advisory) => {
-        advisory = {
-          ...advisory,
-          linkedPosts: posts,
-        };
-      }).catch(() => {});
+      // ).then((advisory) => {
+      //   advisory = {
+      //     ...advisory,
+      //     linkedPosts: posts,
+      //   };
+      // }).catch(() => {});
 
       this.emit(SUCCESS, {
         results: advisories,

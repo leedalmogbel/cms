@@ -1,17 +1,19 @@
 const Sequelize = require('sequelize');
+const moment = require('moment');
 const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
   constructor({
-    PostModel, UserModel, RecycleBinModel, PostTagModel,
+    PostModel, UserModel, RecycleBinModel, PostTagModel, PostAdvisoryRepository,
   }) {
     super(PostModel);
 
     this.UserModel = UserModel;
     this.RecycleBinModel = RecycleBinModel;
     this.PostTagModel = PostTagModel;
+    this.PostAdvisoryRepository = PostAdvisoryRepository;
   }
 
   buildListArgs(data = {}) {
@@ -119,8 +121,6 @@ class PostRepository extends BaseRepository {
       }
     }
 
-    args.order = order;
-
     // offset
     if ('offset' in data) {
       args.offset = Number(data.offset);
@@ -130,6 +130,13 @@ class PostRepository extends BaseRepository {
     if ('limit' in data) {
       args.limit = Number(data.limit);
     }
+
+    if ('order' in data) {
+      // customized sorting via date
+      order = [['publishedAt', data.order.publishedAt]];
+    }
+
+    args.order = order;
 
     return args;
   }
@@ -166,6 +173,14 @@ class PostRepository extends BaseRepository {
     });
   }
 
+  getByGeneratedPostId(postId) {
+    return this.model.findOne({
+      where: {
+        postId,
+      },
+    });
+  }
+
   count(args) {
     return this.model.count(this.buildListArgs(args));
   }
@@ -191,6 +206,18 @@ class PostRepository extends BaseRepository {
 
       throw error;
     }
+  }
+
+  async deletePostAdvisory(postId) {
+    const postAdvisories = await this.PostAdvisoryRepository.getPostAdvisories(postId);
+
+    postAdvisories.map(async (pAdv) => {
+      await this.PostAdvisoryRepository.destroy({
+        where: {
+          id: pAdv.id,
+        },
+      });
+    });
   }
 }
 

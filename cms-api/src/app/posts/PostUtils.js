@@ -4,6 +4,7 @@ const PmsPost = require('src/domain/pms/Post');
 const PublishPostStreams = require('src/domain/streams/PublishPostStreams');
 const UpdatePostStreams = require('src/domain/streams/UpdatePostStreams');
 const uuidv4 = require('uuid/v4');
+const moment = require('moment');
 const { Operation } = require('../../infra/core/core');
 
 class PostUtils extends Operation {
@@ -78,8 +79,17 @@ class PostUtils extends Operation {
       });
     }
 
-    if ('address' in data && data.address) {
-      const loc = await this.BaseLocation.detail(data.address);
+    if ('scheduledAt' in data && data.scheduledAt !== null) {
+      data.scheduledAt = moment(data.scheduledAt).utc().format('YYYY-MM-DD HH:mm:ss');
+    }
+
+    if ('address' in data
+      && 'placeId' in data
+      && data.address
+      && data.placeId
+    ) {
+      const { placeId, address } = data;
+      const loc = await this.BaseLocation.detail(placeId, address);
       loc.isGeofence = data.isGeofence;
 
       data = {

@@ -28,7 +28,7 @@ class AdvisoryRepository extends BaseRepository {
       limit: 20,
     };
 
-    const order = [['updatedAt', 'DESC']]; // set order by default descending
+    let order = [['updatedAt', 'DESC']]; // set order by default descending
 
     // search for keyword
     if ('keyword' in data) {
@@ -128,6 +128,13 @@ class AdvisoryRepository extends BaseRepository {
       };
     }
 
+    if ('order' in data) {
+      const sorting = data.order.updatedAt !== undefined ? 'updatedAt' : 'createdAt';
+
+      // customized sorting via date
+      order = [[sorting, data.order[sorting]]];
+    }
+
     // order
     args.order = order;
 
@@ -155,6 +162,7 @@ class AdvisoryRepository extends BaseRepository {
             'createdAt',
             'updatedAt',
           ],
+          order: [[{ model: this.PostAdvisoryModel, as: 'postAdvisory' }, 'createdAt', 'DESC']],
           include: [
             {
               model: this.PostModel,
@@ -165,6 +173,8 @@ class AdvisoryRepository extends BaseRepository {
                 'postId',
                 'title',
                 'status',
+                'createdAt',
+                'updatedAt',
               ],
             },
           ],

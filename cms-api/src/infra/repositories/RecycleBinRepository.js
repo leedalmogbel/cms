@@ -1,11 +1,14 @@
 
 const Sequelize = require('sequelize');
+const moment = require('moment');
 const { BaseRepository } = require('../../infra/core/core');
 
 const { Op } = Sequelize;
 
 class RecycleBinRepository extends BaseRepository {
-  constructor({ RecycleBinModel, UserModel, PostModel, PostUtils, PostTagRepository }) {
+  constructor({
+    RecycleBinModel, UserModel, PostModel, PostUtils, PostTagRepository,
+  }) {
     super(RecycleBinModel);
 
     this.UserModel = UserModel;
@@ -24,8 +27,8 @@ class RecycleBinRepository extends BaseRepository {
               { [Op.ne]: 'initial' },
             ],
           },
-          isActive: 1
-        }
+          isActive: 1,
+        },
       },
       limit: 20,
     };
@@ -37,33 +40,33 @@ class RecycleBinRepository extends BaseRepository {
       && data.keyword) {
       data.keyword = data.keyword.toLowerCase();
       args.where = {
-        [Op.or]:[
+        [Op.or]: [
           Sequelize.where(
             Sequelize.fn('lower', Sequelize.json('meta.title')),
             {
-              [Op.like]: `%${data.keyword}%`
-            }
+              [Op.like]: `%${data.keyword}%`,
+            },
           ),
           Sequelize.where(
             Sequelize.fn('lower', Sequelize.json('meta.content')),
             {
-              [Op.like]: `%${data.keyword}%`
-            }
+              [Op.like]: `%${data.keyword}%`,
+            },
           ),
           Sequelize.where(
             Sequelize.fn('lower', Sequelize.json('meta.tagsAdded')),
             {
-              [Op.like]: `%${data.keyword}%`
-            }
+              [Op.like]: `%${data.keyword}%`,
+            },
           ),
           Sequelize.where(
             Sequelize.fn('lower', Sequelize.json('meta.tagsRetained')),
             {
-              [Op.like]: `%${data.keyword}%`
-            }
+              [Op.like]: `%${data.keyword}%`,
+            },
           ),
-        ]
-      }
+        ],
+      };
     }
 
     if ('category' in data) {
@@ -97,10 +100,10 @@ class RecycleBinRepository extends BaseRepository {
     if ('type' in data && data.type) {
       args.where = {
         ...args.where,
-        [Op.and]:[
-          { type: data.type }
-        ]
-      }
+        [Op.and]: [
+          { type: data.type },
+        ],
+      };
     }
 
     return args;
@@ -129,8 +132,8 @@ class RecycleBinRepository extends BaseRepository {
     const transaction = await this.model.sequelize.transaction();
 
     try {
-      if(typeof ids !== 'number') {
-        await Promise.all(posts.map(async post => this.restore(post, transaction)));
+      if (typeof ids !== 'number') {
+        await Promise.all(posts.map(async (post) => this.restore(post, transaction)));
       } else {
         await this.restore(posts, transaction);
       }
@@ -138,7 +141,7 @@ class RecycleBinRepository extends BaseRepository {
       await transaction.commit();
 
       return { id: ids };
-    } catch(error) {
+    } catch (error) {
       await transaction.rollback();
 
       throw error;
@@ -153,16 +156,24 @@ class RecycleBinRepository extends BaseRepository {
     post.meta.lockUser = null;
     post.meta.expiredAt = null;
 
-    if('post' == post.type) {
+    if (post.meta.publishedAt) {
+      post.meta.publishedAt = moment(post.meta.publishedAt).subtract(8, 'hours');
+    }
+
+    if (post.meta.scheduledAt) {
+      post.meta.scheduledAt = moment(post.meta.scheduledAt).subtract(8, 'hours');
+    }
+
+    if (post.type === 'post') {
       await this.PostModel.create({
-        ...post.meta
+        ...post.meta,
       }, { transaction });
 
       await this.buildTags(post.meta);
-    } 
-    //else {
+    }
+    // else {
     //  // advisory
-    //}
+    // }
 
     return post.meta;
   }
@@ -200,9 +211,9 @@ class RecycleBinRepository extends BaseRepository {
 
   async destroyList(posts) {
     const transaction = await this.model.sequelize.transaction();
-    let id = [];
+    const id = [];
     try {
-      await Promise.all(posts.map(async post => {
+      await Promise.all(posts.map(async (post) => {
         await post.destroy({ transaction });
         id.push(post.id);
       }));
@@ -210,7 +221,7 @@ class RecycleBinRepository extends BaseRepository {
       await transaction.commit();
 
       return id;
-    } catch(error) {
+    } catch (error) {
       await transaction.rollback();
 
       throw error;

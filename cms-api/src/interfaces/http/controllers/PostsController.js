@@ -17,6 +17,7 @@ class PostsController extends BaseController {
     router.post('/:id/revise', this.injector('RevisePost'), this.update);
     router.post('/:id/publish', this.injector('PublishPost'), this.update);
     router.post('/:id/comment', this.injector('AddPostComment'), this.update);
+    router.post('/:id/recall', this.injector('RecallPost'), this.update);
     router.delete('/:id', this.injector('RemovePost'), this.delete);
 
     return router;
@@ -101,7 +102,7 @@ class PostsController extends BaseController {
       })
       .on(ERROR, next);
 
-    operation.execute(Number(req.params.id), req.body);
+    operation.execute(req.params.id, req.body);
   }
 
   delete(req, res, next) {

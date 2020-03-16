@@ -35,7 +35,7 @@ class BaseLocation extends Operation {
     }
   }
 
-  async detail(address) {
+  async detail(placeId, address) {
     const service = process.env.LOCATION_SERVICE;
 
     switch (service) {
@@ -53,7 +53,7 @@ class BaseLocation extends Operation {
       default: {
         try {
           const res = await this.GetLocationOSM
-            .execute(address);
+            .execute(placeId, address);
 
           return res;
         } catch (err) {

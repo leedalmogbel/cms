@@ -16,7 +16,12 @@ class Login extends Operation {
       );
     }
 
-    const user = await this.UserRepository.getByEmail(data.email);
+    let user = await this.UserRepository.getByEmail(data.email);
+    user = user.toJSON();
+
+    // remove unnecessary fields
+    delete user.email;
+
     if (!user) {
       return this.emit(
         NOT_FOUND,

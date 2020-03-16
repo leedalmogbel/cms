@@ -46,6 +46,11 @@ module.exports = {
         allowNull: true,
         defaultValue: null,
       },
+      recall: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: null,
+      },
       scheduledAt: DataTypes.DATE,
       expiredAt: DataTypes.DATE,
       publishedAt: DataTypes.DATE,

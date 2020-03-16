@@ -1,7 +1,7 @@
 const { Operation } = require('../../infra/core/core');
 
 class RemovePost extends Operation {
-  constructor({ PostRepository, PostUtils,  }) {
+  constructor({ PostRepository, PostUtils }) {
     super();
     this.PostRepository = PostRepository;
     this.PostUtils = PostUtils;
@@ -20,6 +20,9 @@ class RemovePost extends Operation {
     }
 
     try {
+      // delete linkd advisory to a post
+      await this.PostRepository.deletePostAdvisory(id);
+
       await this.PostRepository.moveToBin(id);
 
       this.emit(SUCCESS, {

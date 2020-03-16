@@ -14,10 +14,12 @@ class RecycleBinRestore extends Operation {
     let posts;
 
     try {
-      if(typeof data.id !== 'number') {
-        posts = await Promise.all(data.id.map(async id => {
-          return await this.RecycleBinRepository.getById(id);
-        }));
+      if (typeof data.id !== 'number') {
+        posts = await Promise.all(
+          data.id.map(
+            async (id) => await this.RecycleBinRepository.getById(id),
+          ),
+        );
       } else {
         posts = await this.RecycleBinRepository.getById(data.id);
       }
