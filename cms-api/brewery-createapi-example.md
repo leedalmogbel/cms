@@ -174,7 +174,7 @@ There are three pre-defined events for CreateUser class \(SUCCESS, ERROR, VALIDA
 To complete our CRUD use cases, let us create the use cases for **CreateUser,** **UpdateUser**, **DeleteUser**, **ListUsers** and **ShowUses**.
 
 **src/app/CreateUser.js**
-
+  
 ```
 const { Operation } = require('@brewery/core');
 const User = require('src/domain/User');

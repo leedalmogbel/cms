@@ -1,4 +1,4 @@
-const { Operation } = require('@brewery/core');
+const { Operation } = require('../../infra/core/core');
 
 class ListUsers extends Operation {
   constructor({ UserRepository }) {
@@ -6,14 +6,20 @@ class ListUsers extends Operation {
     this.UserRepository = UserRepository;
   }
 
-  async execute() {
+  async execute(data) {
     const { SUCCESS, ERROR } = this.events;
 
     try {
-      const users = await this.UserRepository.getAll({});
+      const users = await this.UserRepository.getUsers(data);
+      const total = await this.UserRepository.count(data);
 
-      this.emit(SUCCESS, users);
-    } catch(error) {
+      this.emit(SUCCESS, {
+        results: users,
+        meta: {
+          total,
+        },
+      });
+    } catch (error) {
       this.emit(ERROR, error);
     }
   }
@@ -22,4 +28,3 @@ class ListUsers extends Operation {
 ListUsers.setEvents(['SUCCESS', 'ERROR', 'VALIDATION_ERROR', 'NOT_FOUND']);
 
 module.exports = ListUsers;
-    

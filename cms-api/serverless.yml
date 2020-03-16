@@ -3,24 +3,119 @@ service: kapp-cms-api
 plugins:
   - serverless-offline
   - serverless-mocha-plugin
-
+  - serverless-domain-manager
 provider:
-  region: us-east-1
+  region: ap-southeast-1
   name: aws
-  runtime: nodejs8.10
-  memorySize: 128
+  runtime: nodejs10.x
+  memorySize: 256
   versionFunctions: false
-  environment: ${file(env.yml):${self:custom.stage}}
   timeout: 30
+  environment: ${file(env.yml):${self:custom.stage}}
+  websocketApiRouteSelectionExpression: $request.body.action
+  vpc:
+    securityGroupIds:
+      - ${file(env.yml):${self:custom.stage}.VPC_SECURITY_GROUP}
+    subnetIds:
+      - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_1}
+      - ${file(env.yml):${self:custom.stage}.VPC_SUBNET_2}
+  stackTags:
+    ProjectCode: "CMS"
+    SupportContact: "Stratpoint"
+    # Name: CMS-Lambda-CF-${file(env.yml):${self:custom.stage}}
+  role:  ${file(env.yml):${self:custom.stage}.ROLE_ARN}
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  customDomain:
+   domainName: ${file(env.yml):${self:custom.stage}.API_DOMAIN_NAME}
+   stage: ${opt:stage, self:provider.stage}
+   certificateName: ${file(env.yml):${self:custom.stage}.CERTIFICATE_NAME}
+   createRoute53Record: true
+   endpointType: 'edge'
+   securityPolicy: tls_1_2
 
 functions:
   app:
     handler: src/app-serverless.handler
     events:
-      - http:
+      - http: 
           path: /{proxy+}
           method: any
           cors: true
+          authorizer:
+            arn: ${file(env.yml):${self:custom.stage}.COGNITO_AUTHORIZER}
+  autocomplete:
+    handler: src/handler.location
+    events:
+      - http:
+          path: /location/autocomplete
+          method: post
+          cors: true
+  tags:
+    handler: src/handler.smartTags
+    events:
+      - http:
+          path: /smart/tags
+          method: post
+          cors: true
+  userSeeds:
+    handler: src/handler.userSeeds
+  cron: 
+    handler: src/cron.scheduled
+    events:
+      - schedule: 
+          rate: cron(0/10 * * * ? *)
+          enabled: true
+  cronLockedPost:
+    handler: src/cron.lockedPost
+    events:
+      - schedule:
+          rate: rate(30 minutes)
+          enabled: true
+  socketAuth:
+    handler: src/socket.auth
+  socketConnect:
+    handler: src/socket.connect
+    events:
+      - websocket:
+          route: $connect
+          authorizer:
+            name: socketAuth
+            identitySource:
+              - 'route.request.querystring.Authorizer'
+  socketDisconnect:
+    handler: src/socket.disconnect
+    events:
+      - websocket:
+          route: $disconnect
+  socketDefault:
+    handler: src/socket.default
+    events:
+      - websocket:
+          route: $default
+  notify:
+    handler: src/socket.notify
+    events:
+      - websocket:
+          route: NOTIFY
+  lockPost:
+    handler: src/socket.lockPost
+    events:
+      - websocket:
+          route: LOCKPOST
+  kickLockedPost:
+    handler: src/socket.kickLockedPost
+    events:
+      - websocket:
+          route: KICKLOCKEDPOST
+  kickLockedPostConfirm:
+    handler: src/socket.kickLockedPostConfirm
+    events:
+      - websocket:
+          route: KICKLOCKEDPOSTCONFIRM
+  unlockPost:
+    handler: src/socket.unlockPost
+    events:
+      - websocket:
+          route: UNLOCKPOST  
