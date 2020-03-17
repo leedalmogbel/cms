@@ -2,11 +2,12 @@ const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class PublishPost extends Operation {
-  constructor({ PostRepository, UserRepository, PostUtils }) {
+  constructor({ PostRepository, UserRepository, PostUtils, HistoryRepository }) {
     super();
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
     this.PostUtils = PostUtils;
+    this.HistoryRepository = HistoryRepository;
   }
 
   async execute(id, data) {
@@ -44,6 +45,13 @@ class PublishPost extends Operation {
       }
 
       const res = await this.publish(id, data);
+      const log = await this.HistoryRepository.add({
+        parentId: res.id,
+        type: 'post',
+        meta: res,
+      });
+      console.log(log)
+console.log('asdasda')
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
         meta: {},
@@ -89,8 +97,14 @@ class PublishPost extends Operation {
           address,
           isGeofence,
         };
-
+console.log('tae')
         const res = await this.publish(id, data);
+        const log = await this.HistoryRepository.add({
+          parentId: res.id,
+          type: 'post',
+          meta: res,
+        });
+        console.log(log)
         return res.id;
       }),
     ).then((ids) => {
