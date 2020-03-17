@@ -50,8 +50,7 @@ class PublishPost extends Operation {
         type: 'post',
         meta: res,
       });
-      console.log(log)
-console.log('asdasda')
+
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
         meta: {},
@@ -97,14 +96,14 @@ console.log('asdasda')
           address,
           isGeofence,
         };
-console.log('tae')
+
         const res = await this.publish(id, data);
         const log = await this.HistoryRepository.add({
           parentId: res.id,
           type: 'post',
           meta: res,
         });
-        console.log(log)
+
         return res.id;
       }),
     ).then((ids) => {
