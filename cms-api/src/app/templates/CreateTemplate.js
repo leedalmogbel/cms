@@ -1,4 +1,4 @@
-const Template = require('src/domain/Post');
+const Template = require('src/domain/Template');
 const { Operation } = require('../../infra/core/core');
 
 class CreateTemplate extends Operation {
@@ -7,10 +7,20 @@ class CreateTemplate extends Operation {
     this.TemplateRepository = TemplateRepository;
   }
 
-  async execute(id, data) {
-    const {
-      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
-    } = this.events;
+  async execute(data) {
+    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
+
+    try {
+      const payload = new Template(data);
+      const template = await this.TemplateRepository.add(payload);
+
+      this.emit(SUCCESS, {
+        results: template,
+        meta: {},
+      });
+    } catch (error) {
+      this.emit(ERROR, error);
+    }
   }
 }
 

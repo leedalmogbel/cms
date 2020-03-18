@@ -31,9 +31,9 @@ module.exports = {
       isActive: {
         type: DataTypes.INTEGER,
         defaultValue: 1,
-      }
+      },
     }, {
-      tableName: 'Templates',
+      tableName: 'templates',
       timestamps: true,
     });
 
