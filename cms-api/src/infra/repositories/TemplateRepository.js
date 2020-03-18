@@ -77,6 +77,15 @@ class TemplateRepository extends BaseRepository {
     });
   }
 
+  getTemplateById(id) {
+    return this.model.findOne({
+      where: {
+        id,
+        isActive: 1,
+      }
+    });
+  }
+
   count(args) {
     return this.model.count(this.buildListArgs(args));
   }

@@ -19,6 +19,10 @@ class RemoveTemplate extends Operation {
     }
 
     try {
+      await this.TemplateRepository.update(id, {
+        isActive: 0,
+      });
+
       this.emit(SUCCESS, {
         results: { id },
         meta: {},
