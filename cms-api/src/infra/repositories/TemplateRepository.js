@@ -4,8 +4,10 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class TemplateRepository extends BaseRepository {
-  constructor({ TemplateModel }) {
+  constructor({ TemplateModel, UserModel }) {
     super(TemplateModel);
+
+    this.UserModel = UserModel;
   }
 
   buildListArgs(data = {}) {
@@ -73,7 +75,16 @@ class TemplateRepository extends BaseRepository {
 
   getTemplates(args) {
     return this.getAll({
-      ...this.buildListArgs(args)
+      ...this.buildListArgs(args),
+      include: [
+        {
+          model: this.UserModel,
+          as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+      ],
     });
   }
 

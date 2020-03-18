@@ -37,6 +37,13 @@ module.exports = {
       timestamps: true,
     });
 
+    TemplateModel.associate = () => {
+      TemplateModel.belongsTo(datasource.models.UserModel, {
+        foreignKey: 'userId',
+        as: 'user',
+      });
+    };
+
     /**
      * Examples on how to associate or set relationship with other models
      *
