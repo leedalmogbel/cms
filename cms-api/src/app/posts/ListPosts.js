@@ -57,11 +57,11 @@ class ListPosts extends Operation {
           }
         }
 
-        const exists = this.HistoryRepository.getHistoryByPostId(post.id);
+        const exists = this.HistoryRepository.getHistoryByPostId(post.id, 'post');
         if (exists) {
           post = {
             ...post,
-            history: exists.toJSON(),
+            history: exists,
           }
         }
 

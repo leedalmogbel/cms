@@ -32,9 +32,10 @@ class HistoryRepository extends BaseRepository {
     return args;
   }
 
-  getHistoryByPostId(postId) {
+  getHistoryByPostId(postId, type) {
     return this.getAll({
-      postId
+      parentId: postId,
+      type: type
     });
   }
 
