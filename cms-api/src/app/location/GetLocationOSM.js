@@ -14,6 +14,7 @@ class GetLocationOSM extends Operation {
           fields: ['complete_name', 'name'],
           minimum_should_match: '100%',
           query: address,
+          // search_type: 'dfs_query_then_fetch',
           // type: 'phrase',
         },
       },

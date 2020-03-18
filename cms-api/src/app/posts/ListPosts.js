@@ -1,11 +1,12 @@
 const { Operation } = require('../../infra/core/core');
 
 class ListPosts extends Operation {
-  constructor({ PostRepository, PostTagRepository }) {
+  constructor({ PostRepository, PostTagRepository, HistoryRepository }) {
     super();
 
     this.PostRepository = PostRepository;
     this.PostTagRepository = PostTagRepository;
+    this.HistoryRepository = HistoryRepository;
   }
 
   async execute(args, session) {
@@ -53,6 +54,14 @@ class ListPosts extends Operation {
           if (parseInt(lockUser.userId, 10) === session.id) {
             post.isLocked = null;
             post.lockUser = null;
+          }
+        }
+
+        const exists = this.HistoryRepository.getHistoryByPostId(post.id);
+        if (exists) {
+          post = {
+            ...post,
+            history: exists.toJSON(),
           }
         }
 

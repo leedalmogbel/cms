@@ -19,21 +19,6 @@ class HistoryRepository extends BaseRepository {
       limit: 20,
     };
 
-    const order = [['updatedAt', 'DESC']];
-
-    // set keyword
-    if ('keyword' in data
-      && data.keyword) {
-      args.where[Op.or] = {
-        title: {
-          [Op.like]:
-            `%${data.keyword}%`,
-        },
-      };
-    }
-
-    args.order = order;
-
     // offset
     if ('offset' in data) {
       args.offset = Number(data.offset);
@@ -47,27 +32,9 @@ class HistoryRepository extends BaseRepository {
     return args;
   }
 
-  getTags(args) {
+  getHistoryByPostId(postId) {
     return this.getAll({
-      ...this.buildListArgs(args),
-    });
-  }
-
-  getTagById(id) {
-    return this.model.findOne({
-      where: {
-        id,
-        isActive: 1,
-      },
-    });
-  }
-
-  getTagByName(name) {
-    return this.model.findOne({
-      where: {
-        name,
-        isActive: 1,
-      },
+      postId
     });
   }
 

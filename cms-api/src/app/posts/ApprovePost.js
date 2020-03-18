@@ -2,11 +2,12 @@ const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class ApprovePost extends Operation {
-  constructor({ PostRepository, UserRepository, PostUtils }) {
+  constructor({ PostRepository, UserRepository, PostUtils, HistoryRepository }) {
     super();
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
     this.PostUtils = PostUtils;
+    this.HistoryRepository = HistoryRepository;
   }
 
   async execute(id, data) {
@@ -43,6 +44,12 @@ class ApprovePost extends Operation {
       }
 
       const res = await this.publish(id, data);
+      await this.HistoryRepository.add({
+        parentId: res.id,
+        type: 'post',
+        meta: res,
+      });
+
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
         meta: {},

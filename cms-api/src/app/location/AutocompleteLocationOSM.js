@@ -28,6 +28,7 @@ class AutocompleteLocationOSM extends Operation {
             fields: ['complete_name', 'name'],
             minimum_should_match: '100%',
             query: location_string,
+            // search_type: 'dfs_query_then_fetch',
             // type: 'phrase',
           },
         },
