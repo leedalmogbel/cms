@@ -10,7 +10,7 @@ class ShowTemplate extends Operation {
     const { SUCCESS, NOT_FOUND } = this.events;
 
     try {
-      const post = await this.TemplateRepository.getById(id);
+      const post = await this.TemplateRepository.getTemplateById(id);
 
       this.emit(SUCCESS, {
         results: post,
