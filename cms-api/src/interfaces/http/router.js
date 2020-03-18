@@ -54,6 +54,7 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
   apiRouter.use('/recyclebin', controller('controllers/RecycleBinController.js'));
   apiRouter.use('/posttags', controller('controllers/PostTagsController.js'));
   apiRouter.use('/postadvisory', controller('controllers/PostAdvisoriesController.js'));
+  apiRouter.use('/templates', controller('controllers/TemplatesController.js'));
   
   /* apiRoutes END */
 
