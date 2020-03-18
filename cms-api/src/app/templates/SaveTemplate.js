@@ -11,6 +11,24 @@ class SaveTemplate extends Operation {
     const {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
+
+    try {
+      await this.TemplateRepository.getById(id);
+    } catch (error) {
+      error.message = 'Template not found';
+      return this.emit(NOT_FOUND, error);
+    }
+
+    try {
+      await this.TemplateRepository.update(id, data);
+
+      this.emit(SUCCESS, {
+        results: { id },
+        meta: {},
+      });
+    } catch (error) {
+      this.emit(ERROR, error);
+    }
   }
 }
 
