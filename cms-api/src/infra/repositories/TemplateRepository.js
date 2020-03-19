@@ -49,6 +49,16 @@ class TemplateRepository extends BaseRepository {
       }
     }
 
+    // set location
+    if ('location' in data && data.location) {
+      args.where[Op.and] = Sequelize.where(
+        Sequelize.fn('lower', Sequelize.col('locations')),
+        {
+          [Op.like]: `%${data.location.toLowerCase()}%`,
+        },
+      );
+    }
+
     if ('category' in data) {
       args.where.category = data.category;
     }
