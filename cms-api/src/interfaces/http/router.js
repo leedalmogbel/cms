@@ -55,6 +55,7 @@ module.exports = ({ config, containerMiddleware, loggerMiddleware, errorHandler,
   apiRouter.use('/posttags', controller('controllers/PostTagsController.js'));
   apiRouter.use('/postadvisory', controller('controllers/PostAdvisoriesController.js'));
   apiRouter.use('/templates', controller('controllers/TemplatesController.js'));
+  apiRouter.use('/histories', controller('controllers/HistoriesController.js'));
   
   /* apiRoutes END */
 

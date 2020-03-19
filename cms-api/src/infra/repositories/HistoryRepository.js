@@ -5,8 +5,7 @@ const { BaseRepository } = require('../../infra/core/core');
 const { Op } = Sequelize;
 
 class HistoryRepository extends BaseRepository {
-  constructor
-  ({ HistoryModel }) {
+  constructor({ HistoryModel }) {
     super(HistoryModel);
   }
 
@@ -14,28 +13,30 @@ class HistoryRepository extends BaseRepository {
     // init fetch arguments
     const args = {
       where: {
-        isActive: 1,
+        [Op.and]: {
+          isActive: 1,
+          parentId: Number(data.id),
+          type: data.type,
+        },
       },
-      limit: 20,
     };
-
-    // offset
-    if ('offset' in data) {
-      args.offset = Number(data.offset);
-    }
-
-    // limit
-    if ('limit' in data) {
-      args.limit = Number(data.limit);
-    }
 
     return args;
   }
 
+  getHistories(args) {
+    return this.getAll({
+      ...this.buildListArgs(args),
+    });
+  }
+
   getHistoryByPostId(postId, type) {
     return this.getAll({
-      parentId: postId,
-      type: type
+      where: {
+        parentId: postId,
+        type,
+      },
+      raw: true,
     });
   }
 
@@ -45,4 +46,3 @@ class HistoryRepository extends BaseRepository {
 }
 
 module.exports = HistoryRepository;
-

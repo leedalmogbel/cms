@@ -49,19 +49,10 @@ class ListPosts extends Operation {
           post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
         }
 
-
         if (isLocked && lockUser && session) {
           if (parseInt(lockUser.userId, 10) === session.id) {
             post.isLocked = null;
             post.lockUser = null;
-          }
-        }
-
-        const exists = this.HistoryRepository.getHistoryByPostId(post.id, 'post');
-        if (exists) {
-          post = {
-            ...post,
-            history: exists,
           }
         }
 
