@@ -59,7 +59,7 @@ class PublishPost extends Operation {
       };
 
       const log = await this.HistoryRepository.add({
-        parentId: res.id,
+        parentId: id,
         type: 'post',
         meta: res,
       });
@@ -120,7 +120,7 @@ class PublishPost extends Operation {
         };
 
         const log = await this.HistoryRepository.add({
-          parentId: res.id,
+          parentId: id,
           type: 'post',
           meta: res,
         });
