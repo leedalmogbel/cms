@@ -28,6 +28,8 @@ const Post = attributes({
   isPublishedImmediately: Number,
   isLocked: Number,
   lockUser: Object,
+  recall: Object,
+  recalledAt: Date,
   scheduledAt: Date,
   expiredAt: Date,
   publishedAt: Date,
