@@ -14,12 +14,16 @@ class RecallPost extends Operation {
     } = this.events;
 
     let post;
+    let action = 'cms';
+
     try {
       post = await this.PostRepository.getById(id);
     } catch (error) {}
 
     if (!post) {
       post = await this.PostRepository.getByGeneratedPostId(id);
+      action = 'pmw';
+
       if (!post) {
         return this.emit(NOT_FOUND, new Error('Post not found'));
       }
@@ -41,6 +45,7 @@ class RecallPost extends Operation {
       const { postId } = post;
       const payload = {
         status: 'recalled',
+        recalledAt: new Date().toISOString(),
         recall: {
           ...data,
           userId: 'userId' in data ? data.userId : null,
@@ -49,7 +54,19 @@ class RecallPost extends Operation {
       };
 
       await this.PostRepository.update(post.id, payload);
-      await this.pmsIntegrate(postId, data);
+
+      if (action === 'cms') {
+        await this.pmsIntegrate(postId, data);
+      }
+
+      if (action === 'pmw') {
+        // const message = ''
+        // await this.PostUtils.saveNotification({
+        //   userId: editorId,
+        //   message,
+        //   meta: { id, postId },
+        // });
+      }
 
       this.emit(SUCCESS, {
         results: { id },

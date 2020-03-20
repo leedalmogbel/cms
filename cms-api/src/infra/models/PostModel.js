@@ -51,6 +51,7 @@ module.exports = {
         allowNull: true,
         defaultValue: null,
       },
+      recalledAt: DataTypes.DATE,
       scheduledAt: DataTypes.DATE,
       expiredAt: DataTypes.DATE,
       publishedAt: DataTypes.DATE,
