@@ -2,7 +2,12 @@ const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class PublishPost extends Operation {
-  constructor({ PostRepository, UserRepository, PostUtils, HistoryRepository }) {
+  constructor({
+    PostRepository,
+    UserRepository,
+    PostUtils,
+    HistoryRepository,
+  }) {
     super();
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
@@ -44,7 +49,15 @@ class PublishPost extends Operation {
         };
       }
 
-      const res = await this.publish(id, data);
+      let user = await this.UserRepository.getUserById(data.userId);
+      user = user.toJSON();
+
+      let res = await this.publish(id, data);
+      res = {
+        ...res,
+        CurrentUser: user,
+      };
+
       const log = await this.HistoryRepository.add({
         parentId: res.id,
         type: 'post',
@@ -97,7 +110,15 @@ class PublishPost extends Operation {
           isGeofence,
         };
 
-        const res = await this.publish(id, data);
+        let user = await this.UserRepository.getUserById(data.userId);
+        user = user.toJSON();
+
+        let res = await this.publish(id, data);
+        res = {
+          ...res,
+          CurrentUser: user,
+        };
+
         const log = await this.HistoryRepository.add({
           parentId: res.id,
           type: 'post',
