@@ -1,11 +1,21 @@
 const { Operation } = require('../../infra/core/core');
 
 class RecallPost extends Operation {
-  constructor({ PostRepository, PostUtils, httpClient }) {
+  constructor({
+    PostRepository,
+    SocketRepository,
+    UserRepository,
+    NotificationRepository,
+    httpClient,
+    NotificationSocket,
+  }) {
     super();
     this.PostRepository = PostRepository;
-    this.PostUtils = PostUtils;
+    this.SocketRepository = SocketRepository;
+    this.UserRepository = UserRepository;
+    this.NotificationRepository = NotificationRepository;
     this.httpClient = httpClient;
+    this.NotificationSocket = NotificationSocket;
   }
 
   async execute(id, data) {
@@ -42,14 +52,17 @@ class RecallPost extends Operation {
     }
 
     try {
+      const recalledAt = new Date().toISOString();
+      const pmwMod = 'PMW Moderator';
       const { postId } = post;
+
       const payload = {
         status: 'recalled',
-        recalledAt: new Date().toISOString(),
+        recalledAt,
         recall: {
           ...data,
           userId: 'userId' in data ? data.userId : null,
-          name: 'name' in data ? data.name : 'PMW Administrator',
+          name: 'name' in data ? data.name : pmwMod,
         },
       };
 
@@ -59,13 +72,17 @@ class RecallPost extends Operation {
         await this.pmsIntegrate(postId, data);
       }
 
+      // notify all user of recalled post from pmw
       if (action === 'pmw') {
-        // const message = ''
-        // await this.PostUtils.saveNotification({
-        //   userId: editorId,
-        //   message,
-        //   meta: { id, postId },
-        // });
+        await this.notifyUsers({
+          type: 'NOTIFICATION',
+          message: `${pmwMod} recalled a post ${post.title}`,
+          meta: {
+            id: post.id,
+            postId,
+            name: pmwMod,
+          }
+        });
       }
 
       this.emit(SUCCESS, {
@@ -98,6 +115,27 @@ class RecallPost extends Operation {
 
     console.time('PMS END POST RECALL INTEGRATION');
     console.log(`PMS response for id: ${data.postId}`, res, payload);
+  }
+
+  async notifyUsers(data) {
+    const { message, meta } = data;
+    const users = await this.UserRepository.getAll();
+    if (!users || !users.length) return;
+
+    await Promise.all(
+      users.map(async (user) => {
+        // save notification
+        await this.NotificationRepository.add({
+          userId: user.id,
+          message,
+          meta,
+          active: 1,
+        });
+
+        // get socket
+        await this.NotificationSocket.notifyUser(user.id, data);
+      })
+    );
   }
 }
 
