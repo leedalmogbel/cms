@@ -17,17 +17,17 @@ class Login extends Operation {
     }
 
     let user = await this.UserRepository.getByEmail(data.email);
-    user = user.toJSON();
-
-    // remove unnecessary fields
-    delete user.email;
-
+    
     if (!user) {
       return this.emit(
         NOT_FOUND,
         new Error('Kapp user does not exists.'),
       );
     }
+    
+    // remove unnecessary fields
+    user = user.toJSON();
+    delete user.email;
 
     this.emit(SUCCESS, {
       results: user,
