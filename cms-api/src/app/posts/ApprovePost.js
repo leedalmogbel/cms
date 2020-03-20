@@ -43,7 +43,15 @@ class ApprovePost extends Operation {
         };
       }
 
-      const res = await this.publish(id, data);
+      let user = await this.UserRepository.getUserById(data.userId);
+      user = user.toJSON();
+
+      let res = await this.publish(id, data);
+      res = {
+        ...res,
+        CurrentUser: user,
+      };
+
       await this.HistoryRepository.add({
         parentId: res.id,
         type: 'post',
