@@ -171,6 +171,7 @@ class AdvisoryRepository extends BaseRepository {
               attributes: [
                 'id',
                 'postId',
+                'category',
                 'title',
                 'content',
                 'source',
@@ -179,6 +180,8 @@ class AdvisoryRepository extends BaseRepository {
                 'recalledAt',
                 'createdAt',
                 'updatedAt',
+                'publishedAt',
+                'locations',
               ],
             },
           ],
