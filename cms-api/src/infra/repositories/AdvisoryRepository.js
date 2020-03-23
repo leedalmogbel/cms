@@ -225,7 +225,7 @@ class AdvisoryRepository extends BaseRepository {
       await Promise.all(
         posts.map(async (post) => {
           await post.update({
-            advisories: post.advisories.filter((advisory) => advisory.id != id),
+            advisories: post.advisories.filter((advisory) => advisory.id !== id),
           }, { transaction });
         }),
       );
@@ -246,6 +246,29 @@ class AdvisoryRepository extends BaseRepository {
 
       throw error;
     }
+  }
+
+  async getAttachedPosts(advisoryId) {
+    const postAdvisory = await this.PostAdvisoryModel.findAll({
+      where: {
+        advisoryId,
+      },
+    });
+
+    const postIds = [...new Set(postAdvisory.map((post) => post.postId))];
+
+    const posts = await this.PostModel.findAll({
+      where: {
+        id: {
+          [Op.in]: postIds,
+        },
+      },
+    });
+
+    return {
+      published: posts.filter((post) => post.status === 'published'),
+      results: posts,
+    };
   }
 
   async getAttachedPost(id) {
