@@ -53,10 +53,12 @@ class PublishPost extends Operation {
       user = user.toJSON();
 
       let res = await this.publish(id, data);
-      res = {
-        ...res,
-        CurrentUser: user,
-      };
+      if (user) {
+        res = {
+          ...res,
+          CurrentUser: user,
+        };
+      }
 
       const log = await this.HistoryRepository.add({
         parentId: id,
@@ -114,10 +116,12 @@ class PublishPost extends Operation {
         user = user.toJSON();
 
         let res = await this.publish(id, data);
-        res = {
-          ...res,
-          CurrentUser: user,
-        };
+        if (user) {
+          res = {
+            ...res,
+            CurrentUser: user,
+          };
+        }
 
         const log = await this.HistoryRepository.add({
           parentId: id,
