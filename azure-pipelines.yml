@@ -26,3 +26,4 @@ steps:
       npm i -g serverless
       npm i 
       serverless deploy -s dev
+      serverless deploy -s qa
