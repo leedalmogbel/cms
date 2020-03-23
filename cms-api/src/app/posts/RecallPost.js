@@ -81,9 +81,23 @@ class RecallPost extends Operation {
             id: post.id,
             postId,
             name: pmwMod,
-          }
+          },
         });
       }
+
+      let user = await this.UserRepository.getUserById(post.userId);
+      user = user.toJSON();
+
+      post = {
+        ...post,
+        CurrentUser: user,
+      };
+
+      await this.HistoryRepository.add({
+        parentId: id,
+        type: 'post',
+        meta: post,
+      });
 
       this.emit(SUCCESS, {
         results: { id },

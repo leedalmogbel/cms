@@ -19,6 +19,7 @@ class HistoryRepository extends BaseRepository {
           type: data.type,
         },
       },
+      order: [['createdAt', 'DESC']],
     };
 
     return args;
