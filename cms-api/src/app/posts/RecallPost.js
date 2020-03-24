@@ -98,6 +98,7 @@ class RecallPost extends Operation {
         user = user.toJSON();
       }
 
+      post = post.toJSON();
       post = {
         ...post,
         CurrentUser: user,
