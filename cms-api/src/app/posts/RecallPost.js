@@ -8,6 +8,7 @@ class RecallPost extends Operation {
     NotificationRepository,
     httpClient,
     NotificationSocket,
+    HistoryRepository,
   }) {
     super();
     this.PostRepository = PostRepository;
@@ -16,6 +17,7 @@ class RecallPost extends Operation {
     this.NotificationRepository = NotificationRepository;
     this.httpClient = httpClient;
     this.NotificationSocket = NotificationSocket;
+    this.HistoryRepository = HistoryRepository;
   }
 
   async execute(id, data) {
