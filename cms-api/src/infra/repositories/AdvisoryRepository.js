@@ -212,7 +212,7 @@ class AdvisoryRepository extends BaseRepository {
   }
 
   async moveToBin(id, posts) {
-    const entity = await this._getById(id);
+    const entity = await this.getAdvisoryById(id);
     const transaction = await this.model.sequelize.transaction();
 
     try {
@@ -222,20 +222,21 @@ class AdvisoryRepository extends BaseRepository {
         meta: entity,
       }, { transaction });
 
-      await Promise.all(
-        posts.map(async (post) => {
-          await post.update({
-            advisories: post.advisories.filter((advisory) => advisory.id !== id),
-          }, { transaction });
-        }),
-      );
+      if (Array.isArray(posts) && posts.length) {
+        await Promise.all(
+          posts.map(async (post) => {
+            await post.update({
+              advisories: post.advisories.filter((advisory) => advisory.id !== id),
+            }, { transaction });
+          }),
+        );
 
-      await this.PostAdvisoryModel.destroy({
-        where: {
-          advisoryId: id,
-        },
-      });
-
+        await this.PostAdvisoryModel.destroy({
+          where: {
+            advisoryId: id,
+          },
+        });
+      }
       await entity.destroy(id, { transaction });
 
       await transaction.commit();

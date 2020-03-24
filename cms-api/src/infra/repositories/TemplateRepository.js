@@ -24,7 +24,7 @@ class TemplateRepository extends BaseRepository {
     // set keyword
     if ('keyword' in data && data.keyword) {
       const keyword = data.keyword.toLowerCase();
-      
+
       args.where[Op.or] = [
         Sequelize.where(
           Sequelize.fn('lower', Sequelize.col('name')),

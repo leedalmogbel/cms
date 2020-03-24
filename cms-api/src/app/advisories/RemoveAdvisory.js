@@ -39,7 +39,7 @@ class RemoveAdvisory extends Operation {
 
       await this.AdvisoryRepository.moveToBin(ids, entity.result);
     } else {
-      ids.map(async (id) => {
+      ids.forEach(async (id) => {
         try {
           await this.AdvisoryRepository.getById(id);
         } catch (error) {
@@ -59,17 +59,7 @@ class RemoveAdvisory extends Operation {
           return this.emit(VALIDATION_ERROR, error);
         }
 
-        if (valid) {
-          await this.AdvisoryRepository.moveToBin(id, entity.result);
-        } else {
-          id = {
-            id,
-            message,
-            valid,
-          };
-        }
-
-        return id;
+        await this.AdvisoryRepository.moveToBin(id, entity.result);
       });
     }
 
