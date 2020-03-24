@@ -86,7 +86,7 @@ class RecallPost extends Operation {
           },
         });
       }
-      console.log('POSTTtTTTT',post)
+
       let user;
       user = {
         firstName: 'PWM',
@@ -96,6 +96,11 @@ class RecallPost extends Operation {
         user = await this.UserRepository.getUserById(post.userId);
         user = user.toJSON();
       }
+
+      post = {
+        ...post,
+        CurrentUser: user,
+      };
 
       await this.HistoryRepository.add({
         parentId: post.id,
