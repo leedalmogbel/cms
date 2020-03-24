@@ -87,15 +87,19 @@ class RecallPost extends Operation {
         });
       }
 
-      let user = await this.UserRepository.getUserById(post.userId);
-      user = user.toJSON();
+      let user;
+      user = 'PMW MODERATOR';
+      if (data.userId !== null) {
+        user = await this.UserRepository.getUserById(data.userId);
+        user = user.toJSON();
+      }
 
       post = {
         ...post,
         CurrentUser: user,
       };
       await this.HistoryRepository.add({
-        parentId: id,
+        parentId: data.id,
         type: 'post',
         meta: post,
       });
