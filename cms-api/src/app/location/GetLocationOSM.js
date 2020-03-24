@@ -7,17 +7,42 @@ class GetLocationOSM extends Operation {
   }
 
   async execute(placeId, address) {
-    const osmResponse = await this.httpClient.post(process.env.OSM_AUTOSUGGEST_ENDPOINT, {
+    const url = `${process.env.OSM_AUTOSUGGEST_ENDPOINT}?search_type=dfs_query_then_fetch`;
+    const osmResponse = await this.httpClient.post(url, {
       size: 20,
       query: {
         multi_match: {
           fields: ['complete_name', 'name'],
           minimum_should_match: '100%',
           query: address,
-          // search_type: 'dfs_query_then_fetch',
-          // type: 'phrase',
         },
       },
+      sort: [{
+        _script: {
+          type: 'number',
+          script: {
+            lang: 'painless',
+            inline: "if(params.scores.containsKey(doc['location_level.keyword'].value)) { return params.scores[doc['location_level.keyword'].value];} return 10;",
+            params: {
+              scores: {
+                Country: 1,
+                'Island Group': 2,
+                'Mega Region': 3,
+                Region: 4,
+                Province: 5,
+                Municipality: 6,
+                District: 7,
+                Barangay: 8,
+                Exact: 9,
+              },
+            },
+          },
+          order: 'asc',
+        },
+      },
+      '_score',
+      'complete_name.keyword',
+      ],
     });
 
     if (osmResponse && 'hits' in osmResponse) {
