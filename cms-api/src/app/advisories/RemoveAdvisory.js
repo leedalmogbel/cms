@@ -59,6 +59,7 @@ class RemoveAdvisory extends Operation {
         try {
           entity = await this.AdvisoryRepository.getAttachedPosts(id);
 
+          console.log('ENTITIYADV', entity)
           if (entity.published.length) {
             const message = 'Advisory is attached to a published post';
             return this.emit(
