@@ -11,7 +11,9 @@ class RemoveAdvisory extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
-    let res;
+    let entity;
+    let valid = true;
+    let message;
 
     if (typeof ids === 'number') {
       try {
@@ -21,7 +23,6 @@ class RemoveAdvisory extends Operation {
         return this.emit(NOT_FOUND, error);
       }
 
-      let entity;
       try {
         entity = await this.AdvisoryRepository.getAttachedPost(ids);
 
@@ -37,49 +38,48 @@ class RemoveAdvisory extends Operation {
       }
 
       await this.AdvisoryRepository.moveToBin(ids, entity.result);
-
-      try {
-        this.emit(SUCCESS, {
-          results: { ids },
-          meta: {},
-        });
-      } catch (error) {
-        this.emit(ERROR, error);
-      }
     } else {
-      ids.forEach(async (id) => {
+      ids.map(async (id) => {
         try {
           await this.AdvisoryRepository.getById(id);
         } catch (error) {
           error.message = 'Advisory not found';
           return this.emit(NOT_FOUND, error);
         }
-
-        let entity;
         try {
           entity = await this.AdvisoryRepository.getAttachedPosts(id);
 
-          console.log('ENTITIYADV', entity)
-          if (entity.published.length) {
-            const message = 'Advisory is attached to a published post';
-            return this.emit(
-              VALIDATION_ERROR, message,
-            );
+          if (entity.published.length && entity.published.length) {
+            message = 'Advisory is attached to a published post';
+          } else {
+            message = 'error';
+            valid = false;
           }
         } catch (error) {
           return this.emit(VALIDATION_ERROR, error);
         }
 
-        await this.AdvisoryRepository.moveToBin(id, entity.result);
-        try {
-          this.emit(SUCCESS, {
-            results: { ids },
-            meta: {},
-          });
-        } catch (error) {
-          this.emit(ERROR, error);
+        if (valid) {
+          await this.AdvisoryRepository.moveToBin(id, entity.result);
+        } else {
+          id = {
+            id,
+            message,
+            valid,
+          };
         }
+
+        return id;
       });
+    }
+
+    try {
+      this.emit(SUCCESS, {
+        results: { ids },
+        meta: {},
+      });
+    } catch (error) {
+      this.emit(ERROR, error);
     }
   }
 }

@@ -143,7 +143,6 @@ class AdvisoriesController extends BaseController {
           .json(result);
       })
       .on(VALIDATION_ERROR, (error) => {
-        console.log(error)
         res.status(Status.BAD_REQUEST).json({
           message: error.message,
         });
