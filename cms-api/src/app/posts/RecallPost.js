@@ -92,7 +92,6 @@ class RecallPost extends Operation {
         ...post,
         CurrentUser: user,
       };
-
       await this.HistoryRepository.add({
         parentId: id,
         type: 'post',
