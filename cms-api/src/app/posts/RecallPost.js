@@ -92,8 +92,8 @@ class RecallPost extends Operation {
         firstName: 'PWM',
         lastName: 'Moderator',
       };
-      if (data.userId !== null) {
-        user = await this.UserRepository.getUserById(data.userId);
+      if (post.userId !== null) {
+        user = await this.UserRepository.getUserById(post.userId);
         user = user.toJSON();
       }
 
@@ -103,7 +103,7 @@ class RecallPost extends Operation {
       };
 
       await this.HistoryRepository.add({
-        parentId: data.id,
+        parentId: post.id,
         type: 'post',
         meta: post,
       });
