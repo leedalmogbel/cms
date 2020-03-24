@@ -4,6 +4,7 @@ const Template = attributes({
   // Add atttributes here
   id: Number,
   userId: Number,
+  modifiedBy: Number,
   category: String,
   subCategory: String,
   name: String,

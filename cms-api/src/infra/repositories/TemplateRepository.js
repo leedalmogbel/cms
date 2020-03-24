@@ -19,34 +19,28 @@ class TemplateRepository extends BaseRepository {
       limit: 20,
     };
 
-    let order = [['updatedAt', 'DESC']];
+    const order = [['updatedAt', 'DESC']];
 
     // set keyword
-    if ('keyword' in data
-      && data.keyword) {
-      if ('ids' in data) {
-        args.where = {
-          id: data.ids,
-        };
-      } else {
-        data.keyword = data.keyword.toLowerCase();
-        args.where = {
-          [Op.or]: [
-            Sequelize.where(
-              Sequelize.fn('lower', Sequelize.col('title')),
-              {
-                [Op.like]: `%${data.keyword}%`,
-              },
-            ),
-            Sequelize.where(
-              Sequelize.fn('lower', Sequelize.col('content')),
-              {
-                [Op.like]: `%${data.keyword}%`,
-              },
-            ),
-          ],
-        };
-      }
+    if ('keyword' in data && data.keyword) {
+      args.where[Op.or] = [
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('title')),
+          {
+            [Op.like]: `%${data.keyword.toLowerCase()}%`,
+          },
+        ),
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('content')),
+          {
+            [Op.like]: `%${data.keyword.toLowerCase()}%`,
+          },
+        ),
+      ];
+    }
+
+    if ('ids' in data) {
+      args.where.id = data.ids;
     }
 
     // set location
@@ -73,11 +67,6 @@ class TemplateRepository extends BaseRepository {
       args.limit = Number(data.limit);
     }
 
-    if ('order' in data) {
-      // customized sorting via date
-      order = [['publishedAt', data.order.publishedAt]];
-    }
-
     args.order = order;
 
     return args;
@@ -90,6 +79,13 @@ class TemplateRepository extends BaseRepository {
         {
           model: this.UserModel,
           as: 'user',
+          attributes: {
+            exclude: ['password'],
+          },
+        },
+        {
+          model: this.UserModel,
+          as: 'userModified',
           attributes: {
             exclude: ['password'],
           },

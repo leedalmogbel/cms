@@ -10,6 +10,7 @@ module.exports = {
         type: DataTypes.INTEGER,
       },
       userId: DataTypes.INTEGER,
+      modifiedBy: DataTypes.INTEGER,
       category: DataTypes.STRING,
       subCategory: DataTypes.STRING,
       name: DataTypes.STRING,
@@ -41,6 +42,11 @@ module.exports = {
       TemplateModel.belongsTo(datasource.models.UserModel, {
         foreignKey: 'userId',
         as: 'user',
+      });
+
+      TemplateModel.belongsTo(datasource.models.UserModel, {
+        foreignKey: 'modifiedBy',
+        as: 'userModified',
       });
     };
 
