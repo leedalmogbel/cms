@@ -88,7 +88,10 @@ class RecallPost extends Operation {
       }
 
       let user;
-      user = 'PMW MODERATOR';
+      user = {
+        firstName: 'PWM',
+        lastName: 'Moderator',
+      };
       if (data.userId !== null) {
         user = await this.UserRepository.getUserById(data.userId);
         user = user.toJSON();
@@ -98,6 +101,7 @@ class RecallPost extends Operation {
         ...post,
         CurrentUser: user,
       };
+
       await this.HistoryRepository.add({
         parentId: data.id,
         type: 'post',
