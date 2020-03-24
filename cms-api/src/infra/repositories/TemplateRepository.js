@@ -39,6 +39,24 @@ class TemplateRepository extends BaseRepository {
           },
         ),
         Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('title')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('content')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+        Sequelize.where(
+          Sequelize.fn('lower', Sequelize.col('source')),
+          {
+            [Op.like]: `%${keyword}%`,
+          },
+        ),
+        Sequelize.where(
           Sequelize.fn('lower', Sequelize.json('tagsAdded')),
           {
             [Op.like]: `%${keyword}%`,
