@@ -68,7 +68,7 @@ class RecallPost extends Operation {
         },
       };
 
-      await this.PostRepository.update(post.id, payload);
+      let updatedPost = await this.PostRepository.update(post.id, payload);
 
       if (action === 'cms') {
         await this.pmsIntegrate(postId, data);
@@ -98,16 +98,16 @@ class RecallPost extends Operation {
         user = user.toJSON();
       }
 
-      post = post.toJSON();
-      post = {
-        ...post,
+      updatedPost = updatedPost.toJSON();
+      updatedPost = {
+        ...updatedPost,
         CurrentUser: user,
       };
 
       const log = await this.HistoryRepository.add({
         parentId: post.id,
         type: 'post',
-        meta: post,
+        meta: updatedPost,
       });
 
       console.log(log)
