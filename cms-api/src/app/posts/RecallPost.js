@@ -92,7 +92,7 @@ class RecallPost extends Operation {
         firstName: 'PWM',
         lastName: 'Moderator',
       };
-      console.log(post)
+
       if (post.userId !== null) {
         user = await this.UserRepository.getUserById(post.userId);
         user = user.toJSON();
@@ -110,7 +110,6 @@ class RecallPost extends Operation {
         meta: updatedPost,
       });
 
-      console.log(log)
       this.emit(SUCCESS, {
         results: { id },
         message: 'Post successfully recalled.',
