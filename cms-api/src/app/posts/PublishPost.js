@@ -49,22 +49,22 @@ class PublishPost extends Operation {
         };
       }
 
-      let user = await this.UserRepository.getUserById(data.userId);
-      user = user.toJSON();
+      // let user = await this.UserRepository.getUserById(data.userId);
+      // user = user.toJSON();
 
-      let res = await this.publish(id, data);
-      if (user) {
-        res = {
-          ...res,
-          CurrentUser: user,
-        };
-      }
+      const res = await this.publish(id, data);
+      // if (user) {
+      //   res = {
+      //     ...res,
+      //     CurrentUser: user,
+      //   };
+      // }
 
-      const log = await this.HistoryRepository.add({
-        parentId: id,
-        type: 'post',
-        meta: res,
-      });
+      // const log = await this.HistoryRepository.add({
+      //   parentId: id,
+      //   type: 'post',
+      //   meta: res,
+      // });
 
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
@@ -112,22 +112,22 @@ class PublishPost extends Operation {
           isGeofence,
         };
 
-        let user = await this.UserRepository.getUserById(data.userId);
-        user = user.toJSON();
+        // let user = await this.UserRepository.getUserById(data.userId);
+        // user = user.toJSON();
 
-        let res = await this.publish(id, data);
-        if (user) {
-          res = {
-            ...res,
-            CurrentUser: user,
-          };
-        }
+        const res = await this.publish(id, data);
+        // if (user) {
+        //   res = {
+        //     ...res,
+        //     CurrentUser: user,
+        //   };
+        // }
 
-        const log = await this.HistoryRepository.add({
-          parentId: id,
-          type: 'post',
-          meta: res,
-        });
+        // const log = await this.HistoryRepository.add({
+        //   parentId: id,
+        //   type: 'post',
+        //   meta: res,
+        // });
 
         return res.id;
       }),
