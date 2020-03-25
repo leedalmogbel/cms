@@ -17,10 +17,14 @@ module.exports = async (req, res, next) => {
       const identity = identities[0];
 
       const { userId } = identity;
-      if (!userId) next();
+      if (!userId) {
+        return next();
+      }
 
       const user = await UserRepository.getByEmail(userId);
-      if (!user) next();
+      if (!user) {
+        return next();
+      }
 
       // if user exists add session to req
       req.session = user.toJSON();

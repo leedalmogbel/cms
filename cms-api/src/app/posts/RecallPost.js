@@ -55,8 +55,16 @@ class RecallPost extends Operation {
 
     try {
       const recalledAt = new Date().toISOString();
-      const pmwMod = 'PMW Moderator';
       const { postId } = post;
+
+      // format name
+      let name = 'name' in data ? data.name : null;
+      const firstName = 'firstName' in data ? data.firstName : 'PMW';
+      const lastName = 'lastName' in data ? data.lastName : 'Moderator';
+
+      if (!('userId' in data) || !data.userId) {
+        name = `${firstName} ${lastName}`;
+      }
 
       const payload = {
         status: 'recalled',
@@ -64,7 +72,7 @@ class RecallPost extends Operation {
         recall: {
           ...data,
           userId: 'userId' in data ? data.userId : null,
-          name: 'name' in data ? data.name : pmwMod,
+          name,
         },
       };
 
@@ -78,19 +86,19 @@ class RecallPost extends Operation {
       if (action === 'pmw') {
         await this.notifyUsers({
           type: 'NOTIFICATION',
-          message: `${pmwMod} recalled a post ${post.title}`,
+          message: `${name} recalled a post ${post.title}`,
           meta: {
             id: post.id,
             postId,
-            name: pmwMod,
+            name,
           },
         });
       }
 
       let user;
       user = {
-        firstName: 'PWM',
-        lastName: 'Moderator',
+        firstName,
+        lastName,
       };
 
       if (post.userId !== null) {
@@ -104,7 +112,7 @@ class RecallPost extends Operation {
         CurrentUser: user,
       };
 
-      const log = await this.HistoryRepository.add({
+      await this.HistoryRepository.add({
         parentId: post.id,
         type: 'post',
         meta: updatedPost,
