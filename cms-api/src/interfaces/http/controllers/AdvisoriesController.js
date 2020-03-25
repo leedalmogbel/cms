@@ -133,7 +133,7 @@ class AdvisoriesController extends BaseController {
   delete(req, res, next) {
     const { operation } = req;
     const {
-      SUCCESS, ERROR, NOT_FOUND, VALIDATION_ERROR
+      SUCCESS, ERROR, NOT_FOUND, VALIDATION_ERROR,
     } = operation.events;
 
     operation
@@ -154,7 +154,7 @@ class AdvisoriesController extends BaseController {
       })
       .on(ERROR, next);
 
-    operation.execute(req.body.id);
+    operation.execute(req.body);
   }
 }
 

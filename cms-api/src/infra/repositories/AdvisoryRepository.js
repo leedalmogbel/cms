@@ -222,7 +222,7 @@ class AdvisoryRepository extends BaseRepository {
         meta: entity,
       }, { transaction });
 
-      if (Array.isArray(posts) && posts.length) {
+      if (typeof posts !== 'undefined') {
         await Promise.all(
           posts.map(async (post) => {
             await post.update({
@@ -237,6 +237,7 @@ class AdvisoryRepository extends BaseRepository {
           },
         });
       }
+
       await entity.destroy(id, { transaction });
 
       await transaction.commit();

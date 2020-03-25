@@ -6,25 +6,28 @@ class RemoveAdvisory extends Operation {
     this.AdvisoryRepository = AdvisoryRepository;
   }
 
-  async execute(ids) {
+  async execute(args) {
     const {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
+
+    const advisoryIds = args.id;
+
 
     let entity;
     let valid = true;
     let message;
 
-    if (typeof ids === 'number') {
+    if (typeof advisoryIds === 'number') {
       try {
-        await this.AdvisoryRepository.getById(ids);
+        await this.AdvisoryRepository.getById(advisoryIds);
       } catch (error) {
         error.message = 'Advisory not found';
         return this.emit(NOT_FOUND, error);
       }
 
       try {
-        entity = await this.AdvisoryRepository.getAttachedPost(ids);
+        entity = await this.AdvisoryRepository.getAttachedPost(advisoryIds);
 
         if (entity.published.length) {
           return this.emit(
@@ -37,37 +40,35 @@ class RemoveAdvisory extends Operation {
         return this.emit(VALIDATION_ERROR, error);
       }
 
-      await this.AdvisoryRepository.moveToBin(ids, entity.result);
+      await this.AdvisoryRepository.moveToBin(advisoryIds, entity.result);
     } else {
-      Promise.all(
-        ids.map(async (id) => {
-          try {
-            await this.AdvisoryRepository.getById(id);
-          } catch (error) {
-            error.message = 'Advisory not found';
-            return this.emit(NOT_FOUND, error);
-          }
-          try {
-            entity = await this.AdvisoryRepository.getAttachedPosts(id);
+      advisoryIds.map(async (id) => {
+        try {
+          await this.AdvisoryRepository.getById(id);
+        } catch (error) {
+          error.message = 'Advisory not found';
+          return this.emit(NOT_FOUND, error);
+        }
+        try {
+          entity = await this.AdvisoryRepository.getAttachedPosts(id);
 
-            if (entity.published.length && entity.published.length) {
-              message = 'Advisory is attached to a published post';
-            } else {
-              message = 'error';
-              valid = false;
-            }
-          } catch (error) {
-            return this.emit(VALIDATION_ERROR, error);
+          if (entity.published.length && entity.published.length) {
+            message = 'Advisory is attached to a published post';
+          } else {
+            message = 'error';
+            valid = false;
           }
+        } catch (error) {
+          return this.emit(VALIDATION_ERROR, error);
+        }
 
-          await this.AdvisoryRepository.moveToBin(id, entity.result);
-        }),
-      );
+        await this.AdvisoryRepository.moveToBin(id, entity.result);
+      });
     }
 
     try {
       this.emit(SUCCESS, {
-        results: { ids },
+        results: { advisoryIds },
         meta: {},
       });
     } catch (error) {
