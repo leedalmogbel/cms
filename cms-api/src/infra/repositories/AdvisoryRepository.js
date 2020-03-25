@@ -250,6 +250,39 @@ class AdvisoryRepository extends BaseRepository {
     }
   }
 
+  async moveToRecyleBin(advisoryId, posts) {
+    const advisory = await this.getAdvisoryById(advisoryId);
+
+    try {
+      const recycleAdvisoryEntry = await this.RecycleBinModel.create({
+        userId: advisory.userId,
+        type: 'advisory',
+        meta: advisory,
+      });
+
+      if (typeof posts !== 'undefined') {
+        await Promise.all(
+          posts.map(async (post) => {
+            await post.update({
+              advisories: post.advisories.filter((adv) => adv.id !== advisoryId),
+            });
+          }),
+        );
+
+        await this.PostAdvisoryModel.destroy({
+          where: {
+            advisoryId,
+          },
+        });
+      }
+
+      await advisory.destroy(advisoryId);
+      return recycleAdvisoryEntry;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async getAttachedPosts(advisoryId) {
     const postAdvisory = await this.PostAdvisoryModel.findAll({
       where: {

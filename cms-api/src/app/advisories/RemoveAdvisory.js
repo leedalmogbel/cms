@@ -41,28 +41,33 @@ class RemoveAdvisory extends Operation {
       }
 
       await this.AdvisoryRepository.moveToBin(advisoryIds, entity.result);
-    } else {
+    }
+
+    if (Array.isArray(advisoryIds)) {
       advisoryIds.map(async (id) => {
         try {
           await this.AdvisoryRepository.getById(id);
         } catch (error) {
-          error.message = 'Advisory not found';
-          return this.emit(NOT_FOUND, error);
+          return this.emit(
+            NOT_FOUND,
+            new Error('Advisory not found'),
+          );
         }
+
         try {
           entity = await this.AdvisoryRepository.getAttachedPosts(id);
 
-          if (entity.published.length && entity.published.length) {
-            message = 'Advisory is attached to a published post';
-          } else {
-            message = 'error';
-            valid = false;
+          if (entity.published.length) {
+            return this.emit(
+              VALIDATION_ERROR,
+              new Error('Advisory is attached to a published post'),
+            );
           }
         } catch (error) {
           return this.emit(VALIDATION_ERROR, error);
         }
 
-        await this.AdvisoryRepository.moveToBin(id, entity.result);
+        await this.AdvisoryRepository.moveToRecyleBin(id, entity.result);
       });
     }
 
