@@ -60,7 +60,7 @@ class PublishPost extends Operation {
         };
       }
 
-      const log = await this.HistoryRepository.add({
+      await this.HistoryRepository.add({
         parentId: id,
         type: 'post',
         meta: res,
@@ -90,10 +90,10 @@ class PublishPost extends Operation {
         const { placeId, isGeofence, address } = loc;
         let { postId } = post;
 
-        id = 'id' in loc ? loc.id : null;
+        id = 'id' in loc && loc.id ? loc.id : null;
 
         // create initial post for succeeding locations
-        if (!id) {
+        if (!id || id === null) {
           postId = await this.PostUtils.generateUid();
           const payload = new Post({
             status: 'initial',
@@ -112,10 +112,11 @@ class PublishPost extends Operation {
           isGeofence,
         };
 
-        let user = await this.UserRepository.getUserById(data.userId);
-        user = user.toJSON();
-
         let res = await this.publish(id, data);
+
+        // get user for history logging
+        let user = await this.UserRepository.getUserById(res.userId);
+        user = user.toJSON();
 
         if (user) {
           res = {
@@ -124,7 +125,7 @@ class PublishPost extends Operation {
           };
         }
 
-        const log = await this.HistoryRepository.add({
+        await this.HistoryRepository.add({
           parentId: id,
           type: 'post',
           meta: res,
