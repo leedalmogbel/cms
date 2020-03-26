@@ -67,7 +67,7 @@ class RemoveAdvisory extends Operation {
           return this.emit(VALIDATION_ERROR, error);
         }
 
-        await this.AdvisoryRepository.moveToRecyleBin(id, entity.result);
+        await this.AdvisoryRepository.moveToRecyleBin(id, entity.results);
       });
     }
 

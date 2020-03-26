@@ -263,8 +263,11 @@ class AdvisoryRepository extends BaseRepository {
       if (typeof posts !== 'undefined') {
         await Promise.all(
           posts.map(async (post) => {
+            console.log(post.id)
             await post.update({
-              advisories: post.advisories.filter((adv) => adv.id !== advisoryId),
+              advisories: post.advisories.filter(
+                (adv) => adv.id !== advisoryId,
+              ),
             });
           }),
         );
