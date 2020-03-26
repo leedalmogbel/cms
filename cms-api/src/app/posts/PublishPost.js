@@ -126,7 +126,7 @@ class PublishPost extends Operation {
         }
 
         await this.HistoryRepository.add({
-          parentId: id,
+          parentId: res.id,
           type: 'post',
           meta: res,
         });
