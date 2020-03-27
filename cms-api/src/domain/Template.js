@@ -21,6 +21,7 @@ const Template = attributes({
   expiredAt: Date,
   publishedAt: Date,
   isActive: Boolean,
+  isEmbargo: Boolean,
 })(class Template {
   // Add validation functions below
   // e.g.:
