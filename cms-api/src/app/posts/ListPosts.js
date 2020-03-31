@@ -1,11 +1,12 @@
 const { Operation } = require('../../infra/core/core');
 
 class ListPosts extends Operation {
-  constructor({ PostRepository, PostTagRepository }) {
+  constructor({ PostRepository, PostTagRepository, HistoryRepository }) {
     super();
 
     this.PostRepository = PostRepository;
     this.PostTagRepository = PostTagRepository;
+    this.HistoryRepository = HistoryRepository;
   }
 
   async execute(args, session) {
@@ -47,7 +48,6 @@ class ListPosts extends Operation {
         if (expiredAt !== null) {
           post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
         }
-
 
         if (isLocked && lockUser && session) {
           if (parseInt(lockUser.userId, 10) === session.id) {

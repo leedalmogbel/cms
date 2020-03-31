@@ -2,11 +2,17 @@ const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class PublishPost extends Operation {
-  constructor({ PostRepository, UserRepository, PostUtils }) {
+  constructor({
+    PostRepository,
+    UserRepository,
+    PostUtils,
+    HistoryRepository,
+  }) {
     super();
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
     this.PostUtils = PostUtils;
+    this.HistoryRepository = HistoryRepository;
   }
 
   async execute(id, data) {
@@ -43,7 +49,23 @@ class PublishPost extends Operation {
         };
       }
 
-      const res = await this.publish(id, data);
+      let user = await this.UserRepository.getUserById(data.userId);
+      user = user.toJSON();
+
+      let res = await this.publish(id, data);
+      if (user) {
+        res = {
+          ...res,
+          CurrentUser: user,
+        };
+      }
+
+      await this.HistoryRepository.add({
+        parentId: id,
+        type: 'post',
+        meta: res,
+      });
+
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
         meta: {},
@@ -68,10 +90,10 @@ class PublishPost extends Operation {
         const { placeId, isGeofence, address } = loc;
         let { postId } = post;
 
-        id = 'id' in loc ? loc.id : null;
+        id = 'id' in loc && loc.id ? loc.id : null;
 
         // create initial post for succeeding locations
-        if (!id) {
+        if (!id || id === null) {
           postId = await this.PostUtils.generateUid();
           const payload = new Post({
             status: 'initial',
@@ -90,7 +112,25 @@ class PublishPost extends Operation {
           isGeofence,
         };
 
-        const res = await this.publish(id, data);
+        let res = await this.publish(id, data);
+
+        // get user for history logging
+        let user = await this.UserRepository.getUserById(res.userId);
+        user = user.toJSON();
+
+        if (user) {
+          res = {
+            ...res,
+            CurrentUser: user,
+          };
+        }
+
+        await this.HistoryRepository.add({
+          parentId: res.id,
+          type: 'post',
+          meta: res,
+        });
+
         return res.id;
       }),
     ).then((ids) => {

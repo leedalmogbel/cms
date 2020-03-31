@@ -6,7 +6,7 @@ const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
   constructor({
-    PostModel, UserModel, RecycleBinModel, PostTagModel, PostAdvisoryRepository,
+    PostModel, UserModel, RecycleBinModel, PostTagModel, PostAdvisoryRepository, PostAdvisoryModel,
   }) {
     super(PostModel);
 
@@ -14,6 +14,7 @@ class PostRepository extends BaseRepository {
     this.RecycleBinModel = RecycleBinModel;
     this.PostTagModel = PostTagModel;
     this.PostAdvisoryRepository = PostAdvisoryRepository;
+    this.PostAdvisoryModel = PostAdvisoryModel;
   }
 
   buildListArgs(data = {}) {
@@ -212,7 +213,7 @@ class PostRepository extends BaseRepository {
     const postAdvisories = await this.PostAdvisoryRepository.getPostAdvisories(postId);
 
     postAdvisories.map(async (pAdv) => {
-      await this.PostAdvisoryRepository.destroy({
+      await this.PostAdvisoryModel.destroy({
         where: {
           id: pAdv.id,
         },

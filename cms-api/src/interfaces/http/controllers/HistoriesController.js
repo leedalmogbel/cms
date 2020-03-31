@@ -4,19 +4,15 @@ const { Router } = require('express');
 const Status = require('http-status');
 const { BaseController } = require('../../../infra/core/core');
 
-class AdvisoriesController extends BaseController {
+class HistoriesController extends BaseController {
   constructor() {
     super();
     const router = Router();
 
-    router.get('/', this.injector('ListAdvisories'), this.index);
-    router.get('/:id', this.injector('ShowAdvisory'), this.show);
-    router.post('/', this.injector('CreateInitialAdvisory'), this.create);
-    router.put('/:id', this.injector('SaveAdvisory'), this.update);
-    router.post('/:id/publish', this.injector('PublishAdvisory'), this.update);
-    router.post('/:id/url', this.injector('AttachmentUrlAdvisory'), this.attach);
-    router.post('/:id/geturl', this.injector('GetS3Url'), this.attach);
-    router.delete('/', this.injector('RemoveAdvisory'), this.delete);
+    router.get('/', this.injector('ListHistories'), this.index);
+    router.get('/:id', this.injector('ShowHistory'), this.show);
+    router.post('/', this.injector('CreateHistory'), this.create);
+    router.delete('/:id', this.injector('DeleteTag'), this.delete);
 
     return router;
   }
@@ -103,49 +99,15 @@ class AdvisoriesController extends BaseController {
     operation.execute(Number(req.params.id), req.body);
   }
 
-  attach(req, res, next) {
-    const { operation } = req;
-    const {
-      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
-    } = operation.events;
-
-    operation
-      .on(SUCCESS, (result) => {
-        res
-          .status(Status.ACCEPTED)
-          .json(result);
-      })
-      .on(VALIDATION_ERROR, (error) => {
-        res.status(Status.BAD_REQUEST).json({
-          message: error.message,
-        });
-      })
-      .on(NOT_FOUND, (error) => {
-        res.status(Status.NOT_FOUND).json({
-          message: error.message,
-        });
-      })
-      .on(ERROR, next);
-
-    operation.execute(Number(req.params.id), req.body);
-  }
-
   delete(req, res, next) {
     const { operation } = req;
-    const {
-      SUCCESS, ERROR, NOT_FOUND, VALIDATION_ERROR,
-    } = operation.events;
+    const { SUCCESS, ERROR, NOT_FOUND } = operation.events;
 
     operation
       .on(SUCCESS, (result) => {
         res
           .status(Status.ACCEPTED)
           .json(result);
-      })
-      .on(VALIDATION_ERROR, (error) => {
-        res.status(Status.BAD_REQUEST).json({
-          message: error.message,
-        });
       })
       .on(NOT_FOUND, (error) => {
         res.status(Status.NOT_FOUND).json({
@@ -154,8 +116,8 @@ class AdvisoriesController extends BaseController {
       })
       .on(ERROR, next);
 
-    operation.execute(req.body);
+    operation.execute(Number(req.params.id));
   }
 }
 
-module.exports = AdvisoriesController;
+module.exports = HistoriesController;

@@ -205,5 +205,14 @@
     "firstName": "David",
     "lastName": "Tamayo",
     "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "karoxas",
+    "email": "karoxas@abs-cbn.com",
+    "password": "",
+    "firstName": "Kathleen",
+    "lastName": "Roxas",
+    "active": 1
   }
 ]

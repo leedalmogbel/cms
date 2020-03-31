@@ -11,6 +11,7 @@ module.exports = {
       },
       userId: DataTypes.INTEGER,
       message: DataTypes.STRING,
+      type: DataTypes.STRING,
       meta: DataTypes.JSON,
       isRead: {
         type: DataTypes.BOOLEAN,

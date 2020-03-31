@@ -171,10 +171,17 @@ class AdvisoryRepository extends BaseRepository {
               attributes: [
                 'id',
                 'postId',
+                'category',
                 'title',
+                'content',
+                'source',
                 'status',
+                'scheduledAt',
+                'recalledAt',
                 'createdAt',
                 'updatedAt',
+                'publishedAt',
+                'locations',
               ],
             },
           ],
@@ -205,7 +212,7 @@ class AdvisoryRepository extends BaseRepository {
   }
 
   async moveToBin(id, posts) {
-    const entity = await this._getById(id);
+    const entity = await this.getAdvisoryById(id);
     const transaction = await this.model.sequelize.transaction();
 
     try {
@@ -215,19 +222,21 @@ class AdvisoryRepository extends BaseRepository {
         meta: entity,
       }, { transaction });
 
-      await Promise.all(
-        posts.map(async (post) => {
-          await post.update({
-            advisories: post.advisories.filter((advisory) => advisory.id != id),
-          }, { transaction });
-        }),
-      );
+      if (typeof posts !== 'undefined') {
+        await Promise.all(
+          posts.map(async (post) => {
+            await post.update({
+              advisories: post.advisories.filter((advisory) => advisory.id !== id),
+            }, { transaction });
+          }),
+        );
 
-      await this.PostAdvisoryModel.destroy({
-        where: {
-          advisoryId: id,
-        },
-      });
+        await this.PostAdvisoryModel.destroy({
+          where: {
+            advisoryId: id,
+          },
+        });
+      }
 
       await entity.destroy(id, { transaction });
 
@@ -239,6 +248,65 @@ class AdvisoryRepository extends BaseRepository {
 
       throw error;
     }
+  }
+
+  async moveToRecyleBin(advisoryId, posts) {
+    const advisory = await this.getAdvisoryById(advisoryId);
+
+    try {
+      const recycleAdvisoryEntry = await this.RecycleBinModel.create({
+        userId: advisory.userId,
+        type: 'advisory',
+        meta: advisory,
+      });
+
+      if (typeof posts !== 'undefined') {
+        await Promise.all(
+          posts.map(async (post) => {
+            console.log(post.id)
+            await post.update({
+              advisories: post.advisories.filter(
+                (adv) => adv.id !== advisoryId,
+              ),
+            });
+          }),
+        );
+
+        await this.PostAdvisoryModel.destroy({
+          where: {
+            advisoryId,
+          },
+        });
+      }
+
+      await advisory.destroy(advisoryId);
+      return recycleAdvisoryEntry;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async getAttachedPosts(advisoryId) {
+    const postAdvisory = await this.PostAdvisoryModel.findAll({
+      where: {
+        advisoryId,
+      },
+    });
+
+    const postIds = [...new Set(postAdvisory.map((post) => post.postId))];
+
+    const posts = await this.PostModel.findAll({
+      where: {
+        id: {
+          [Op.in]: postIds,
+        },
+      },
+    });
+
+    return {
+      published: posts.filter((post) => post.status === 'published'),
+      results: posts,
+    };
   }
 
   async getAttachedPost(id) {

@@ -1,18 +1,16 @@
 const { attributes } = require('structure');
 
-const Notification = attributes({
+const History = attributes({
   // Add atttributes here
   id: Number,
-  userId: Number,
-  message: String,
+  parentId: Number,
   type: String,
   meta: Object,
-  isRead: Number,
-  active: Number,
+  isActive: Number,
   createdAt: Date,
   updatedAt: Date,
-})(class Notification {
+})(class History {
 });
 
 
-module.exports = Notification;
+module.exports = History;
