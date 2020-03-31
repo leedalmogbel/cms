@@ -11,6 +11,12 @@ class CreateTemplate extends Operation {
     const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
 
     try {
+      // remove modifiedBy if null
+      const { modifiedBy } = data;
+      if (!modifiedBy || modifiedBy === 'null') {
+        delete data.modifiedBy;
+      }
+    
       const payload = new Template(data);
       const template = await this.TemplateRepository.add(payload);
 
