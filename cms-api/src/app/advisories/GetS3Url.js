@@ -12,8 +12,10 @@ class GetS3Url extends Operation {
 
   async execute(id, args) {
     const { SUCCESS, ERROR } = this.events;
+    const today = new Date().toISOString().slice(0, 10);
 
-    const Key = `Advisory/${id}/${args.fileName}`;
+    const Key = `Advisory/${today}/${id}/${args.fileName}`;
+    // const Key = `${args.directory}/${today}/${id}/${args.fileName}`;
     const { fileType } = args;
 
     const putUrl = await this.putUrl(Key, fileType);
