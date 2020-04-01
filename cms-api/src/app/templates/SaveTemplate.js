@@ -1,4 +1,3 @@
-const Template = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class SaveTemplate extends Operation {
@@ -18,8 +17,14 @@ class SaveTemplate extends Operation {
       error.message = 'Template not found';
       return this.emit(NOT_FOUND, error);
     }
-
+    
     try {
+      // remove modifiedBy if null
+      const { modifiedBy } = data;
+      if (!modifiedBy || modifiedBy === 'null') {
+        delete data.modifiedBy;
+      }
+
       await this.TemplateRepository.update(id, data);
 
       this.emit(SUCCESS, {
