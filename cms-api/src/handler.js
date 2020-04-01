@@ -36,6 +36,11 @@ module.exports.location = async (event, context, callback) => {
   return Container.resolve('BaseLocation').autocomplete(event);
 };
 
+module.exports.export = async (event, context, callback) => {
+  const Container = await getContainer();
+  return Container.resolve('BaseExport').export(event);
+};
+
 module.exports.smartTags = async (event, context, callback) => {
   const res = await httpPost(
     process.env.SMART_TAGS_ENDPOINT,

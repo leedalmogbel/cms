@@ -10,6 +10,7 @@ class PostsController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('ListPosts'), this.index);
+    router.get('/export', this.injector('InvokeExportPosts'), this.index);
     router.get('/:id', this.injector('ShowPost'), this.show);
     router.post('/', this.injector('CreateInitialPost'), this.create);
     router.post('/:id/save', this.injector('SavePost'), this.update);
