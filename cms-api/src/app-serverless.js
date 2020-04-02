@@ -1,5 +1,6 @@
 require('module').Module._initPaths();
 const config = require('config');
+const AWS = require('aws-sdk');
 const awilix = require('awilix');
 const { brew } = require('./infra/core/core');
 
@@ -20,7 +21,27 @@ module.exports.handler = (event, context, callback) => {
     body: event.body,
   });
 
+  const setupDBSecrets = async () => {
+    const client = new AWS.SecretsManager({
+      region: process.env.REGION,
+    });
+
+    const secretValue = await client.getSecretValue({ SecretId: process.env.SECRET_MANAGER_NAME })
+      .promise();
+
+    const {
+      username,
+      password,
+      host,
+    } = JSON.parse(secretValue.SecretString);
+
+    process.env.DB_USERNAME = (typeof username !== 'undefined') ? username : process.env.DB_USERNAME;
+    process.env.DB_PASSWORD = (typeof password !== 'undefined') ? password : process.env.DB_PASSWORD;
+    process.env.DB_HOST = (typeof host !== 'undefined') ? host : process.env.DB_HOST;
+  };
+
   brew(config, async (brewed) => {
+    setupDBSecrets();
     try {
       if (typeof brewed.getServerless === 'function') {
         brewed.container.register({
@@ -29,14 +50,14 @@ module.exports.handler = (event, context, callback) => {
 
         const app = await brewed.getServerless();
         const res = await app(event, context);
-        
+
         res.headers = {
           ...res.headers,
           'strict-transport-security': 'max-age=63072000; includeSubdomains; preload',
           'cache-control': 'no-store',
-          'pragma': 'no-cache'
-        }
-        
+          pragma: 'no-cache',
+        };
+
         callback(null, res);
       }
 
