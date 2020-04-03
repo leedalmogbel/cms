@@ -67,6 +67,7 @@ class GetLocationOSM extends Operation {
         barangay_id = null,
         barangay = null,
         location_level = null,
+        location_level_score = null,
         area_name = null,
         complete_name = null,
         type = null,
@@ -74,6 +75,8 @@ class GetLocationOSM extends Operation {
         name = null,
         street = null,
         suburb = null,
+        district = null,
+        district_id = null,
       } = _source;
 
       // get longitude and latitude
@@ -98,6 +101,7 @@ class GetLocationOSM extends Operation {
         barangayId: barangay_id,
         barangay,
         locationLevel: location_level,
+        locationLevelScore: location_level_score,
         areaName: area_name,
         completeName: complete_name,
         type,
@@ -105,7 +109,8 @@ class GetLocationOSM extends Operation {
         name,
         street,
         suburb,
-        district: '',
+        district,
+        districtId: district_id,
         city: municipality,
         lat: latlng[0],
         lng: latlng[1],
