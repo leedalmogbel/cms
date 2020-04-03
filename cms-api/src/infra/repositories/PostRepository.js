@@ -122,6 +122,14 @@ class PostRepository extends BaseRepository {
       }
     }
 
+    if ('source' in data) {
+      args.where.source = data.source;
+    }
+
+    if ('priorityLevel' in data) {
+      args.where.priorityLevel = data.priorityLevel;
+    }
+
     // offset
     if ('offset' in data) {
       args.offset = Number(data.offset);
