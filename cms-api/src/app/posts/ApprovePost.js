@@ -154,7 +154,7 @@ class ApprovePost extends Operation {
       data.publishedAt = new Date().toISOString();
     }
 
-    if ('scheduledAt' in data) {
+    if (data.status === 'scheduled' && 'scheduledAt' in data) {
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
@@ -165,7 +165,7 @@ class ApprovePost extends Operation {
     let post = await this.PostRepository.getPostById(id);
     post = post.toJSON();
 
-    if (post.scheduledAt) {
+    if (post.status === 'scheduled') {
       return post;
     }
 
