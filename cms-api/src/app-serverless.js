@@ -26,7 +26,7 @@ module.exports.handler = (event, context, callback) => {
       region: process.env.REGION,
     });
 
-    const secretValue = await client.getSecretValue({ SecretId: process.env.SECRET_MANAGER_NAME })
+    const secretValue = await client.getSecretValue({ SecretId: process.env.SECRET_MANAGER_DB })
       .promise();
 
     const {
