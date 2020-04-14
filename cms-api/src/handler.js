@@ -37,9 +37,16 @@ module.exports.location = async (event, context, callback) => {
 };
 
 module.exports.smartTags = async (event, context, callback) => {
+  const { body } = event;
+
+  // add category placeholder if not available
+  if (!('category' in event.body)) {
+    body.category = '';
+  }
+
   const res = await httpPost(
     process.env.SMART_TAGS_ENDPOINT,
-    event.body,
+    body,
   );
 
   return {
