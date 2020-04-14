@@ -40,8 +40,25 @@ module.exports.handler = (event, context, callback) => {
     process.env.DB_HOST = (typeof host !== 'undefined') ? host : process.env.DB_HOST;
   };
 
+  const setupAppSecrets = async () => {
+    const client = new AWS.SecretsManager({
+      region: process.env.REGION,
+    });
+
+    const secretValue = await client.getSecretValue({
+      SecretId: process.env.SECRET_MANAGER_APP,
+    }).promise();
+
+    const {
+      BUCKET_NAME,
+    } = JSON.parse(secretValue.SecretString);
+
+    process.env.BUCKET_NAME = (typeof BUCKET_NAME !== 'undefined') ? BUCKET_NAME : process.env.BUCKET_NAME;
+  };
+
   brew(config, async (brewed) => {
     setupDBSecrets();
+    setupAppSecrets();
     try {
       if (typeof brewed.getServerless === 'function') {
         brewed.container.register({
