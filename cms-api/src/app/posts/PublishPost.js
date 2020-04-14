@@ -158,7 +158,7 @@ class PublishPost extends Operation {
         return 'embargo';
       }
 
-      if (data.scheduledAt && !data.publishedAt) {
+      if (data.scheduledAt && !data.publishedAt && !data.isPublishedImmediately) {
         return 'scheduled';
       }
 
@@ -182,7 +182,7 @@ class PublishPost extends Operation {
       data.publishedAt = new Date().toISOString();
     }
 
-    if ('scheduledAt' in data) {
+    if (data.status === 'scheduled' && 'scheduledAt' in data) {
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
