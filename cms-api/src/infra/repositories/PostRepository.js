@@ -61,14 +61,13 @@ class PostRepository extends BaseRepository {
       }
     }
 
-    // set location
-    if ('location' in data) {
-      if (data.location) {
-        args.where.locationAddress = {
-          [Op.like]:
-            `%${data.location}%`,
-        };
-      }
+    if ('location' in data && data.location) {
+      args.where[Op.and] = Sequelize.where(
+        Sequelize.fn('lower', Sequelize.col('locations')),
+        {
+          [Op.like]: `%${data.location.toLowerCase()}%`,
+        },
+      );
     }
 
     if ('category' in data) {
@@ -77,33 +76,34 @@ class PostRepository extends BaseRepository {
 
     // set date
     if ('date' in data && data.date) {
-      const date = new Date(data.date);
-      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
-      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
+      const fromDate = new Date(data.date.from);
+      const toDate = new Date(data.date.to);
+      const startDate = new Date(fromDate.setHours(0, 0, 0, 0)).toISOString();
+      const endDate = new Date(toDate.setHours(24, 0, 0, 0)).toISOString();
 
-      if ('status' in data && data.status === 'scheduled') {
-        args.where.scheduledAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      } else if ('status' in data && data.status === 'published') {
-        args.where.publishedAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      } else {
-        // default filter
-        args.where.updatedAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      }
+      // if ('status' in data && data.status === 'scheduled') {
+      //   args.where.scheduledAt = {
+      //     [Op.between]: [
+      //       startDate,
+      //       endDate,
+      //     ],
+      //   };
+      // } else if ('status' in data && data.status === 'published') {
+      //   args.where.publishedAt = {
+      //     [Op.between]: [
+      //       startDate,
+      //       endDate,
+      //     ],
+      //   };
+      // } else {
+      // default filter
+      args.where.updatedAt = {
+        [Op.between]: [
+          startDate,
+          endDate,
+        ],
+      };
+      // }
     }
 
     if ('status' in data) {
