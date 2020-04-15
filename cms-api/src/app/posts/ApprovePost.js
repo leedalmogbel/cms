@@ -130,7 +130,7 @@ class ApprovePost extends Operation {
         return 'embargo';
       }
 
-      if (data.scheduledAt && !data.publishedAt) {
+      if (data.scheduledAt && !data.publishedAt && !data.isPublishedImmediately) {
         return 'scheduled';
       }
 
