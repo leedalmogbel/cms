@@ -46,6 +46,7 @@ module.exports.handler = (event, context, callback) => {
     }).promise();
 
     const {
+      DB_NAME,
       COGNITO_POOL_ID,
       COGNITO_AUTHORIZER,
       AWS_ACCOUNT,
@@ -67,6 +68,7 @@ module.exports.handler = (event, context, callback) => {
       CERTIFICATE_NAME,
     } = JSON.parse(secretValue.SecretString);
 
+    process.env.DB_NAME = (typeof DB_NAME !== 'undefined') ? DB_NAME : process.env.DB_NAME;
     process.env.COGNITO_POOL_ID = (typeof COGNITO_POOL_ID !== 'undefined') ? COGNITO_POOL_ID : process.env.COGNITO_POOL_ID;
     process.env.COGNITO_AUTHORIZER = (typeof COGNITO_AUTHORIZER !== 'undefined') ? COGNITO_AUTHORIZER : process.env.COGNITO_AUTHORIZER;
     process.env.AWS_ACCOUNT = (typeof AWS_ACCOUNT !== 'undefined') ? AWS_ACCOUNT : process.env.AWS_ACCOUNT;
@@ -90,7 +92,7 @@ module.exports.handler = (event, context, callback) => {
 
   brew(config, async (brewed) => {
     setupDBSecrets();
-    // setupAppSecrets();
+    setupAppSecrets();
     try {
       if (typeof brewed.getServerless === 'function') {
         brewed.container.register({
