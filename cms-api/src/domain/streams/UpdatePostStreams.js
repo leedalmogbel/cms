@@ -56,9 +56,9 @@ module.exports = (post, oldPost) => {
   } = loc;
 
   const {
-    oldTagsRetained = [[]],
-    oldTagsRemoved = [[]],
-    oldTagsAdded = [[]],
+    tagsRetained: oldTagsRetained = [[]],
+    tagsRemoved: oldTagsRemoved = [[]],
+    tagsAdded: oldTagsAdded = [[]],
   } = oldPost;
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
