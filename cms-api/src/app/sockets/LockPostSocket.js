@@ -243,6 +243,17 @@ class LockPostSocket extends Operation {
       };
     }
 
+    // if post is not locked
+    if (post && !post.isLocked) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Post is not locked to user.',
+        }),
+      };
+    }
+
     // notify current lock user
     await this.send(post.lockUser.connectionId, {
       type: 'BROADCAST_KICK_CONFIRM',
