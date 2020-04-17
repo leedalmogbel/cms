@@ -193,8 +193,7 @@ class LockPostSocket extends Operation {
     await Promise.all(
       sockets.map(async (socket) => {
         // skip same connectionId to prevent sending to self
-        if (socket.connectionId === connectionId
-          || socket.connectionId === currentUser.connectionId) return;
+        if (socket.connectionId === connectionId) return;
 
         await this.send(socket.connectionId, {
           type: 'BROADCAST_LOCK',
