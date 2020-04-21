@@ -30,11 +30,12 @@ module.exports.handler = (event, context, callback) => {
       .promise();
 
     console.log({ db: secretValue, type: typeof secretValue });
+
     const {
       username,
       password,
       host,
-    } = JSON.parse(secretValue.SecretString);
+    } = typeof secretValue === 'object' ? secretValue : JSON.parse(secretValue.SecretString);
 
     process.env.DB_USERNAME = (typeof username !== 'undefined') ? username : process.env.DB_USERNAME;
     process.env.DB_PASSWORD = (typeof password !== 'undefined') ? password : process.env.DB_PASSWORD;
