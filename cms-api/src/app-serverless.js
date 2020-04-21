@@ -44,6 +44,7 @@ module.exports.handler = (event, context, callback) => {
     const secretValue = await client.getSecretValue({
       SecretId: process.env.SECRET_MANAGER_APP,
     }).promise();
+
     const {
       DB_NAME,
       COGNITO_POOL_ID,
