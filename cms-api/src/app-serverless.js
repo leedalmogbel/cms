@@ -10,16 +10,6 @@ const httpClient = require('./infra/http-request');
 
 module.exports.handler = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  console.log({
-    resource: event.resource,
-    path: event.path,
-    httpMethod: event.httpMethod,
-    headers: {
-      Accept: event.headers.Accept,
-      'content-type': event.headers['content-type'],
-    },
-    body: event.body,
-  });
 
   const client = new AWS.SecretsManager({
     region: process.env.REGION,
@@ -29,7 +19,6 @@ module.exports.handler = (event, context, callback) => {
     const secretValue = await client.getSecretValue({ SecretId: process.env.SECRET_MANAGER_DB })
       .promise();
 
-    console.log({ db: secretValue, type: typeof secretValue });
     const {
       username,
       password,
@@ -45,7 +34,7 @@ module.exports.handler = (event, context, callback) => {
     const secretValue = await client.getSecretValue({
       SecretId: process.env.SECRET_MANAGER_APP,
     }).promise();
-    console.log({ app: secretValue, type: typeof secretValue });
+
     const {
       DB_NAME,
       COGNITO_POOL_ID,
