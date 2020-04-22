@@ -36,6 +36,11 @@ module.exports.location = async (event, context, callback) => {
   return Container.resolve('BaseLocation').autocomplete(event);
 };
 
+module.exports.osmLocation = async (event, context, callback) => {
+  const Container = await getContainer();
+  return Container.resolve('OsmAutocompleteProxy').execute(event);
+};
+
 module.exports.smartTags = async (event, context, callback) => {
   const body = JSON.parse(event.body);
 
