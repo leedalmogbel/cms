@@ -11,38 +11,10 @@ class GetLocationOSM extends Operation {
     const osmResponse = await this.httpClient.post(url, {
       size: 20,
       query: {
-        multi_match: {
-          fields: ['complete_name', 'name'],
-          minimum_should_match: '100%',
-          query: address,
-        },
+        ids: {
+          values: [`${placeId}`]
+        }
       },
-      sort: [{
-        _script: {
-          type: 'number',
-          script: {
-            lang: 'painless',
-            inline: "if(params.scores.containsKey(doc['location_level.keyword'].value)) { return params.scores[doc['location_level.keyword'].value];} return 10;",
-            params: {
-              scores: {
-                Country: 1,
-                'Island Group': 2,
-                'Mega Region': 3,
-                Region: 4,
-                Province: 5,
-                Municipality: 6,
-                District: 7,
-                Barangay: 8,
-                Exact: 9,
-              },
-            },
-          },
-          order: 'asc',
-        },
-      },
-      '_score',
-      'complete_name.keyword',
-      ],
     });
 
     if (osmResponse && 'hits' in osmResponse) {
