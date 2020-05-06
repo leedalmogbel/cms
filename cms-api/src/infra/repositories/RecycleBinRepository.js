@@ -7,12 +7,13 @@ const { Op } = Sequelize;
 
 class RecycleBinRepository extends BaseRepository {
   constructor({
-    RecycleBinModel, UserModel, PostModel, PostUtils, PostTagRepository,
+    RecycleBinModel, UserModel, PostModel, PostUtils, PostTagRepository, AdvisoryModel,
   }) {
     super(RecycleBinModel);
 
     this.UserModel = UserModel;
     this.PostModel = PostModel;
+    this.AdvisoryModel = AdvisoryModel;
     this.PostUtils = PostUtils;
     this.PostTagRepository = PostTagRepository;
   }
@@ -133,7 +134,19 @@ class RecycleBinRepository extends BaseRepository {
 
     try {
       if (typeof ids !== 'number') {
-        await Promise.all(posts.map(async (post) => this.restore(post, transaction)));
+        await Promise.all(
+          posts.map(
+            async (post) => {
+              if (post.type === 'post') {
+                this.restore(post, transaction);
+              }
+
+              if (post.type === 'advisory') {
+                this.restoreAdvisory(post, transaction);
+              }
+            },
+          ),
+        );
       } else {
         await this.restore(posts, transaction);
       }
@@ -171,11 +184,24 @@ class RecycleBinRepository extends BaseRepository {
 
       await this.buildTags(post.meta);
     }
-    // else {
-    //  // advisory
-    // }
 
     return post.meta;
+  }
+
+  async restoreAdvisory(advisory, transaction) {
+    await advisory.destroy(advisory.id, { transaction });
+
+    advisory.meta.status = 'draft';
+
+    if (advisory.meta.publishedAt) {
+      advisory.meta.publishedAt = moment(advisory.meta.publishedAt).subtract(8, 'hours');
+    }
+
+    await this.AdvisoryModel.create({
+      ...advisory.meta,
+    }, { transaction });
+
+    await this.buildTags(advisory.meta);
   }
 
   async buildTags(data) {
