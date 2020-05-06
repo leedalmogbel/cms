@@ -12,7 +12,6 @@ class RecycleBinRestore extends Operation {
     } = this.events;
 
     let posts;
-
     try {
       if (typeof data.id !== 'number') {
         posts = await Promise.all(

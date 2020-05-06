@@ -146,7 +146,13 @@ class RecycleBinRepository extends BaseRepository {
           }),
         );
       } else {
-        await this.restore(posts, transaction);
+        if (posts.type === 'post') {
+          await this.restore(posts, transaction);
+        }
+
+        if (posts.type === 'advisory') {
+          await this.restoreAdvisory(posts, transaction);
+        }
       }
 
       await transaction.commit();
@@ -190,6 +196,7 @@ class RecycleBinRepository extends BaseRepository {
     await advisory.destroy(advisory.id, { transaction });
 
     advisory.meta.status = 'draft';
+    delete advisory.meta.id;
 
     if (advisory.meta.publishedAt) {
       advisory.meta.publishedAt = moment(advisory.meta.publishedAt).subtract(8, 'hours');
