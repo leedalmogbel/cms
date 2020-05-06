@@ -136,23 +136,23 @@ class RecycleBinRepository extends BaseRepository {
       if (typeof ids !== 'number') {
         await Promise.all(
           posts.map(async (post) => {
-            if (post.type === 'post') {
+            // if (post.type === 'post') {
               this.restore(post, transaction);
-            }
+            // }
 
-            if (post.type === 'advisory') {
-              this.restoreAdvisory(post, transaction);
-            }
+            // if (post.type === 'advisory') {
+            //   this.restoreAdvisory(post, transaction);
+            // }
           }),
         );
       } else {
-        if (posts.type === 'post') {
+        // if (posts.type === 'post') {
           await this.restore(posts, transaction);
-        }
+        // }
 
-        if (posts.type === 'advisory') {
-          await this.restoreAdvisory(posts, transaction);
-        }
+        // if (posts.type === 'advisory') {
+        //   await this.restoreAdvisory(posts, transaction);
+        // }
       }
 
       await transaction.commit();
