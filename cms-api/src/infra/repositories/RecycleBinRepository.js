@@ -137,11 +137,11 @@ class RecycleBinRepository extends BaseRepository {
         await Promise.all(
           posts.map(async (post) => {
             if (post.type === 'post') {
-              this.restore(post, transaction);
+              return this.restore(post, transaction);
             }
 
             if (post.type === 'advisory') {
-              this.restoreAdvisory(post, transaction);
+              return this.restoreAdvisory(post, transaction);
             }
           }),
         );
