@@ -48,7 +48,7 @@ class RemoveAdvisory extends Operation {
         try {
           await this.AdvisoryRepository.getById(id);
         } catch (error) {
-          return this.emit(
+          this.emit(
             NOT_FOUND,
             new Error('Advisory not found'),
           );
@@ -58,13 +58,13 @@ class RemoveAdvisory extends Operation {
           entity = await this.AdvisoryRepository.getAttachedPosts(id);
 
           if (entity.published.length) {
-            return this.emit(
+            this.emit(
               VALIDATION_ERROR,
               new Error('Advisory is attached to a published post'),
             );
           }
         } catch (error) {
-          return this.emit(VALIDATION_ERROR, error);
+          this.emit(VALIDATION_ERROR, error);
         }
 
         await this.AdvisoryRepository.moveToRecyleBin(id, entity.results);
