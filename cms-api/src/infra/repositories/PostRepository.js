@@ -62,12 +62,18 @@ class PostRepository extends BaseRepository {
     }
 
     if ('location' in data && data.location) {
-      args.where[Op.and] = Sequelize.where(
-        Sequelize.fn('lower', Sequelize.col('locations')),
-        {
-          [Op.like]: `%${data.location.toLowerCase()}%`,
+      args.where[Op.or] = {
+        locations: {
+          [Op.contains]: [{
+            address: `%${data.location}%`,
+          }],
+          [Op.contains]: [{
+            [Op.like]: {
+              address: data.location,
+            },
+          }],
         },
-      );
+      };
     }
 
     if ('category' in data) {
@@ -162,6 +168,7 @@ class PostRepository extends BaseRepository {
           },
         },
       ],
+      logging: true,
     });
   }
 
