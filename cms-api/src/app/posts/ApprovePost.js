@@ -52,11 +52,13 @@ class ApprovePost extends Operation {
         CurrentUser: user,
       };
 
-      await this.HistoryRepository.add({
-        parentId: res.id,
-        type: 'post',
-        meta: res,
-      });
+      if (!res.approval) {
+        await this.HistoryRepository.add({
+          parentId: res.id,
+          type: 'post',
+          meta: res,
+        });
+      }
 
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
@@ -212,16 +214,18 @@ class ApprovePost extends Operation {
         message,
         meta: { id, postId },
       });
+
+      await this.HistoryRepository.add({
+        parentId: post.id,
+        type: 'post',
+        meta: post,
+      });
+
+      post.approval = true;
     }
 
     await this.PostUtils.firehoseIntegrate(oldPost, post);
     await this.PostUtils.pmsIntegrate(post);
-
-    await this.HistoryRepository.add({
-      parentId: post.id,
-      type: 'post',
-      meta: post,
-    });
 
     return post;
   }
