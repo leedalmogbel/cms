@@ -217,6 +217,12 @@ class ApprovePost extends Operation {
     await this.PostUtils.firehoseIntegrate(oldPost, post);
     await this.PostUtils.pmsIntegrate(post);
 
+    await this.HistoryRepository.add({
+      parentId: post.id,
+      type: 'post',
+      meta: post,
+    });
+
     return post;
   }
 }
