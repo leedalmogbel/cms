@@ -200,6 +200,14 @@ class ApprovePost extends Operation {
         message,
         meta: { id, postId },
       });
+
+      await this.HistoryRepository.add({
+        parentId: post.id,
+        type: 'post',
+        meta: post,
+      });
+
+      post.approval = true;
     }
 
     // if writer revised the post resend approval notification
@@ -214,14 +222,6 @@ class ApprovePost extends Operation {
         message,
         meta: { id, postId },
       });
-
-      await this.HistoryRepository.add({
-        parentId: post.id,
-        type: 'post',
-        meta: post,
-      });
-
-      post.approval = true;
     }
 
     await this.PostUtils.firehoseIntegrate(oldPost, post);
