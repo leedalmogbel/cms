@@ -17,11 +17,22 @@ const Template = attributes({
   tagsAdded: Array,
   status: String,
   isPublishedImmediately: Number,
-  scheduledAt: Date,
-  expiredAt: Date,
-  publishedAt: Date,
   isActive: Boolean,
   isEmbargo: Boolean,
+  scheduledAt: {
+    type: Date,
+    nullable: true,
+  },
+  expiredAt: {
+    type: Date,
+    nullable: true,
+  },
+  publishedAt: {
+    type: Date,
+    nullable: true,
+  },
+  createdAt: Date,
+  updatedAt: Date,
 })(class Template {
   // Add validation functions below
   // e.g.:

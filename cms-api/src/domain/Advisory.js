@@ -20,7 +20,10 @@ const Advisory = attributes({
   tagsRemoved: Array,
   status: String,
   attachments: Array,
-  publishedAt: Date,
+  publishedAt: {
+    type: Date,
+    nullable: true,
+  },
   createdAt: Date,
   updatedAt: Date,
   isActive: Number,
