@@ -145,13 +145,6 @@ class ScheduledPost extends Operation {
       data.validateData();
     }
 
-    // validate data before publishing
-    data.forEach((i) => {
-      if (data[i] === null) {
-        delete data[i];
-      }
-    });
-
     // publish post and fetch updated
     await this.PostRepository.update(data.id, data);
     let post = await this.PostRepository.getPostById(data.id);
