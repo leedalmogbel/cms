@@ -23,7 +23,6 @@ class RecycleBinRestore extends Operation {
         posts = await this.RecycleBinRepository.getBinById(data.id);
       }
     } catch (error) {
-      console.log(error)
       return this.emit(
         NOT_FOUND,
         new Error('Post/s not found'),

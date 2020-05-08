@@ -208,7 +208,8 @@ class RecycleBinRepository extends BaseRepository {
 
     await this.AdvisoryModel.create({
       ...advisory.meta,
-    }, { transaction });
+      updatedAt: advisory.meta.updatedAt,
+    }, { transaction, silent: true });
 
     await this.buildTags(advisory.meta);
 
