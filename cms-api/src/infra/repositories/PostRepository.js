@@ -62,12 +62,20 @@ class PostRepository extends BaseRepository {
     }
 
     if ('location' in data && data.location) {
-      args.where[Op.and] = Sequelize.where(
-        Sequelize.fn('lower', Sequelize.col('locations')),
-        {
-          [Op.like]: `%${data.location.toLowerCase()}%`,
+      // args.where[Op.and] = Sequelize.where(
+      //   Sequelize.fn('lower', Sequelize.col('locations.address')),
+      //   {
+      //     [Op.like]: `%${data.location.toLowerCase()}%`,
+      //   },
+      // );
+
+      args.where[Op.and] = {
+        locations: {
+          [Op.like]: {
+            address: `${data.location.toLowerCase()}`,
+          },
         },
-      );
+      };
     }
 
     if ('category' in data) {
