@@ -82,26 +82,10 @@ class PostRepository extends BaseRepository {
 
     // set date
     if ('date' in data && data.date) {
-      const fromDate = new Date(data.date.from);
-      const toDate = new Date(data.date.to);
-      const startDate = new Date(fromDate.setHours(0, 0, 0, 0)).toISOString();
-      const endDate = new Date(toDate.setHours(24, 0, 0, 0)).toISOString();
+      const date = new Date(data.date);
+      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
+      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
 
-      // if ('status' in data && data.status === 'scheduled') {
-      //   args.where.scheduledAt = {
-      //     [Op.between]: [
-      //       startDate,
-      //       endDate,
-      //     ],
-      //   };
-      // } else if ('status' in data && data.status === 'published') {
-      //   args.where.publishedAt = {
-      //     [Op.between]: [
-      //       startDate,
-      //       endDate,
-      //     ],
-      //   };
-      // } else {
       // default filter
       args.where.updatedAt = {
         [Op.between]: [
@@ -109,7 +93,6 @@ class PostRepository extends BaseRepository {
           endDate,
         ],
       };
-      // }
     }
 
     if ('status' in data) {
