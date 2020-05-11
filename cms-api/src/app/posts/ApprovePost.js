@@ -2,7 +2,9 @@ const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class ApprovePost extends Operation {
-  constructor({ PostRepository, UserRepository, PostUtils, HistoryRepository }) {
+  constructor({
+    PostRepository, UserRepository, PostUtils, HistoryRepository,
+  }) {
     super();
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;

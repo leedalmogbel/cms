@@ -10,7 +10,7 @@ const { Op } = Sequelize;
 
 class ScheduledPost extends Operation {
   constructor({
-    PostRepository, PostUtils, httpClient, UserModel,
+    PostRepository, PostUtils, httpClient, UserModel, HistoryRepository,
   }) {
     super();
 
@@ -18,6 +18,7 @@ class ScheduledPost extends Operation {
     this.PostUtils = PostUtils;
     this.httpClient = httpClient;
     this.UserModel = UserModel;
+    this.HistoryRepository = HistoryRepository;
   }
 
   async execute() {
@@ -149,6 +150,12 @@ class ScheduledPost extends Operation {
     await this.PostRepository.update(data.id, data);
     let post = await this.PostRepository.getPostById(data.id);
     post = post.toJSON();
+
+    await this.HistoryRepository.add({
+      parentId: post.id,
+      type: 'post',
+      meta: post,
+    });
 
     // publish to firehose
     const firehose = new AWS.Firehose({
