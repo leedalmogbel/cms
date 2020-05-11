@@ -200,7 +200,7 @@ class RecycleBinRepository extends BaseRepository {
     await advisory.destroy(advisory.id, { transaction });
 
     advisory.meta.status = 'draft';
-    delete advisory.meta.id;
+    // delete advisory.meta.id;
 
     if (advisory.meta.publishedAt) {
       advisory.meta.publishedAt = moment(advisory.meta.publishedAt).subtract(8, 'hours');
