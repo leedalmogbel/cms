@@ -29,10 +29,22 @@ const Post = attributes({
   isLocked: Number,
   lockUser: Object,
   recall: Object,
-  recalledAt: Date,
-  scheduledAt: Date,
-  expiredAt: Date,
-  publishedAt: Date,
+  recalledAt: {
+    type: Date,
+    nullable: true,
+  },
+  scheduledAt: {
+    type: Date,
+    nullable: true,
+  },
+  expiredAt: {
+    type: Date,
+    nullable: true,
+  },
+  publishedAt: {
+    type: Date,
+    nullable: true,
+  },
   createdAt: Date,
   updatedAt: Date,
   isActive: Number,

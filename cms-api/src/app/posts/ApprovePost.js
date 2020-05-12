@@ -2,7 +2,9 @@ const Post = require('src/domain/Post');
 const { Operation } = require('../../infra/core/core');
 
 class ApprovePost extends Operation {
-  constructor({ PostRepository, UserRepository, PostUtils, HistoryRepository }) {
+  constructor({
+    PostRepository, UserRepository, PostUtils, HistoryRepository,
+  }) {
     super();
     this.PostRepository = PostRepository;
     this.UserRepository = UserRepository;
@@ -52,11 +54,13 @@ class ApprovePost extends Operation {
         CurrentUser: user,
       };
 
-      await this.HistoryRepository.add({
-        parentId: res.id,
-        type: 'post',
-        meta: res,
-      });
+      if (!res.approval) {
+        await this.HistoryRepository.add({
+          parentId: res.id,
+          type: 'post',
+          meta: res,
+        });
+      }
 
       return this.emit(SUCCESS, {
         results: { ids: [res.id] },
@@ -130,7 +134,7 @@ class ApprovePost extends Operation {
         return 'embargo';
       }
 
-      if (data.scheduledAt && !data.publishedAt) {
+      if (data.scheduledAt && !data.publishedAt && !data.isPublishedImmediately) {
         return 'scheduled';
       }
 
@@ -154,7 +158,7 @@ class ApprovePost extends Operation {
       data.publishedAt = new Date().toISOString();
     }
 
-    if ('scheduledAt' in data) {
+    if (data.status === 'scheduled' && 'scheduledAt' in data) {
       data.scheduledAt = new Date(data.scheduledAt).toISOString();
     }
 
@@ -165,7 +169,7 @@ class ApprovePost extends Operation {
     let post = await this.PostRepository.getPostById(id);
     post = post.toJSON();
 
-    if (post.scheduledAt) {
+    if (post.status === 'scheduled') {
       return post;
     }
 
@@ -198,6 +202,14 @@ class ApprovePost extends Operation {
         message,
         meta: { id, postId },
       });
+
+      await this.HistoryRepository.add({
+        parentId: post.id,
+        type: 'post',
+        meta: post,
+      });
+
+      post.approval = true;
     }
 
     // if writer revised the post resend approval notification

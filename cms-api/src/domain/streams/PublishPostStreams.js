@@ -18,6 +18,7 @@ module.exports = (post) => {
       firstName,
       lastName,
     },
+    status,
   } = post;
 
   const loc = locations.length ? locations[0] : {};
@@ -138,7 +139,7 @@ module.exports = (post) => {
     postTimeOfDay: null,
     postDayOfWeek: null,
     postOtherRestriction: null,
-    postStatus: 'Active',
+    postStatus: status,
     reportedFlag: null,
     postScore: null,
     postByLines: [],

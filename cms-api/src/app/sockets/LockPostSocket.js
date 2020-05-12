@@ -64,7 +64,7 @@ class LockPostSocket extends Operation {
 
     try {
       // update post without updating the updatedAt
-      post.update({
+      await post.update({
         isLocked: true,
         lockUser: {
           connectionId,
@@ -145,24 +145,23 @@ class LockPostSocket extends Operation {
       };
     }
 
-    // notify current lock user
-    if (post.isLocked && post.lockUser) {
-      const currentUser = post.lockUser;
-      await this.send(currentUser.connectionId, {
-        type: 'BROADCAST_KICK',
-        message: '',
-        meta: {
-          id,
-          postId: post.postId,
-          userId,
-          name,
-        },
-      });
+    // if post is not locked
+    if (post && !post.isLocked) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Post is not locked to user.',
+        }),
+      };
     }
 
+    // get current locked user
+    const currentUser = post.lockUser;
+
+    // update post without updating the updatedAt
     try {
-      // update post without updating the updatedAt
-      post.update({
+      await post.update({
         isLocked: true,
         lockUser: {
           connectionId,
@@ -175,6 +174,18 @@ class LockPostSocket extends Operation {
     } catch (error) {
       console.log('Kick Locked Post Error', error);
     }
+
+    // notify current lock user
+    await this.send(currentUser.connectionId, {
+      type: 'BROADCAST_KICK',
+      message: '',
+      meta: {
+        id,
+        postId: post.postId,
+        userId,
+        name,
+      },
+    });
 
     // send post lock broadcast to all connections
     const sockets = await this.SocketRepository.getAll();
@@ -239,6 +250,17 @@ class LockPostSocket extends Operation {
         headers,
         body: JSON.stringify({
           message: 'Invalid post id',
+        }),
+      };
+    }
+
+    // if post is not locked
+    if (post && !post.isLocked) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          message: 'Post is not locked to user.',
         }),
       };
     }

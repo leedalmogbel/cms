@@ -21,7 +21,7 @@ class SavePost extends Operation {
       SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
     } = this.events;
 
-    const autosave = 'autosave' in data;
+    const autosave = 'autosave' in data && data.autosave;
     let oldPost;
 
     try {

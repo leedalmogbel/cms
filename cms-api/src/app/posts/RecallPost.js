@@ -1,3 +1,4 @@
+const AWS = require('aws-sdk');
 const { Operation } = require('../../infra/core/core');
 
 class RecallPost extends Operation {
@@ -77,7 +78,10 @@ class RecallPost extends Operation {
       };
 
       let updatedPost = await this.PostRepository.update(post.id, payload);
+      updatedPost = updatedPost.toJSON();
 
+      // update firehose and pms stream
+      await this.firehoseIntegrate(updatedPost);
       if (action === 'cms') {
         await this.pmsIntegrate(postId, data);
       }
@@ -106,7 +110,6 @@ class RecallPost extends Operation {
         user = user.toJSON();
       }
 
-      updatedPost = updatedPost.toJSON();
       updatedPost = {
         ...updatedPost,
         CurrentUser: user,
@@ -147,7 +150,46 @@ class RecallPost extends Operation {
     );
 
     console.time('PMS END POST RECALL INTEGRATION');
-    console.log(`PMS response for id: ${data.postId}`, res, payload);
+    console.log(`PMS response for id: ${postId}`, res, payload);
+  }
+
+  async firehoseIntegrate(post) {
+    if (post.status !== 'recalled') return;
+    console.time('FIREHOSE RECALL INTEGRATION');
+
+    console.log('test123', post);
+
+    const { postId, recall } = post;
+    
+    const payload = {
+      applicationName: null,
+      applicationUniqueId: null,
+      buildVersionRelease: null,
+      sessionId: null,
+      cmsUserId: recall.userId,
+      pmsWebUserId: null,
+      ipAddress: null,
+      actionTake: null,
+      clickedContent: null,
+      eventTimestamp: null,
+      postId,
+      reasons: recall.reasons,
+      description: recall.description,
+    };
+
+    const firehose = new AWS.Firehose({
+      apiVersion: '2015-08-04',
+    });
+
+    const fres = await firehose.putRecord({
+      DeliveryStreamName: process.env.FIREHOSE_POST_STREAM_RECALL,
+      Record: {
+        Data: JSON.stringify(payload),
+      },
+    }).promise();
+
+    console.timeEnd('FIREHOSE RECALL INTEGRATION');
+    console.log(`Firehose response for id: ${post.postId}`, fres, payload);
   }
 
   async notifyUsers(data) {

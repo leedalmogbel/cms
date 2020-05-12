@@ -41,10 +41,22 @@ module.exports.export = async (event, context, callback) => {
   return Container.resolve('BaseExport').export(event);
 };
 
+module.exports.osmLocation = async (event, context, callback) => {
+  const Container = await getContainer();
+  return Container.resolve('OsmAutocompleteProxy').execute(event);
+};
+
 module.exports.smartTags = async (event, context, callback) => {
+  const body = JSON.parse(event.body);
+
+  // add category placeholder if not available
+  if (!('category' in body)) {
+    body.category = '';
+  }
+
   const res = await httpPost(
     process.env.SMART_TAGS_ENDPOINT,
-    event.body,
+    JSON.stringify(body),
   );
 
   return {

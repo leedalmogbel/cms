@@ -1,5 +1,0 @@
-START RequestId: 176db52d-d0f0-4927-8508-35d89ba6e0ce Version: $LATEST
-2019-10-18 14:16:05.166 (+08:00)	176db52d-d0f0-4927-8508-35d89ba6e0ce	rows
-END RequestId: 176db52d-d0f0-4927-8508-35d89ba6e0ce
-REPORT RequestId: 176db52d-d0f0-4927-8508-35d89ba6e0ce	Duration: 29.25 ms	Billed Duration: 100 ms	Memory Size: 256 MB	Max Memory Used: 24 MB	
-

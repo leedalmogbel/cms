@@ -52,6 +52,13 @@ functions:
           path: /location/autocomplete
           method: post
           cors: true
+  osmAutocomplete:
+    handler: src/handler.osmLocation
+    events:
+      - http:
+          path: /osm/autocomplete
+          method: post
+          cors: true
   tags:
     handler: src/handler.smartTags
     events:

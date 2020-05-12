@@ -61,14 +61,27 @@ class PostRepository extends BaseRepository {
       }
     }
 
-    // set location
-    if ('location' in data) {
-      if (data.location) {
-        args.where.locationAddress = {
-          [Op.like]:
-            `%${data.location}%`,
-        };
-      }
+    if ('location' in data && data.location) {
+      args.where[Op.and] = Sequelize.where(
+        Sequelize.fn('lower', Sequelize.col('locations')),
+        {
+          [Op.like]: `%${data.location.toLowerCase()}%`,
+        },
+      );
+
+      // args.where = {
+      //   [Op.and]: {
+      //     'locations.address': {
+      //       [Op.like]: `%${data.location.toLowerCase()}%`,
+      //     },
+      //   },
+      // };
+
+      // args.where[Op.and] = Sequelize.fn('JSON_CONTAINS', Sequelize.col('locations'), Sequelize.cast(`{"address":"%${data.location}%"}`, 'CHAR CHARACTER SET utf8'));
+      // args.where[Op.and] = {
+      //   [Op.col]: 'locations.address',
+      //   [Op.like]: `%${data.location.toLowerCase()}%`,
+      // };
     }
 
     if ('category' in data) {
@@ -81,29 +94,13 @@ class PostRepository extends BaseRepository {
       const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
       const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
 
-      if ('status' in data && data.status === 'scheduled') {
-        args.where.scheduledAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      } else if ('status' in data && data.status === 'published') {
-        args.where.publishedAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      } else {
-        // default filter
-        args.where.updatedAt = {
-          [Op.between]: [
-            startDate,
-            endDate,
-          ],
-        };
-      }
+      // default filter
+      args.where.updatedAt = {
+        [Op.between]: [
+          startDate,
+          endDate,
+        ],
+      };
     }
 
     if ('status' in data) {
@@ -162,6 +159,7 @@ class PostRepository extends BaseRepository {
           },
         },
       ],
+      logging: true,
     });
   }
 
