@@ -1,4 +1,5 @@
 const { Operation } = require('../../infra/core/core');
+const mysql = require('mysql2');
 
 class ExportPosts extends Operation {
   constructor({ PostRepository }) {
@@ -8,22 +9,59 @@ class ExportPosts extends Operation {
   }
 
   async execute(data) {
-    const posts = await this.sequelize.query(`
-      SELECT "postId", "contributors", "category", "title", "content", "locationAddress", "tagsOriginal", "tagsRetained", "tagsRemoved", "tagsAdded", "status", "publishedAt", "scheduledAt", "expiredAt", "createdAt", "updatedAt"
-      UNION ALL
-      SELECT postId, contributors, category, title, content, locationAddress, tagsOriginal, tagsRetained, tagsRemoved, tagsAdded, status, publishedAt, scheduledAt, expiredAt, createdAt, updatedAt
-      FROM posts
-      WHERE status != "initial"
-      INTO OUTFILE S3 "s3://kapp-cms/csv-export/2020-4-6-posts"
-      FIELDS TERMINATED BY ','
-      OPTIONALLY ENCLOSED BY '"'
-      ESCAPED BY '"'
-      LINES TERMINATED BY '\r\n'
-      MANIFEST ON
-      OVERWRITE ON
-    `);
+    const connection = mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+    });
 
-    console.log('query response', posts);
+    connection.connect();
+
+    function rawQuery() {
+      return new Promise((resolve, reject) => {
+        connection.query(`
+          SELECT "postId", "contributors", "category", "title", "content", "locationAddress", "tagsOriginal", "tagsRetained", "tagsRemoved", "tagsAdded", "status", "publishedAt", "scheduledAt", "expiredAt", "createdAt", "updatedAt"
+          UNION ALL
+          SELECT postId, contributors, category, title, content, locationAddress, tagsOriginal, tagsRetained, tagsRemoved, tagsAdded, status, publishedAt, scheduledAt, expiredAt, createdAt, updatedAt
+          FROM posts
+          WHERE status != "initial"
+          INTO OUTFILE S3 "s3://kapp-cms/csv-export/2020-5-12-posts"
+          FIELDS TERMINATED BY ','
+          OPTIONALLY ENCLOSED BY '"'
+          ESCAPED BY '"'
+          LINES TERMINATED BY '\r\n'
+          OVERWRITE ON
+        `, (error, result, fields) => {
+          console.log('test 123');
+          if (error) {
+            return reject(error);
+          }
+
+          resolve(result);
+        });
+      });
+    }
+
+    const res = await rawQuery();
+    console.log('query response', res);
+
+
+    // const posts = await this.sequelize.query(`
+    //   SELECT "postId", "contributors", "category", "title", "content", "locationAddress", "tagsOriginal", "tagsRetained", "tagsRemoved", "tagsAdded", "status", "publishedAt", "scheduledAt", "expiredAt", "createdAt", "updatedAt"
+    //   UNION ALL
+    //   SELECT postId, contributors, category, title, content, locationAddress, tagsOriginal, tagsRetained, tagsRemoved, tagsAdded, status, publishedAt, scheduledAt, expiredAt, createdAt, updatedAt
+    //   FROM posts
+    //   WHERE status != "initial"
+    //   INTO OUTFILE S3 "s3://kapp-cms/csv-export/2020-5-12-posts.csv"
+    //   FIELDS TERMINATED BY ','
+    //   OPTIONALLY ENCLOSED BY '"'
+    //   ESCAPED BY '"'
+    //   LINES TERMINATED BY '\r\n'
+    //   OVERWRITE ON
+    // `);
+
+    connection.end();
 
     return {
       results: 'Success',
