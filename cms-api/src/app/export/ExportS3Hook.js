@@ -24,7 +24,7 @@ class ExportS3Hook extends Operation {
     console.log(message);
 
     // construct file url
-    const url = `https://${bucket}.s3-${process.env.REGION}/${rawFile}`;
+    const url = `https://${bucket}.s3-${process.env.REGION}.amazonaws.com/${rawFile}`;
     console.log('CSV url', url);
 
     // notify user the csv file is ready for download 
