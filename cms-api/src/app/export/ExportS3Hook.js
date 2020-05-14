@@ -8,9 +8,7 @@ class ExportS3Hook extends Operation {
 
   async execute(event) {
     console.log('Incoming Event: ', event);
-
     const object = event.Records[0].s3;
-    console.log(object);
 
     // parse and breakdown filename
     const bucket = object.bucket.name;
@@ -21,10 +19,13 @@ class ExportS3Hook extends Operation {
 
     // get user id from filename
     const userId = filename.split('-').pop();
-    console.log('userId', userId);
 
     const message = `File is uploaded in - ${bucket} -> ${rawFile}`;
     console.log(message);
+
+    // construct file url
+    const url = `https://${bucket}.s3-${process.env.REGION}/${rawFile}`;
+    console.log('CSV url', url);
 
     // notify user the csv file is ready for download 
     await this.NotificationSocket
@@ -32,7 +33,7 @@ class ExportS3Hook extends Operation {
         type: 'CSV_EXPORT',
         message: 'Post csv file is now ready for download.',
         meta: {
-          download_link: rawFile,
+          download_link: url,
         },
       });
 
