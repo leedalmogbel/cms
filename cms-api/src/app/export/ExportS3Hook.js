@@ -1,4 +1,5 @@
 const { Operation } = require('../../infra/core/core');
+const AWS = require('aws-sdk');
 
 class ExportS3Hook extends Operation {
   constructor({ NotificationSocket }) {
@@ -22,6 +23,28 @@ class ExportS3Hook extends Operation {
 
     const message = `File is uploaded in - ${bucket} -> ${rawFile}`;
     console.log(message);
+
+    // update ACL of uploaded file
+    const s3 = new AWS.S3();
+
+    function makeCsvPublic() {
+      return new Promise((resolve, reject) => {
+        s3.putObjectAcl({
+          Bucket: bucket,
+          Key: rawFile,
+          ACL: 'public-read',
+        }, (err, data) => {
+          if (err) {
+            console.log('Put object ACL public-read Error', data);
+            return reject(err);
+          }
+
+          resolve(data);
+        });
+      });
+    }
+
+    await makeCsvPublic();
 
     // construct file url
     const url = `https://${bucket}.s3-${process.env.REGION}.amazonaws.com/${rawFile}`;
