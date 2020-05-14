@@ -26,13 +26,18 @@ class PostsController extends BaseController {
 
   index(req, res, next) {
     const { operation } = req;
-    const { SUCCESS, ERROR } = operation.events;
+    const { SUCCESS, ERROR, VALIDATION_ERROR } = operation.events;
 
     operation
       .on(SUCCESS, (result) => {
         res
           .status(Status.OK)
           .json(result);
+      })
+      .on(VALIDATION_ERROR, (error) => {
+        res.status(Status.BAD_REQUEST).json({
+          message: error.message,
+        });
       })
       .on(ERROR, next);
 

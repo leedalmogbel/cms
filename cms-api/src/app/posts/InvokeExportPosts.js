@@ -2,37 +2,41 @@ const { Operation } = require('../../infra/core/core');
 const AWS = require('aws-sdk');
 
 class InvokeExportPosts extends Operation {
-  constructor() {
-    super();
-  }
+  async execute(data, session) {
+    const { SUCCESS, ERROR, VALIDATION_ERROR } = this.events;
 
-  async execute(args, session) {
-    const { SUCCESS, ERROR } = this.events;
+    // validate required data
+    if (!('userId' in data) && !data.userId) {
+      return this.emit(VALIDATION_ERROR, new Error('Params userId is required.'));
+    }
+
+    const lambda = new AWS.Lambda();
+    const service = 'kapp-cms-api';
+    const nodeEnv = process.env.NODE_ENV === 'local' ? 'dev' : process.env.NODE_ENV;
+
+    const params = {
+      FunctionName: `${service}-${nodeEnv}-exportCsv`,
+      InvokeArgs: JSON.stringify({
+        ...data,
+        type: 'post',
+      }),
+    };
+
+    function invokeFunc() {
+      return new Promise((resolve, reject) => {
+        lambda.invokeAsync(params, (error, res) => {
+          if (error) return reject(error);
+          resolve(res);
+        });
+      });
+    }
 
     try {
-      const lambda = new AWS.Lambda();
-
-      const params = {
-        FunctionName: 'exportCsv',
-        InvokeArgs: JSON.stringify({
-          type: 'post'
-        }),
-      };
-
-      // let res = await lambda.invokeAsync(params);
-      // console.log(res);
-
-      lambda.invokeAsync(params, (error, res) => {
-        if (error) {
-          console.log('invoke error', error);
-        } else {
-          console.log('invoke success', res);
-        }
-      })
+      await invokeFunc(params);
 
       this.emit(SUCCESS, {
-        results: [],
         meta: {},
+        message: 'Export post now in progress.',
       });
     } catch (error) {
       this.emit(ERROR, error);
