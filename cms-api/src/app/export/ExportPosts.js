@@ -12,9 +12,10 @@ class ExportPosts extends Operation {
     console.log('Export Started');
     console.log('export post data', data);
 
+    const { userId } = data;
     const bucket = process.env.BUCKET_NAME;
     const today = new Date().toISOString().slice(0, 10);
-    const filename = `posts-${today}`;
+    const filename = `${today}-posts-${userId}`;
 
     const res = await this.sequelize.query(`
       SELECT "postId", "contributors", "category", "title", "content", "locationAddress", "tagsOriginal", "tagsRetained", "tagsRemoved", "tagsAdded", "status", "publishedAt", "scheduledAt", "expiredAt", "createdAt", "updatedAt"
