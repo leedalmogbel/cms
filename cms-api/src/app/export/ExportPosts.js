@@ -13,7 +13,7 @@ class ExportPosts extends Operation {
     console.log('export post data', data);
 
     const bucket = process.env.BUCKET_NAME;
-    const today = new Date().format('m-d-Y');
+    const today = new Date().toISOString().slice(0, 10);
     const filename = `posts-${today}`;
 
     const res = await this.sequelize.query(`
