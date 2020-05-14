@@ -91,8 +91,11 @@ module.exports.handler = (event, context, callback) => {
   };
 
   brew(config, async (brewed) => {
-    setupDBSecrets();
-    setupAppSecrets();
+    if (process.env.NODE_ENV !== 'local') {
+      setupDBSecrets();
+      setupAppSecrets();
+    }
+
     try {
       if (typeof brewed.getServerless === 'function') {
         brewed.container.register({

@@ -36,6 +36,16 @@ module.exports.location = async (event, context, callback) => {
   return Container.resolve('BaseLocation').autocomplete(event);
 };
 
+module.exports.export = async (event, context, callback) => {
+  const Container = await getContainer();
+  return Container.resolve('BaseExport').export(event);
+};
+
+module.exports.exportS3Hook = async (event, context, callback) => {
+  const Container = await getContainer();
+  return Container.resolve('ExportS3Hook').execute(event);
+};
+
 module.exports.osmLocation = async (event, context, callback) => {
   const Container = await getContainer();
   return Container.resolve('OsmAutocompleteProxy').execute(event);

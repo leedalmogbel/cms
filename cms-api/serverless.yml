@@ -80,6 +80,10 @@ functions:
       - schedule:
           rate: rate(30 minutes)
           enabled: true
+  exportCsv:
+    handler: src/handler.export
+  exportS3Hook:
+    handler: src/handler.exportS3Hook
   socketAuth:
     handler: src/socket.auth
   socketConnect:

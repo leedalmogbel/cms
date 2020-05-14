@@ -10,6 +10,7 @@ class PostsController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('ListPosts'), this.index);
+    router.get('/export', this.injector('InvokeExportPosts'), this.index);
     router.get('/:id', this.injector('ShowPost'), this.show);
     router.post('/', this.injector('CreateInitialPost'), this.create);
     router.post('/:id/save', this.injector('SavePost'), this.update);
@@ -25,13 +26,18 @@ class PostsController extends BaseController {
 
   index(req, res, next) {
     const { operation } = req;
-    const { SUCCESS, ERROR } = operation.events;
+    const { SUCCESS, ERROR, VALIDATION_ERROR } = operation.events;
 
     operation
       .on(SUCCESS, (result) => {
         res
           .status(Status.OK)
           .json(result);
+      })
+      .on(VALIDATION_ERROR, (error) => {
+        res.status(Status.BAD_REQUEST).json({
+          message: error.message,
+        });
       })
       .on(ERROR, next);
 
