@@ -18,6 +18,12 @@ class ExportS3Hook extends Operation {
     const ext = file.split('.').pop();
     const filename = file.replace(ext, '');
 
+    // do not rename if file is already in csv
+    if (ext === 'csv') {
+      console.log('File uploaded is already in csv format');
+      return 'Success';
+    }
+
     // get user id from filename
     const userId = filename.split('-').pop();
 
