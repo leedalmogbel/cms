@@ -16,7 +16,7 @@ class ExportS3Hook extends Operation {
     const rawFile = decodeURIComponent(object.object.key.replace(/\+/g, ' '));
     const file = rawFile.replace('csv-export/', '');
     const ext = file.split('.').pop();
-    const filename = file.replace(ext, '');
+    const filename = file.replace(`.${ext}`, '');
 
     // get user id from filename
     const userId = filename.split('-').pop();

@@ -16,7 +16,7 @@ class ExportS3Rename extends Operation {
     const rawFile = decodeURIComponent(object.object.key.replace(/\+/g, ' '));
     const file = rawFile.replace('csv-export/', '');
     const ext = file.split('.').pop();
-    const filename = file.replace(ext, '');
+    const filename = file.replace(`.${ext}`, '');
 
     const message = `File is uploaded in - ${bucket} -> ${rawFile}`;
     console.log(message);
