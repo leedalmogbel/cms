@@ -60,7 +60,9 @@ class ExportS3Rename extends Operation {
     }
 
     await copyCsv();
-    await deletePrevCsv();
+
+    // temporary: disable for now
+    // await deletePrevCsv();
 
     return 'Success';
   }
