@@ -82,6 +82,8 @@ functions:
           enabled: true
   exportCsv:
     handler: src/handler.export
+  exportS3Rename:
+    handler: src/handler.exportS3Rename
   exportS3Hook:
     handler: src/handler.exportS3Hook
   socketAuth:

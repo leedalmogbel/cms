@@ -41,6 +41,11 @@ module.exports.export = async (event, context, callback) => {
   return Container.resolve('BaseExport').export(event);
 };
 
+module.exports.exportS3Rename = async (event, context, callback) => {
+  const Container = await getContainer();
+  return Container.resolve('ExportS3Rename').execute(event);
+};
+
 module.exports.exportS3Hook = async (event, context, callback) => {
   const Container = await getContainer();
   return Container.resolve('ExportS3Hook').execute(event);

@@ -18,61 +18,14 @@ class ExportS3Hook extends Operation {
     const ext = file.split('.').pop();
     const filename = file.replace(ext, '');
 
-    // do not rename if file is already in csv
-    if (ext === 'csv') {
-      console.log('File uploaded is already in csv format');
-      return 'Success';
-    }
-
     // get user id from filename
     const userId = filename.split('-').pop();
 
     const message = `File is uploaded in - ${bucket} -> ${rawFile}`;
     console.log(message);
 
-    // rename file by copy and delete and make public-read
-    const newFilename = `csv-export/${filename}.csv`;
-    const s3 = new AWS.S3();
-
-    function copyCsv() {
-      return new Promise((resolve, reject) => {
-        s3.copyObject({
-          Bucket: bucket,
-          Key: newFilename,
-          CopySource: `${bucket}/${rawFile}`,
-          ACL: 'public-read',
-        }, (err, data) => {
-          if (err) {
-            console.log('Copy s3 object error', data);
-            return reject(err);
-          }
-
-          resolve(data);
-        });
-      });
-    }
-
-    function deletePrevCsv() {
-      return new Promise((resolve, reject) => {
-        s3.deleteObject({
-          Bucket: bucket,
-          Key: rawFile,
-        }, (err, data) => {
-          if (err) {
-            console.log('Delete s3 object error', data);
-            return reject(err);
-          }
-
-          resolve(data);
-        })
-      });
-    }
-
-    await copyCsv();
-    await deletePrevCsv();
-
     // construct file url
-    const url = `https://${bucket}.s3-${process.env.REGION}.amazonaws.com/${newFilename}`;
+    const url = `https://${bucket}.s3-${process.env.REGION}.amazonaws.com/${rawFile}`;
     console.log('CSV url', url);
 
     // notify user the csv file is ready for download 
