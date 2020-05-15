@@ -33,7 +33,7 @@ class ExportS3Hook extends Operation {
         s3.copyObject({
           Bucket: bucket,
           Key: newFilename,
-          CopySource: rawFile,
+          CopySource: `${bucket}/${rawFile}`,
           ACL: 'public-read',
         }, (err, data) => {
           if (err) {
