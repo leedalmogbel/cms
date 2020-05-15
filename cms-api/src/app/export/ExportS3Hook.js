@@ -24,18 +24,20 @@ class ExportS3Hook extends Operation {
     const message = `File is uploaded in - ${bucket} -> ${rawFile}`;
     console.log(message);
 
-    // update ACL of uploaded file
+    // rename file by copy and delete and make public-read
+    const newFilename = `csv-export/${filename}.csv`;
     const s3 = new AWS.S3();
 
-    function makeCsvPublic() {
+    function copyCsv() {
       return new Promise((resolve, reject) => {
-        s3.putObjectAcl({
+        s3.copyObject({
           Bucket: bucket,
-          Key: rawFile,
+          Key: newFilename,
+          CopySource: rawFile,
           ACL: 'public-read',
         }, (err, data) => {
           if (err) {
-            console.log('Put object ACL public-read Error', data);
+            console.log('Copy s3 object error', data);
             return reject(err);
           }
 
@@ -44,10 +46,27 @@ class ExportS3Hook extends Operation {
       });
     }
 
-    await makeCsvPublic();
+    function deletePrevCsv() {
+      return new Promise((resolve, reject) => {
+        s3.deleteObject({
+          Bucket: bucket,
+          Key: rawFile,
+        }, (err, data) => {
+          if (err) {
+            console.log('Delete s3 object error', data);
+            return reject(err);
+          }
+
+          resolve(data);
+        })
+      });
+    }
+
+    await copyCsv();
+    await deletePrevCsv();
 
     // construct file url
-    const url = `https://${bucket}.s3-${process.env.REGION}.amazonaws.com/${rawFile}`;
+    const url = `https://${bucket}.s3-${process.env.REGION}.amazonaws.com/${newFilename}`;
     console.log('CSV url', url);
 
     // notify user the csv file is ready for download 
