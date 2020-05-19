@@ -10,7 +10,7 @@ class GetS3Url extends Operation {
     super();
   }
 
-  async execute(id, args) {
+  async execute(args) {
     const { SUCCESS, ERROR } = this.events;
     const { fileType, fileName, directory } = args;
 

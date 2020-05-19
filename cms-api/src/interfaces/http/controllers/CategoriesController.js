@@ -123,7 +123,7 @@ class CategoriesController extends BaseController {
         });
       })
       .on(ERROR, next);
-console.log('tae')
+
     operation.execute(req.body);
   }
 }
