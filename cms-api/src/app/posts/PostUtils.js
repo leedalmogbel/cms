@@ -83,21 +83,21 @@ class PostUtils extends Operation {
       data.scheduledAt = moment(data.scheduledAt).utc().format('YYYY-MM-DD HH:mm:ss');
     }
 
-    // if ('address' in data
-    //   && 'placeId' in data
-    //   && data.address
-    //   && data.placeId
-    // ) {
-    //   const { placeId, address } = data;
-    //   const loc = await this.BaseLocation.detail(placeId, address);
-    //   loc.isGeofence = data.isGeofence;
+    if ('address' in data
+      && 'placeId' in data
+      && data.address
+      && data.placeId
+    ) {
+      const { placeId, address } = data;
+      const loc = await this.BaseLocation.detail(placeId, address);
+      loc.isGeofence = data.isGeofence;
 
-    //   data = {
-    //     ...data,
-    //     locations: [loc],
-    //     isActive: 1,
-    //   };
-    // }
+      data = {
+        ...data,
+        locations: [loc],
+        isActive: 1,
+      };
+    }
 
     return new Post(data);
   }

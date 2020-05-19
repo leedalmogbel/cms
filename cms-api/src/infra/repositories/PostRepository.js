@@ -68,7 +68,7 @@ class PostRepository extends BaseRepository {
       const functionalWhere = Sequelize.where(Sequelize.fn('LOWER', unquoteCall), loc.toLowerCase());
 
       args.where[Op.and] = Sequelize.where(
-        Sequelize.literal('json_extract(locations, \'$.address\')'), 
+        Sequelize.literal('json_extract(locations, \'$.address\')'),
         {
           [Op.like]: `%${data.location.toLowerCase()}%`,
         },
@@ -82,14 +82,13 @@ class PostRepository extends BaseRepository {
       //   },
       // );
 
-      const sample = {
-        [Op.and]: {
-          'locations.address': {
-            [Op.like]: `%${data.location.toLowerCase()}%`,
-          },
-        },
-      };
-
+      // const sample = {
+      //   [Op.and]: {
+      //     'locations.address': {
+      //       [Op.like]: `%${data.location.toLowerCase()}%`,
+      //     },
+      //   },
+      // };
       // args.where[Op.and] = Sequelize.fn('JSON_CONTAINS', Sequelize.col('locations'), Sequelize.cast(`{"address":"%${data.location}%"}`, 'CHAR CHARACTER SET utf8'));
       // args.where[Op.and] = {
       //   [Op.col]: 'locations.address',
