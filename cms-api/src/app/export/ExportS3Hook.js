@@ -8,13 +8,16 @@ class ExportS3Hook extends Operation {
   }
 
   async execute(event) {
-    console.log('Incoming Event: ', event);
+    console.log('Export Hook Started: ', event);
     const object = event.Records[0].s3;
+
+    const env = process.env.NODE_ENV;
+    const prefix = env !== 'local' ? `csv-export-${env}` : 'csv-export-dev';
 
     // parse and breakdown filename
     const bucket = object.bucket.name;
     const rawFile = decodeURIComponent(object.object.key.replace(/\+/g, ' '));
-    const file = rawFile.replace('csv-export/', '');
+    const file = rawFile.replace(`${prefix}/`, '');
     const ext = file.split('.').pop();
     const filename = file.replace(`.${ext}`, '');
 
@@ -38,6 +41,7 @@ class ExportS3Hook extends Operation {
         },
       });
 
+    console.log('Export Hook Ended');
     return 'Success';
   }
 }

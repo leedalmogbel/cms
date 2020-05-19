@@ -1,5 +1,4 @@
 const { Operation } = require('../../infra/core/core');
-const mysql = require('mysql2');
 
 class ExportPosts extends Operation {
   constructor({ PostRepository }) {
@@ -17,13 +16,16 @@ class ExportPosts extends Operation {
     const today = new Date().toISOString().slice(0, 10);
     const filename = `${today}-posts-${userId}`;
 
+    const env = process.env.NODE_ENV;
+    const prefix = env !== 'local' ? `csv-export-${env}` : 'csv-export-dev';
+
     const res = await this.sequelize.query(`
       SELECT "postId", "contributors", "category", "title", "content", "locationAddress", "tagsOriginal", "tagsRetained", "tagsRemoved", "tagsAdded", "status", "publishedAt", "scheduledAt", "expiredAt", "createdAt", "updatedAt"
       UNION ALL
       SELECT postId, contributors, category, title, content, locationAddress, tagsOriginal, tagsRetained, tagsRemoved, tagsAdded, status, publishedAt, scheduledAt, expiredAt, createdAt, updatedAt
       FROM posts
       WHERE status != "initial"
-      INTO OUTFILE S3 "s3://${bucket}/csv-export/${filename}"
+      INTO OUTFILE S3 "s3://${bucket}/${prefix}/${filename}"
       FIELDS TERMINATED BY ','
       OPTIONALLY ENCLOSED BY '"'
       ESCAPED BY '"'
