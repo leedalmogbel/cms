@@ -12,6 +12,7 @@ class CategoriesController extends BaseController {
     router.get('/', this.injector('ListCategories'), this.index);
     router.get('/:id', this.injector('ShowCategory'), this.show);
     router.post('/', this.injector('CreateCategory'), this.create);
+    router.post('/geturl', this.injector('GetS3Url'), this.attach);
     router.put('/:id', this.injector('SaveCategory'), this.update);
 
     return router;
@@ -97,6 +98,33 @@ class CategoriesController extends BaseController {
       .on(ERROR, next);
 
     operation.execute(Number(req.params.id), req.body);
+  }
+
+  attach(req, res, next) {
+    const { operation } = req;
+    const {
+      SUCCESS, ERROR, VALIDATION_ERROR, NOT_FOUND,
+    } = operation.events;
+
+    operation
+      .on(SUCCESS, (result) => {
+        res
+          .status(Status.ACCEPTED)
+          .json(result);
+      })
+      .on(VALIDATION_ERROR, (error) => {
+        res.status(Status.BAD_REQUEST).json({
+          message: error.message,
+        });
+      })
+      .on(NOT_FOUND, (error) => {
+        res.status(Status.NOT_FOUND).json({
+          message: error.message,
+        });
+      })
+      .on(ERROR, next);
+console.log('tae')
+    operation.execute(req.body);
   }
 }
 
