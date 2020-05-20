@@ -62,35 +62,12 @@ class PostRepository extends BaseRepository {
     }
 
     if ('location' in data && data.location) {
-      const loc = data.location;
-      const extractCall = Sequelize.fn('JSON_EXTRACT', Sequelize.col('locations'), `$.${loc}`);
-      const unquoteCall = Sequelize.fn('JSON_UNQUOTE', extractCall);
-      const functionalWhere = Sequelize.where(Sequelize.fn('LOWER', unquoteCall), loc.toLowerCase());
-
-      // args.where[Op.and] = Sequelize.where(
-      //   Sequelize.literal('json_extract(locations, \'$.address\')'),
-      //   {
-      //     [Op.like]: `%${data.location.toLowerCase()}%`,
-      //   },
-      // );
       args.where[Op.and] = Sequelize.where(
-        Sequelize.fn('lower', Sequelize.col('locations')),
+        Sequelize.literal('LOWER(JSON_EXTRACT(locations, \'$[*].address\'))'),
         {
           [Op.like]: `%${data.location.toLowerCase()}%`,
         },
       );
-      // const sample = {
-      //   [Op.and]: {
-      //     'locations.address': {
-      //       [Op.like]: `%${data.location.toLowerCase()}%`,
-      //     },
-      //   },
-      // };
-      // args.where[Op.and] = Sequelize.fn('JSON_CONTAINS', Sequelize.col('locations'), Sequelize.cast(`{"address":"%${data.location}%"}`, 'CHAR CHARACTER SET utf8'));
-      // args.where[Op.and] = {
-      //   [Op.col]: 'locations.address',
-      //   [Op.like]: `%${data.location.toLowerCase()}%`,
-      // };
     }
 
     if ('category' in data) {
