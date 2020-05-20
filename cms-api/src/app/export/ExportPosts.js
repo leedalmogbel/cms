@@ -22,9 +22,10 @@ class ExportPosts extends Operation {
     const res = await this.sequelize.query(`
       SELECT "postId", "contributors", "category", "title", "content", "locationAddress", "tagsOriginal", "tagsRetained", "tagsRemoved", "tagsAdded", "status", "publishedAt", "scheduledAt", "expiredAt", "createdAt", "updatedAt"
       UNION ALL
-      SELECT postId, contributors, category, title, content, locationAddress, tagsOriginal, tagsRetained, tagsRemoved, tagsAdded, status, publishedAt, scheduledAt, expiredAt, createdAt, updatedAt
+      SELECT postId, contributors, IFNULL(category, ''), IFNULL(title, ''), IFNULL(content, ''), IFNULL(locationAddress, ''), IFNULL(tagsOriginal, ''), IFNULL(tagsRetained, ''), IFNULL(tagsRemoved, ''), IFNULL(tagsAdded, ''), IFNULL(status, ''), IFNULL(publishedAt, ''), IFNULL(scheduledAt, ''), IFNULL(expiredAt, ''), createdAt, updatedAt
       FROM posts
       WHERE status != "initial"
+      ORDER BY updatedAt DESC
       INTO OUTFILE S3 "s3://${bucket}/${prefix}/${filename}"
       FIELDS TERMINATED BY ','
       OPTIONALLY ENCLOSED BY '"'
