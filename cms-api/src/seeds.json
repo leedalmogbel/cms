@@ -214,5 +214,149 @@
     "firstName": "Kathleen",
     "lastName": "Roxas",
     "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "jsambilay",
+    "email": "Jsambilay@abs-cbn.com",
+    "password": "",
+    "firstName": "Jocelyn",
+    "lastName": "Reyes-Sambilay",
+    "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "annalynfm",
+    "email": "AnnalynFM@abs-cbn.com",
+    "password": "",
+    "firstName": "Annalyn",
+    "lastName": "Mabini",
+    "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "josephryanla",
+    "email": "josephryanla@abs-cbn.com",
+    "password": "",
+    "firstName": "Joseph",
+    "lastName": "Aquino",
+    "active": 1
+  },
+  {
+    "role": "editor",
+    "username": "gsoro",
+    "email": "GSOro@abs-cbn.com",
+    "password": "",
+    "firstName": "Gerald",
+    "lastName": "Oro",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "deobdin",
+    "email": "DEObdin@abs-cbn.com",
+    "password": "",
+    "firstName": "Dianne RJ",
+    "lastName": "Obdin",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "armacdon",
+    "email": "ARMacdon@abs-cbn.com",
+    "password": "",
+    "firstName": "Ana Lea",
+    "lastName": "Macdon",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "mabarrios",
+    "email": "MABarrios@abs-cbn.com",
+    "password": "",
+    "firstName": "Mikah",
+    "lastName": "Barrios",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "ttloberiano",
+    "email": "TTLoberiano@abs-cbn.com",
+    "password": "",
+    "firstName": "Thea Loise",
+    "lastName": "Loberiano",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "ffpanag",
+    "email": "FFPanag@abs-cbn.com",
+    "password": "",
+    "firstName": "Fershemae",
+    "lastName": "Panag",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "rlhacosta",
+    "email": "RLHacosta@abs-cbn.com",
+    "password": "",
+    "firstName": "Rean",
+    "lastName": "Hacosta",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "lemoises",
+    "email": "LEMoises@abs-cbn.com",
+    "password": "",
+    "firstName": "Liah",
+    "lastName": "Moises",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "cbbilangel",
+    "email": "CBBilangel@abs-cbn.com",
+    "password": "",
+    "firstName": "Cara Mae",
+    "lastName": "Bilangel",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "mdvillaluna",
+    "email": "MDVillaluna@abs-cbn.com",
+    "password": "",
+    "firstName": "Mark",
+    "lastName": "Villaluna",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "pgcabique",
+    "email": "PGCabique@abs-cbn.com",
+    "password": "",
+    "firstName": "Phobe Kate",
+    "lastName": "Cabique",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "ctlawan",
+    "email": "CTLawan@abs-cbn.com",
+    "password": "",
+    "firstName": "Cristine",
+    "lastName": "Lawan",
+    "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "djdtamayo",
+    "email": "DJDTamayo@abs-cbn.com",
+    "password": "",
+    "firstName": "David",
+    "lastName": "Tamayo",
+    "active": 1
   }
 ]
