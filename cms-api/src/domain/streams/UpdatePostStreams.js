@@ -122,7 +122,7 @@ module.exports = (post, oldPost) => {
     postTimestampUpdated: post.updatedAt,
     version: null,
     postCommunityID: null,
-    postExpirationDate: null,
+    postExpirationDate: post.expiredAt,
     postCategoryId: null,
     postSubCategoryId: null,
     postWordCount: post.title.split(' ').length,
