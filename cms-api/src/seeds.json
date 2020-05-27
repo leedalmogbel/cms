@@ -63,7 +63,7 @@
     "active": 1
   },
   {
-    "role": "writer",
+    "role": "editor",
     "username": "kcaacbay",
     "email": "jzcaacbay@abs-cbn.com",
     "password": "",
@@ -217,8 +217,8 @@
   },
   {
     "role": "editor",
-    "username": "jsambilay",
-    "email": "Jsambilay@abs-cbn.com",
+    "username": "jocelynrs",
+    "email": "JocelynRs@abs-cbn.com",
     "password": "",
     "firstName": "Jocelyn",
     "lastName": "Reyes-Sambilay",
