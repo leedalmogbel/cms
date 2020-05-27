@@ -358,5 +358,14 @@
     "firstName": "David",
     "lastName": "Tamayo",
     "active": 1
+  },
+  {
+    "role": "writer",
+    "username": "rcclapano",
+    "email": "RCClapano@abs-cbn.com",
+    "password": "",
+    "firstName": "Ramoncito",
+    "lastName": "Clapano",
+    "active": 1
   }
 ]
