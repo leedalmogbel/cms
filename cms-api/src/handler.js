@@ -1,6 +1,7 @@
 require('module').Module._initPaths();
 const awilix = require('awilix');
 const config = require('config');
+const AWS = require('aws-sdk');
 const fetch = require('node-fetch');
 const { brew } = require('../src/infra/core/core');
 const httpClient = require('./infra/http-request');
@@ -56,6 +57,64 @@ module.exports.osmLocation = async (event, context, callback) => {
   return Container.resolve('OsmAutocompleteProxy').execute(event);
 };
 
+module.exports.linkClickExternal = async (event, context) => {
+  context.callbackWaitsForEmptyEventLoop = false;
+  const DeliveryStreamName = process.env.FIREHOSE_CLICK_EXTERNAL_LINK;
+
+  const {
+    ConnectivityType,
+    Longitude,
+    Latitude,
+    SessionID,
+    BigDataSessionId,
+    KAPPUserId,
+    IPAddress,
+    ActionTaken,
+    ClickedContent,
+    EventTimeStamp,
+    PostId,
+    LinkDestination,
+    MobileTimeStamp,
+  } = JSON.parse(event.body);
+
+
+  const firehose = new AWS.Firehose({
+    apiVersion: '2015-08-04',
+  });
+
+  const { RecordId } = await firehose.putRecord({
+    DeliveryStreamName,
+    Record: {
+      Data: JSON.stringify({
+        ConnectivityType,
+        Longitude,
+        Latitude,
+        SessionID,
+        BigDataSessionId,
+        KAPPUserId,
+        IPAddress,
+        ActionTaken,
+        ClickedContent,
+        EventTimeStamp,
+        PostId,
+        LinkDestination,
+        MobileTimeStamp,
+      }),
+    },
+  }).promise();
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+      'X-Content-Type-Options': 'nosniff',
+    },
+    body: JSON.stringify({
+      success: (RecordId.length > 0),
+    }),
+  };
+};
 module.exports.smartTags = async (event, context, callback) => {
   const body = JSON.parse(event.body);
 

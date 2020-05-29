@@ -66,6 +66,17 @@ functions:
           path: /smart/tags
           method: post
           cors: true
+  externalLinkClick:
+    handler: src/handler.linkClickExternal
+    events:
+      - http:
+          path: /clicks/external
+          method: post
+          cors: true
+          authorizer:
+            arn: ${file(env.yml):${self:custom.stage}.MOBILE_API_AUTHORIZER}
+            identitySource: method.request.header.kapp_token
+            type: request
   userSeeds:
     handler: src/handler.userSeeds
   cron: 
