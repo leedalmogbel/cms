@@ -75,6 +75,8 @@ functions:
           cors: true
           authorizer:
             arn: ${file(env.yml):${self:custom.stage}.MOBILE_API_AUTHORIZER}
+            identitySource: method.request.header.kapp_token
+            type: request
   userSeeds:
     handler: src/handler.userSeeds
   cron: 
