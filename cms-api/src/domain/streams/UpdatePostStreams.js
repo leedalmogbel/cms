@@ -19,6 +19,7 @@ module.exports = (post, oldPost) => {
       lastName,
     },
     status,
+    advancedOptions,
   } = post;
 
   const loc = locations.length ? locations[0] : {};
@@ -61,6 +62,16 @@ module.exports = (post, oldPost) => {
     tagsRemoved: oldTagsRemoved = [[]],
     tagsAdded: oldTagsAdded = [[]],
   } = oldPost;
+
+  const {
+    ageFrom = null,
+    ageTo = null,
+    gender = null,
+    deviceType = null,
+    deviceBrand = null,
+    clientBrand = null,
+    brandCredit = null,
+  } = advancedOptions;
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
 
@@ -142,11 +153,11 @@ module.exports = (post, oldPost) => {
     postSourceType: 'CMS',
     postSource: post.source,
     postAuthor: nullable(author),
-    postAgeRestriction: null,
-    postGenderRestriction: null,
+    postAgeRestriction: `${ageFrom}-${ageTo}`,
+    postGenderRestriction: gender,
     postTarget: null,
-    postDeviceType: null,
-    postDeviceBrand: null,
+    postDeviceType: deviceType,
+    postDeviceBrand: deviceBrand,
     postDeviceModel: null,
     postMobileDevice: null,
     postNetworkRestriction: null,
