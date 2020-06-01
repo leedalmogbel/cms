@@ -83,7 +83,7 @@ module.exports.linkClickExternal = async (event, context) => {
 
     const required = () => {
       let validRequired = true;
-      [
+      Object.values([
         big_data_session_id,
         kapp_user_id,
         action_taken,
@@ -92,30 +92,36 @@ module.exports.linkClickExternal = async (event, context) => {
         post_id,
         link_destination,
         mobile_timestamp,
-      ].map((value) => {
-        validRequired = !((typeof value === 'undefined' || value.length === 0));
+      ]).map((value) => {
+        if (validRequired !== false) {
+          validRequired = typeof value !== 'undefined' && (value.length > 0 || Number(value) === value);
+        }
       });
       return validRequired;
     };
 
     const doubleValidity = () => {
       let double = true;
-      [
+      Object.values([
         longitude,
         latitude,
-      ].map((value) => {
-        double = Number(value) === value && value % 1 !== 0;
+      ]).map((value) => {
+        if (double !== false) {
+          double = Number(value) === value && value % 1 !== 0;
+        }
       });
       return double;
     };
 
     const intValidity = () => {
       let integer = true;
-      [
+      Object.values([
         event_timestamp,
         mobile_timestamp,
-      ].map((value) => {
-        integer = Number(value) === value && value % 1 === 0;
+      ]).map((value) => {
+        if (integer !== false) {
+          integer = Number(value) === value && value % 1 === 0;
+        }
       });
       return integer;
     };
@@ -126,8 +132,8 @@ module.exports.linkClickExternal = async (event, context) => {
 
     return valid;
   };
-
-  if (!validations()) {
+  await validations();
+  if (!await validations()) {
     return {
       statusCode: 400,
       headers: {
@@ -149,19 +155,19 @@ module.exports.linkClickExternal = async (event, context) => {
     DeliveryStreamName,
     Record: {
       Data: JSON.stringify({
-        ConnectivityType,
-        Longitude,
-        Latitude,
-        SessionID,
-        BigDataSessionId,
-        KAPPUserId,
-        IPAddress,
-        ActionTaken,
-        ClickedContent,
-        EventTimeStamp,
-        PostId,
-        LinkDestination,
-        MobileTimeStamp,
+        connectivity_type,
+        longitude,
+        latitude,
+        session_id,
+        big_data_session_id,
+        kapp_user_id,
+        ip_address,
+        action_taken,
+        clicked_content,
+        event_timestamp,
+        post_id,
+        link_destination,
+        mobile_timestamp,
       }),
     },
   }).promise();
