@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 require('module').Module._initPaths();
 const awilix = require('awilix');
 const config = require('config');
@@ -62,21 +63,83 @@ module.exports.linkClickExternal = async (event, context) => {
   const DeliveryStreamName = process.env.FIREHOSE_CLICK_EXTERNAL_LINK;
 
   const {
-    ConnectivityType,
-    Longitude,
-    Latitude,
-    SessionID,
-    BigDataSessionId,
-    KAPPUserId,
-    IPAddress,
-    ActionTaken,
-    ClickedContent,
-    EventTimeStamp,
-    PostId,
-    LinkDestination,
-    MobileTimeStamp,
+    connectivity_type,
+    longitude,
+    latitude,
+    session_id,
+    big_data_session_id,
+    kapp_user_id,
+    ip_address,
+    action_taken,
+    clicked_content,
+    event_timestamp,
+    post_id,
+    link_destination,
+    mobile_timestamp,
   } = JSON.parse(event.body);
 
+  const validations = async () => {
+    let valid = true;
+
+    const required = () => {
+      let validRequired = true;
+      [
+        bid_data_session_id,
+        kapp_user_id,
+        action_taken,
+        clicked_content,
+        event_timestamp,
+        post_id,
+        link_destination,
+        mobile_timestamp,
+      ].map((value) => {
+        validRequired = !((typeof value === 'undefined' || value.length === 0));
+      });
+      return validRequired;
+    };
+
+    const doubleValidity = () => {
+      let double = true;
+      [
+        longitude,
+        latitude,
+      ].map((value) => {
+        double = Number(value) === value && value % 1 !== 0;
+      });
+      return double;
+    };
+
+    const intValidity = () => {
+      let integer = true;
+      [
+        event_timestamp,
+        mobile_timestamp,
+      ].map((value) => {
+        integer = Number(value) === value && value % 1 === 0;
+      });
+      return integer;
+    };
+
+    valid = required();
+    valid = doubleValidity();
+    valid = intValidity();
+
+    return valid;
+  };
+
+  if (!validations()) {
+    return {
+      statusCode: 400,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+        'X-Content-Type-Options': 'nosniff',
+      },
+      body: JSON.stringify({
+        message: 'Bad Request',
+      }),
+    };
+  }
 
   const firehose = new AWS.Firehose({
     apiVersion: '2015-08-04',
