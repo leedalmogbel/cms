@@ -84,7 +84,7 @@ module.exports.linkClickExternal = async (event, context) => {
     const required = () => {
       let validRequired = true;
       [
-        bid_data_session_id,
+        big_data_session_id,
         kapp_user_id,
         action_taken,
         clicked_content,
