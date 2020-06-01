@@ -65,7 +65,7 @@ module.exports = (post) => {
     deviceBrand = null,
     clientBrand = null,
     brandCredit = null,
-  } = advancedOptions;
+  } = advancedOptions || {};
 
   const author = !firstName || !lastName ? null : `${firstName} ${lastName}`;
 
