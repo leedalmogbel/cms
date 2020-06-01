@@ -51,10 +51,11 @@ module.exports = {
         allowNull: true,
         defaultValue: null,
       },
-      recalledAt: DataTypes.DATE,
-      scheduledAt: DataTypes.DATE,
-      expiredAt: DataTypes.DATE,
-      publishedAt: DataTypes.DATE,
+      advancedOptions: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: null,
+      },
       isActive: {
         type: DataTypes.INTEGER,
         defaultValue: 1,
@@ -63,6 +64,10 @@ module.exports = {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
       },
+      recalledAt: DataTypes.DATE,
+      scheduledAt: DataTypes.DATE,
+      expiredAt: DataTypes.DATE,
+      publishedAt: DataTypes.DATE,
     }, {
       tableName: 'posts',
       timestamps: true,

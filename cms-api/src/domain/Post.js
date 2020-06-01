@@ -29,6 +29,9 @@ const Post = attributes({
   isLocked: Number,
   lockUser: Object,
   recall: Object,
+  advancedOptions: Object,
+  isActive: Number,
+  isEmbargo: Boolean,
   recalledAt: {
     type: Date,
     nullable: true,
@@ -47,8 +50,6 @@ const Post = attributes({
   },
   createdAt: Date,
   updatedAt: Date,
-  isActive: Number,
-  isEmbargo: Boolean,
 })(class Post {
   // Add validation functions below
   // e.g.:
