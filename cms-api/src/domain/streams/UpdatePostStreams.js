@@ -160,6 +160,8 @@ module.exports = (post, oldPost) => {
     postDeviceBrand: deviceBrand,
     postDeviceModel: null,
     postMobileDevice: null,
+    postClientBrand: clientBrand,
+    postBrandCredit: brandCredit,
     postNetworkRestriction: null,
     postTimeOfDay: null,
     postDayOfWeek: null,
