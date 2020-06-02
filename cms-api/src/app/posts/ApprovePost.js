@@ -100,6 +100,7 @@ class ApprovePost extends Operation {
 
         data = {
           ...data,
+          id,
           postId,
           placeId,
           address,

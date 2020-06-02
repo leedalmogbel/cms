@@ -106,6 +106,7 @@ class PublishPost extends Operation {
 
         data = {
           ...data,
+          id,
           postId,
           placeId,
           address,

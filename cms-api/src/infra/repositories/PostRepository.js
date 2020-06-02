@@ -6,7 +6,13 @@ const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
   constructor({
-    PostModel, UserModel, RecycleBinModel, PostTagModel, PostAdvisoryRepository, PostAdvisoryModel,
+    PostModel,
+    UserModel,
+    RecycleBinModel,
+    PostTagModel,
+    PostAdvisoryModel,
+    PostAdvisoryRepository,
+    PostTagRepository,
   }) {
     super(PostModel);
 
@@ -15,9 +21,10 @@ class PostRepository extends BaseRepository {
     this.PostTagModel = PostTagModel;
     this.PostAdvisoryRepository = PostAdvisoryRepository;
     this.PostAdvisoryModel = PostAdvisoryModel;
+    this.PostTagRepository = PostTagRepository;
   }
 
-  buildListArgs(data = {}) {
+  async buildListArgs(data = {}) {
     // init fetch arguments
     const args = {
       where: {
@@ -33,41 +40,61 @@ class PostRepository extends BaseRepository {
 
     let order = [['updatedAt', 'DESC']];
 
-    // set keyword
-    if ('keyword' in data
-      && data.keyword) {
-      if ('ids' in data) {
-        args.where = {
-          id: data.ids,
-        };
-      } else {
-        data.keyword = data.keyword.toLowerCase();
-        args.where = {
-          [Op.or]: [
-            Sequelize.where(
-              Sequelize.fn('lower', Sequelize.col('title')),
-              {
-                [Op.like]: `%${data.keyword}%`,
-              },
-            ),
-            Sequelize.where(
-              Sequelize.fn('lower', Sequelize.col('content')),
-              {
-                [Op.like]: `%${data.keyword}%`,
-              },
-            ),
-          ],
-        };
-      }
+    // filter multiple keyword
+    if ('keyword' in data && Array.isArray(data.keyword) && data.keyword.length > 0) {
+      let keywordArgs = [];
+
+      await Promise.all(
+        data.keyword.map(async (key) => {
+          key = key.toLowerCase();
+  
+          // filter by tags
+          const postTags = await this.PostTagRepository.filterPostTagsByName(key);
+          const postTagIds = postTags.map((pTags) => pTags.postId);
+
+          keywordArgs = [
+            ...keywordArgs,
+            Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('title')), 'LIKE', `%${key}%`),
+            Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('content')), 'LIKE', `%${key}%`),
+            {
+              id: postTagIds,
+            },
+          ];
+        }),
+      );
+
+      args.where = {
+        ...args.where,
+        [Op.and]: [{
+          [Op.or]: keywordArgs,
+        }],
+      };
     }
 
-    if ('location' in data && data.location) {
-      args.where[Op.and] = Sequelize.where(
-        Sequelize.literal('LOWER(JSON_EXTRACT(locations, \'$[*].address\'))'),
-        {
-          [Op.like]: `%${data.location.toLowerCase()}%`,
-        },
+    if ('location' in data && Array.isArray(data.location) && data.location.length > 0) {
+      let locArgs = [];
+
+      await Promise.all(
+        data.location.map(async (loc) => {
+          locArgs = [
+            ...locArgs,
+            Sequelize.where(
+              Sequelize.literal('LOWER(JSON_EXTRACT(locations, \'$[*].address\'))'),
+              {
+                [Op.like]: `%${loc.toLowerCase()}%`,
+              },
+            ),
+          ];
+        }),
       );
+
+      args.where = {
+        ...args.where,
+        [Op.and]: [
+          ...args.where[Op.and],
+          { [Op.or]: locArgs },
+        ],
+      };
     }
 
     if ('category' in data) {
@@ -133,9 +160,11 @@ class PostRepository extends BaseRepository {
     return args;
   }
 
-  getPosts(args) {
+  async getPosts(args) {
+    args = await this.buildListArgs(args);
+
     return this.getAll({
-      ...this.buildListArgs(args),
+      ...args,
       include: [
         {
           model: this.UserModel,
@@ -174,8 +203,9 @@ class PostRepository extends BaseRepository {
     });
   }
 
-  count(args) {
-    return this.model.count(this.buildListArgs(args));
+  async count(args) {
+    args = await this.buildListArgs(args);
+    return this.model.count(args);
   }
 
   async moveToBin(id) {

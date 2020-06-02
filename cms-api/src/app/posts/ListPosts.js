@@ -14,23 +14,7 @@ class ListPosts extends Operation {
 
     try {
       let posts = await this.PostRepository.getPosts(args);
-      let total = await this.PostRepository.count(args);
-
-      if ('keyword' in args) {
-        const postIds = posts.map((post) => post.id);
-        const postTags = await this.PostTagRepository.filterPostTagsByName(args.keyword);
-        const postTagIds = postTags.map((pTags) => pTags.postId);
-
-        posts = await this.PostRepository.getPosts({
-          ...args,
-          ids: Array.from(new Set([...postIds, ...postTagIds])),
-        });
-
-        total = await this.PostRepository.count({
-          ...args,
-          ids: Array.from(new Set([...postIds, ...postTagIds])),
-        });
-      }
+      const total = await this.PostRepository.count(args);
 
       posts = posts.map((post) => {
         post = post.toJSON();
