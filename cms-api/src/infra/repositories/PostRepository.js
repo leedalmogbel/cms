@@ -13,6 +13,7 @@ class PostRepository extends BaseRepository {
     PostAdvisoryModel,
     PostAdvisoryRepository,
     PostTagRepository,
+    httpClient,
   }) {
     super(PostModel);
 
@@ -22,6 +23,7 @@ class PostRepository extends BaseRepository {
     this.PostAdvisoryRepository = PostAdvisoryRepository;
     this.PostAdvisoryModel = PostAdvisoryModel;
     this.PostTagRepository = PostTagRepository;
+    this.httpClient = httpClient;
   }
 
   async buildListArgs(data = {}) {
@@ -154,7 +156,7 @@ class PostRepository extends BaseRepository {
         args.where.createdAt = {
           [Op.between]: [
             new Date(dateFrom).toISOString(),
-            new Date(dateTo).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
 
@@ -170,7 +172,7 @@ class PostRepository extends BaseRepository {
         args.where.publishedAt = {
           [Op.between]: [
             new Date(dateFrom).toISOString(),
-            new Date(dateTo).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
 
@@ -186,7 +188,7 @@ class PostRepository extends BaseRepository {
         args.where.updatedAt = {
           [Op.between]: [
             new Date(dateFrom).toISOString(),
-            new Date(dateTo).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
 
@@ -202,7 +204,7 @@ class PostRepository extends BaseRepository {
         args.where.recalledAt = {
           [Op.between]: [
             new Date(dateFrom).toISOString(),
-            new Date(dateTo).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
 
@@ -335,6 +337,24 @@ class PostRepository extends BaseRepository {
         },
       });
     });
+  }
+
+  async getPostCategory(categoryId) {
+    try {
+      const { category } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/category/${categoryId}`, {});
+      return category.name;
+    } catch (e) {
+      throw new Error('Post category not found');
+    }
+  }
+
+  async getPostSubCategory(subCategoryId) {
+    try {
+      const { subCategory } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/subcategory/${subCategoryId}`, {});
+      return subCategory.name;
+    } catch (e) {
+      throw new Error('Post subcategory not found');
+    }
   }
 }
 

@@ -16,32 +16,43 @@ class ListPosts extends Operation {
       let posts = await this.PostRepository.getPosts(args);
       const total = await this.PostRepository.count(args);
 
-      posts = posts.map((post) => {
-        post = post.toJSON();
-        const {
-          isLocked,
-          lockUser,
-          expiredAt,
-          scheduledAt,
-        } = post;
-
-        if (scheduledAt !== null) {
-          post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
-        }
-
-        if (expiredAt !== null) {
-          post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
-        }
-
-        if (isLocked && lockUser && session) {
-          if (parseInt(lockUser.userId, 10) === session.id) {
-            post.isLocked = null;
-            post.lockUser = null;
+      posts = await Promise.all(
+        posts.map(async (post) => {
+          post = post.toJSON();
+  
+          const {
+            isLocked,
+            lockUser,
+            expiredAt,
+            scheduledAt,
+          } = post;
+  
+          if (scheduledAt !== null) {
+            post.scheduledAt = scheduledAt.includes('1970') ? null : scheduledAt;
           }
-        }
-
-        return post;
-      });
+  
+          if (expiredAt !== null) {
+            post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
+          }
+  
+          if (post.categoryId) {
+            post.category = await this.PostRepository.getPostCategory(post.categoryId);
+          }
+      
+          if (post.subCategoryId) {
+            post.subCategory = await this.PostRepository.getPostSubCategory(post.subCategoryId);
+          }
+  
+          if (isLocked && lockUser && session) {
+            if (parseInt(lockUser.userId, 10) === session.id) {
+              post.isLocked = null;
+              post.lockUser = null;
+            }
+          }
+  
+          return post;
+        })
+      );
 
       this.emit(SUCCESS, {
         results: posts,
