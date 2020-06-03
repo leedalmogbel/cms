@@ -71,6 +71,7 @@ class PostRepository extends BaseRepository {
       };
     }
 
+    // filter multiple location
     if ('location' in data && Array.isArray(data.location) && data.location.length > 0) {
       let locArgs = [];
 
@@ -99,25 +100,12 @@ class PostRepository extends BaseRepository {
       };
     }
 
+    // filter category
     if ('category' in data) {
       args.where.category = data.category;
     }
 
-    // set date
-    if ('date' in data && data.date) {
-      const date = new Date(data.date);
-      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
-      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
-
-      // default filter
-      args.where.updatedAt = {
-        [Op.between]: [
-          startDate,
-          endDate,
-        ],
-      };
-    }
-
+    // filter writer
     if ('writer' in data) {
       args.where = {
         ...args.where,
@@ -135,6 +123,7 @@ class PostRepository extends BaseRepository {
       };
     }
 
+    // filter editor
     if ('editor' in data) {
       args.where = {
         ...args.where,
@@ -150,6 +139,75 @@ class PostRepository extends BaseRepository {
           }],
         ],
       };
+    }
+
+    // filter created date
+    if ('date' in data && data.date) {
+      const { dateFrom, dateTo } = data.date;
+
+      if (dateFrom && dateTo) {
+        // NOTE: reference for future use
+        /* const date = new Date(data.date);
+        const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
+        const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString(); */
+
+        args.where.createdAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(dateTo).toISOString(),
+          ],
+        };
+
+        order = [['createdAt', 'DESC']];
+      }
+    }
+
+    // filter published date
+    if ('publishedDate' in data && data.publishedDate) {
+      const { dateFrom, dateTo } = data.publishedDate;
+
+      if (dateFrom && dateTo) {
+        args.where.publishedAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(dateTo).toISOString(),
+          ],
+        };
+
+        order = [['publishedAt', 'DESC']];
+      }
+    }
+
+    // filter modified date
+    if ('modifiedDate' in data && data.modifiedDate) {
+      const { dateFrom, dateTo } = data.modifiedDate;
+
+      if (dateFrom && dateTo) {
+        args.where.updatedAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(dateTo).toISOString(),
+          ],
+        };
+
+        order = [['updatedAt', 'DESC']];
+      }
+    }
+
+    // filter recalled date
+    if ('recalledDate' in data && data.recalledDate) {
+      const { dateFrom, dateTo } = data.recalledDate;
+
+      if (dateFrom && dateTo) {
+        args.where.recalledAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(dateTo).toISOString(),
+          ],
+        };
+
+        order = [['recalledAt', 'DESC']];
+      }
     }
 
     if ('status' in data) {
