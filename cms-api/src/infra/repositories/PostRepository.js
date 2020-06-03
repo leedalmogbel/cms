@@ -103,8 +103,13 @@ class PostRepository extends BaseRepository {
     }
 
     // filter category
-    if ('category' in data) {
-      args.where.category = data.category;
+    if ('category' in data && Array.isArray(data.category) && data.category.length > 0) {
+      args.where.categoryId = data.category;
+    }
+
+    // filter subcategory
+    if ('subCategory' in data && Array.isArray(data.subCategory) && data.subCategory.length > 0) {
+      args.where.subCategoryId = data.subCategory;
     }
 
     // filter writer
