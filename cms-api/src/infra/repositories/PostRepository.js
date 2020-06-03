@@ -91,8 +91,10 @@ class PostRepository extends BaseRepository {
       args.where = {
         ...args.where,
         [Op.and]: [
-          ...args.where[Op.and],
-          { [Op.or]: locArgs },
+          ...args.where[Op.and] ? args.where[Op.and] : [],
+          [{
+            [Op.or]: locArgs,
+          }],
         ],
       };
     }
@@ -112,6 +114,40 @@ class PostRepository extends BaseRepository {
         [Op.between]: [
           startDate,
           endDate,
+        ],
+      };
+    }
+
+    if ('writer' in data) {
+      args.where = {
+        ...args.where,
+        [Op.and]: [
+          ...args.where[Op.and] ? args.where[Op.and] : [],
+          [{
+            [Op.and]: Sequelize.where(
+              Sequelize.literal('contributors->"$.writers[0].id"'),
+              {
+                [Op.eq]: Number(data.writer),
+              },
+            ),
+          }],
+        ],
+      };
+    }
+
+    if ('editor' in data) {
+      args.where = {
+        ...args.where,
+        [Op.and]: [
+          ...args.where[Op.and] ? args.where[Op.and] : [],
+          [{
+            [Op.and]: Sequelize.where(
+              Sequelize.literal('contributors->"$.editor.id"'),
+              {
+                [Op.eq]: Number(data.editor),
+              },
+            ),
+          }],
         ],
       };
     }
