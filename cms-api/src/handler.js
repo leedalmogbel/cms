@@ -113,22 +113,8 @@ module.exports.linkClickExternal = async (event, context) => {
       return double;
     };
 
-    const intValidity = () => {
-      let integer = true;
-      Object.values([
-        event_timestamp,
-        mobile_timestamp,
-      ]).map((value) => {
-        if (integer !== false) {
-          integer = Number(value) === value && value % 1 === 0;
-        }
-      });
-      return integer;
-    };
-
     valid = required();
     valid = doubleValidity();
-    valid = intValidity();
 
     return valid;
   };
