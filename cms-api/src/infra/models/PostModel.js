@@ -13,6 +13,8 @@ module.exports = {
       contributors: DataTypes.JSON,
       category: DataTypes.STRING,
       subCategory: DataTypes.STRING,
+      categoryId: DataTypes.STRING,
+      subCategoryId: DataTypes.STRING,
       postId: DataTypes.STRING,
       title: DataTypes.STRING(500),
       content: DataTypes.TEXT,

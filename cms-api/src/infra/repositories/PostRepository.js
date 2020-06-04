@@ -6,7 +6,14 @@ const { Op } = Sequelize;
 
 class PostRepository extends BaseRepository {
   constructor({
-    PostModel, UserModel, RecycleBinModel, PostTagModel, PostAdvisoryRepository, PostAdvisoryModel,
+    PostModel,
+    UserModel,
+    RecycleBinModel,
+    PostTagModel,
+    PostAdvisoryModel,
+    PostAdvisoryRepository,
+    PostTagRepository,
+    httpClient,
   }) {
     super(PostModel);
 
@@ -15,9 +22,11 @@ class PostRepository extends BaseRepository {
     this.PostTagModel = PostTagModel;
     this.PostAdvisoryRepository = PostAdvisoryRepository;
     this.PostAdvisoryModel = PostAdvisoryModel;
+    this.PostTagRepository = PostTagRepository;
+    this.httpClient = httpClient;
   }
 
-  buildListArgs(data = {}) {
+  async buildListArgs(data = {}) {
     // init fetch arguments
     const args = {
       where: {
@@ -33,60 +42,179 @@ class PostRepository extends BaseRepository {
 
     let order = [['updatedAt', 'DESC']];
 
-    // set keyword
-    if ('keyword' in data
-      && data.keyword) {
-      if ('ids' in data) {
-        args.where = {
-          id: data.ids,
-        };
-      } else {
-        data.keyword = data.keyword.toLowerCase();
-        args.where = {
-          [Op.or]: [
+    // filter multiple keyword
+    if ('keyword' in data && Array.isArray(data.keyword) && data.keyword.length > 0) {
+      let keywordArgs = [];
+
+      await Promise.all(
+        data.keyword.map(async (key) => {
+          key = key.toLowerCase();
+  
+          // filter by tags
+          const postTags = await this.PostTagRepository.filterPostTagsByName(key);
+          const postTagIds = postTags.map((pTags) => pTags.postId);
+
+          keywordArgs = [
+            ...keywordArgs,
+            Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('title')), 'LIKE', `%${key}%`),
+            Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('content')), 'LIKE', `%${key}%`),
+            {
+              id: postTagIds,
+            },
+          ];
+        }),
+      );
+
+      args.where = {
+        ...args.where,
+        [Op.and]: [{
+          [Op.or]: keywordArgs,
+        }],
+      };
+    }
+
+    // filter multiple location
+    if ('location' in data && Array.isArray(data.location) && data.location.length > 0) {
+      let locArgs = [];
+
+      await Promise.all(
+        data.location.map(async (loc) => {
+          locArgs = [
+            ...locArgs,
             Sequelize.where(
-              Sequelize.fn('lower', Sequelize.col('title')),
+              Sequelize.literal('LOWER(JSON_EXTRACT(locations, \'$[*].address\'))'),
               {
-                [Op.like]: `%${data.keyword}%`,
+                [Op.like]: `%${loc.toLowerCase()}%`,
               },
             ),
-            Sequelize.where(
-              Sequelize.fn('lower', Sequelize.col('content')),
+          ];
+        }),
+      );
+
+      args.where = {
+        ...args.where,
+        [Op.and]: [
+          ...args.where[Op.and] ? args.where[Op.and] : [],
+          [{
+            [Op.or]: locArgs,
+          }],
+        ],
+      };
+    }
+
+    // filter category
+    if ('category' in data && Array.isArray(data.category) && data.category.length > 0) {
+      args.where.categoryId = data.category;
+    }
+
+    // filter subcategory
+    if ('subCategory' in data && Array.isArray(data.subCategory) && data.subCategory.length > 0) {
+      args.where.subCategoryId = data.subCategory;
+    }
+
+    // filter writer
+    if ('writer' in data) {
+      args.where = {
+        ...args.where,
+        [Op.and]: [
+          ...args.where[Op.and] ? args.where[Op.and] : [],
+          [{
+            [Op.and]: Sequelize.where(
+              Sequelize.literal('contributors->"$.writers[0].id"'),
               {
-                [Op.like]: `%${data.keyword}%`,
+                [Op.eq]: Number(data.writer),
               },
             ),
+          }],
+        ],
+      };
+    }
+
+    // filter editor
+    if ('editor' in data) {
+      args.where = {
+        ...args.where,
+        [Op.and]: [
+          ...args.where[Op.and] ? args.where[Op.and] : [],
+          [{
+            [Op.and]: Sequelize.where(
+              Sequelize.literal('contributors->"$.editor.id"'),
+              {
+                [Op.eq]: Number(data.editor),
+              },
+            ),
+          }],
+        ],
+      };
+    }
+
+    // filter created date
+    if ('date' in data && data.date) {
+      const { dateFrom, dateTo } = data.date;
+
+      if (dateFrom && dateTo) {
+        // NOTE: reference for future use
+        /* const date = new Date(data.date);
+        const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
+        const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString(); */
+
+        args.where.createdAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
+
+        order = [['createdAt', 'DESC']];
       }
     }
 
-    if ('location' in data && data.location) {
-      args.where[Op.and] = Sequelize.where(
-        Sequelize.literal('LOWER(JSON_EXTRACT(locations, \'$[*].address\'))'),
-        {
-          [Op.like]: `%${data.location.toLowerCase()}%`,
-        },
-      );
+    // filter published date
+    if ('publishedDate' in data && data.publishedDate) {
+      const { dateFrom, dateTo } = data.publishedDate;
+
+      if (dateFrom && dateTo) {
+        args.where.publishedAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+          ],
+        };
+
+        order = [['publishedAt', 'DESC']];
+      }
     }
 
-    if ('category' in data) {
-      args.where.category = data.category;
+    // filter modified date
+    if ('modifiedDate' in data && data.modifiedDate) {
+      const { dateFrom, dateTo } = data.modifiedDate;
+
+      if (dateFrom && dateTo) {
+        args.where.updatedAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+          ],
+        };
+
+        order = [['updatedAt', 'DESC']];
+      }
     }
 
-    // set date
-    if ('date' in data && data.date) {
-      const date = new Date(data.date);
-      const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
-      const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString();
+    // filter recalled date
+    if ('recalledDate' in data && data.recalledDate) {
+      const { dateFrom, dateTo } = data.recalledDate;
 
-      // default filter
-      args.where.updatedAt = {
-        [Op.between]: [
-          startDate,
-          endDate,
-        ],
-      };
+      if (dateFrom && dateTo) {
+        args.where.recalledAt = {
+          [Op.between]: [
+            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+          ],
+        };
+
+        order = [['recalledAt', 'DESC']];
+      }
     }
 
     if ('status' in data) {
@@ -133,9 +261,11 @@ class PostRepository extends BaseRepository {
     return args;
   }
 
-  getPosts(args) {
+  async getPosts(args) {
+    args = await this.buildListArgs(args);
+
     return this.getAll({
-      ...this.buildListArgs(args),
+      ...args,
       include: [
         {
           model: this.UserModel,
@@ -174,8 +304,9 @@ class PostRepository extends BaseRepository {
     });
   }
 
-  count(args) {
-    return this.model.count(this.buildListArgs(args));
+  async count(args) {
+    args = await this.buildListArgs(args);
+    return this.model.count(args);
   }
 
   async moveToBin(id) {
@@ -211,6 +342,24 @@ class PostRepository extends BaseRepository {
         },
       });
     });
+  }
+
+  async getPostCategory(categoryId) {
+    try {
+      const { category } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/category/${categoryId}`, {});
+      return category.name;
+    } catch (e) {
+      throw new Error('Post category not found');
+    }
+  }
+
+  async getPostSubCategory(subCategoryId) {
+    try {
+      const { subCategory } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/subcategory/${subCategoryId}`, {});
+      return subCategory.name;
+    } catch (e) {
+      throw new Error('Post subcategory not found');
+    }
   }
 }
 

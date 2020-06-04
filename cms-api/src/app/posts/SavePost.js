@@ -32,7 +32,10 @@ class SavePost extends Operation {
     }
 
     const { postId } = oldPost;
-    data = await this.PostUtils.build(data);
+    data = await this.PostUtils.build({
+      ...data,
+      id,
+    });
 
     try {
       // if autosave use silent update and auto lock post

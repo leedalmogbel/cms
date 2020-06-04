@@ -7,6 +7,8 @@ const Post = attributes({
   contributors: Object,
   category: String,
   subCategory: String,
+  categoryId: String,
+  subCategoryId: String,
   postId: String,
   title: String,
   content: String,
@@ -62,10 +64,6 @@ const Post = attributes({
     if (this.status !== 'draft') {
       if (!this.title || !this.title.length) {
         throw new Error('Title is required');
-      }
-
-      if (!this.category || !this.category.length) {
-        throw new Error('Category is required');
       }
 
       if (!this.source || !this.source.length) {
