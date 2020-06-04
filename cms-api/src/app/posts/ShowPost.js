@@ -18,18 +18,14 @@ class ShowPost extends Operation {
       return this.emit(NOT_FOUND, new Error('Post not found'));
     }
 
-    if (post.categoryId) {
-      try {
-        post.category = await this.PostRepository
-          .getPostCategory(post.categoryId);
-      } catch (e) {}
+    if (post.categoryId && post.categoryId.match(/^[a-zA-Z0-9-_]+$/)) {
+      post.category = await this.PostRepository
+        .getPostCategory(post.categoryId);
     }
 
-    if (post.subCategoryId) {
-      try {
-        post.subCategory = await this.PostRepository
-          .getPostSubCategory(post.subCategoryId);
-      } catch (e) {}
+    if (post.subCategoryId && post.subCategoryId.match(/^[a-zA-Z0-9-_]+$/)) {
+      post.subCategory = await this.PostRepository
+        .getPostSubCategory(post.subCategoryId);
     }
 
     this.emit(SUCCESS, {

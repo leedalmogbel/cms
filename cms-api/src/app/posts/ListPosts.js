@@ -35,18 +35,14 @@ class ListPosts extends Operation {
             post.expiredAt = expiredAt.includes('1970') ? null : expiredAt;
           }
   
-          if (post.categoryId) {
-            try {
-              post.category = await this.PostRepository
-                .getPostCategory(post.categoryId);
-            } catch (e) {}
+          if (post.categoryId && post.categoryId.match(/^[a-zA-Z0-9-_]+$/)) {
+            post.category = await this.PostRepository
+              .getPostCategory(post.categoryId);
           }
       
-          if (post.subCategoryId) {
-            try {
-              post.subCategory = await this.PostRepository
-                .getPostSubCategory(post.subCategoryId);
-            } catch (e) {}
+          if (post.subCategoryId && post.subCategoryId.match(/^[a-zA-Z0-9-_]+$/)) {
+            post.subCategory = await this.PostRepository
+              .getPostSubCategory(post.subCategoryId);
           }
   
           if (isLocked && lockUser && session) {
