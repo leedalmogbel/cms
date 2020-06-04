@@ -19,11 +19,17 @@ class ShowPost extends Operation {
     }
 
     if (post.categoryId) {
-      post.category = await this.PostRepository.getPostCategory(post.categoryId);
+      try {
+        post.category = await this.PostRepository
+          .getPostCategory(post.categoryId);
+      } catch (e) {}
     }
 
     if (post.subCategoryId) {
-      post.subCategory = await this.PostRepository.getPostSubCategory(post.subCategoryId);
+      try {
+        post.subCategory = await this.PostRepository
+          .getPostSubCategory(post.subCategoryId);
+      } catch (e) {}
     }
 
     this.emit(SUCCESS, {
