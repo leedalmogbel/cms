@@ -348,18 +348,14 @@ class PostRepository extends BaseRepository {
     try {
       const { category } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/category/${categoryId}`, {});
       return category.name;
-    } catch (e) {
-      throw new Error('Post category not found');
-    }
+    } catch (e) {}
   }
 
   async getPostSubCategory(subCategoryId) {
     try {
       const { subCategory } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/subcategory/${subCategoryId}`, {});
       return subCategory.name;
-    } catch (e) {
-      throw new Error('Post subcategory not found');
-    }
+    } catch (e) {}
   }
 }
 
