@@ -153,19 +153,43 @@ class PostRepository extends BaseRepository {
       const { dateFrom, dateTo } = data.date;
 
       if (dateFrom && dateTo) {
-        // NOTE: reference for future use
-        /* const date = new Date(data.date);
-        const startDate = new Date(date.setHours(0, 0, 0, 0)).toISOString();
-        const endDate = new Date(date.setHours(24, 0, 0, 0)).toISOString(); */
-
-        args.where.createdAt = {
-          [Op.between]: [
-            new Date(dateFrom).toISOString(),
-            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
-          ],
+        args.where = {
+          ...args.where,
+          [Op.or]: [{
+            createdAt: {
+              [Op.between]: [
+                new Date(dateFrom).toISOString(),
+                new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+              ],
+            },
+          }],
         };
 
         order = [['createdAt', 'DESC']];
+      }
+    }
+
+    // filter recalled date
+    if ('recalledDate' in data && data.recalledDate) {
+      const { dateFrom, dateTo } = data.recalledDate;
+
+      if (dateFrom && dateTo) {
+        args.where = {
+          ...args.where,
+          [Op.or]: [
+            ...args.where[Op.or] ? args.where[Op.or] : [],
+            {
+              recalledAt: {
+                [Op.between]: [
+                  new Date(dateFrom).toISOString(),
+                  new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+                ],
+              },
+            },
+          ],
+        };
+
+        order = [['recalledAt', 'DESC']];
       }
     }
 
@@ -174,10 +198,18 @@ class PostRepository extends BaseRepository {
       const { dateFrom, dateTo } = data.publishedDate;
 
       if (dateFrom && dateTo) {
-        args.where.publishedAt = {
-          [Op.between]: [
-            new Date(dateFrom).toISOString(),
-            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+        args.where = {
+          ...args.where,
+          [Op.or]: [
+            ...args.where[Op.or] ? args.where[Op.or] : [],
+            {
+              publishedAt: {
+                [Op.between]: [
+                  new Date(dateFrom).toISOString(),
+                  new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+                ],
+              },
+            },
           ],
         };
 
@@ -190,30 +222,22 @@ class PostRepository extends BaseRepository {
       const { dateFrom, dateTo } = data.modifiedDate;
 
       if (dateFrom && dateTo) {
-        args.where.updatedAt = {
-          [Op.between]: [
-            new Date(dateFrom).toISOString(),
-            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+        args.where = {
+          ...args.where,
+          [Op.or]: [
+            ...args.where[Op.or] ? args.where[Op.or] : [],
+            {
+              updatedAt: {
+                [Op.between]: [
+                  new Date(dateFrom).toISOString(),
+                  new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
+                ],
+              },
+            },
           ],
         };
 
         order = [['updatedAt', 'DESC']];
-      }
-    }
-
-    // filter recalled date
-    if ('recalledDate' in data && data.recalledDate) {
-      const { dateFrom, dateTo } = data.recalledDate;
-
-      if (dateFrom && dateTo) {
-        args.where.recalledAt = {
-          [Op.between]: [
-            new Date(dateFrom).toISOString(),
-            new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
-          ],
-        };
-
-        order = [['recalledAt', 'DESC']];
       }
     }
 
