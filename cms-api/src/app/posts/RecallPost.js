@@ -159,7 +159,7 @@ class RecallPost extends Operation {
 
     console.log('test123', post);
 
-    const { postId, recall } = post;
+    const { postId, recall, recalledAt } = post;
     
     const payload = {
       applicationName: null,
@@ -171,7 +171,7 @@ class RecallPost extends Operation {
       ipAddress: null,
       actionTake: null,
       clickedContent: null,
-      eventTimestamp: null,
+      eventTimestamp: recalledAt,
       postId,
       reasons: recall.reasons,
       description: recall.description,
