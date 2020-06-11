@@ -210,6 +210,11 @@ module.exports.userSeeds = async (event, context, callback) => {
       description: 'KAPP Writer',
       permissions: null,
     },
+    {
+      title: 'administrator',
+      description: 'KAPP Administrator',
+      permissions: null,
+    },
   ];
 
   await Promise.all(
@@ -226,7 +231,17 @@ module.exports.userSeeds = async (event, context, callback) => {
   await Promise.all(
     users.map(async (user) => {
       const usr = await UserRepository.getByEmail(user.email);
-      if (usr) return;
+      
+      if (usr) {
+        const role = await RoleRepository.getByTitle(user.role);
+        if (!role) return;
+
+        delete user.role;
+        user.roleId = role.id;
+
+        await UserRepository.update(usr.id, user);
+        return;
+      }
 
       const role = await RoleRepository.getByTitle(user.role);
       if (!role) return;

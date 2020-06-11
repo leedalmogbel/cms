@@ -1,6 +1,6 @@
 [
   {
-    "role": "editor",
+    "role": "administrator",
     "username": "kpuno",
     "email": "karenmp@abs-cbn.com",
     "password": "",
@@ -54,7 +54,7 @@
     "active": 1
   },
   {
-    "role": "writer",
+    "role": "administrator",
     "username": "gwong",
     "email": "gtwong@abs-cbn.com",
     "password": "",
@@ -72,7 +72,7 @@
     "active": 1
   },
   {
-    "role": "editor",
+    "role": "administrator",
     "username": "mrquirapas",
     "email": "MRQuirapas@abs-cbn.com",
     "password": "",
@@ -81,7 +81,7 @@
     "active": 1
   },
   {
-    "role": "editor",
+    "role": "administrator",
     "username": "baclaro",
     "email": "BNAclaro@abs-cbn.com",
     "password": "",
@@ -99,7 +99,7 @@
     "active": 1
   },
   {
-    "role": "editor",
+    "role": "administrator",
     "username": "mraagas",
     "email": "REMichael@abs-cbn.com",
     "password": "",
