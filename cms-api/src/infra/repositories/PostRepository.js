@@ -160,7 +160,7 @@ class PostRepository extends BaseRepository {
 
         args.where.createdAt = {
           [Op.between]: [
-            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateFrom).setHours(0, 0, 0, 0)).toISOString(),
             new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
@@ -176,7 +176,7 @@ class PostRepository extends BaseRepository {
       if (dateFrom && dateTo) {
         args.where.publishedAt = {
           [Op.between]: [
-            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateFrom).setHours(0, 0, 0, 0)).toISOString(),
             new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
@@ -192,7 +192,7 @@ class PostRepository extends BaseRepository {
       if (dateFrom && dateTo) {
         args.where.updatedAt = {
           [Op.between]: [
-            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateFrom).setHours(0, 0, 0, 0)).toISOString(),
             new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
@@ -208,7 +208,7 @@ class PostRepository extends BaseRepository {
       if (dateFrom && dateTo) {
         args.where.recalledAt = {
           [Op.between]: [
-            new Date(dateFrom).toISOString(),
+            new Date(new Date(dateFrom).setHours(0, 0, 0, 0)).toISOString(),
             new Date(new Date(dateTo).setHours(24, 0, 0, 0)).toISOString(),
           ],
         };
