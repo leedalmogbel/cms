@@ -1,13 +1,13 @@
 const { Operation } = require('../../infra/core/core');
 
 class BaseLocation extends Operation {
-  constructor({ ExportPosts }) {
+  constructor({ ExportPosts, ExportAdvisories }) {
     super();
     this.ExportPosts = ExportPosts;
+    this.ExportAdvisories = ExportAdvisories;
   }
 
   async export(data) {
-    console.log('lambda function event', data);
     const { type } = data;
     let res = 'Done';
 
