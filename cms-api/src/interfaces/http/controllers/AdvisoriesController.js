@@ -10,6 +10,7 @@ class AdvisoriesController extends BaseController {
     const router = Router();
 
     router.get('/', this.injector('ListAdvisories'), this.index);
+    router.get('/export', this.injector('InvokeExportAdvisories'), this.index);
     router.get('/:id', this.injector('ShowAdvisory'), this.show);
     router.post('/', this.injector('CreateInitialAdvisory'), this.create);
     router.put('/:id', this.injector('SaveAdvisory'), this.update);

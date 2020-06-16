@@ -9,16 +9,20 @@ class BaseLocation extends Operation {
   async export(data) {
     console.log('lambda function event', data);
     const { type } = data;
+    let res = 'Done';
 
     switch (type) {
+      case 'advisory':
+        res = await this.ExportAdvisories.execute(data);
+        break;
       case 'post':
       default: {
-        const res = await this.ExportPosts
-          .execute(data);
-
-        return res;
+        res = await this.ExportPosts.execute(data);
+        break;
       }
     }
+    
+    return res;
   }
 }
 

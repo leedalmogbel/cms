@@ -35,7 +35,7 @@ class ExportS3Hook extends Operation {
     await this.NotificationSocket
       .notifyUser(Number(userId), {
         type: 'CSV_EXPORT',
-        message: 'Post csv file is now ready for download.',
+        message: 'Csv file is now ready for download.',
         meta: {
           download_link: url,
         },
