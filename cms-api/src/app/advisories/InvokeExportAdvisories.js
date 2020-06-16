@@ -36,7 +36,7 @@ class InvokeExportAdvisories extends Operation {
 
       this.emit(SUCCESS, {
         meta: {},
-        message: 'Export post now in progress.',
+        message: 'Export advisory now in progress.',
       });
     } catch (error) {
       this.emit(ERROR, error);
