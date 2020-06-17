@@ -80,7 +80,7 @@ class ExportPosts extends Operation {
         IFNULL(category, ''),
         IFNULL(title, ''),
         IFNULL(content, ''),
-        IFNULL(locationAddress, ''),
+        IFNULL(JSON_EXTRACT(locations, '$[0].address'), '') AS "locationAddress",
         IFNULL(tagsOriginal, ''),
         IFNULL(tagsRetained, ''),
         IFNULL(tagsRemoved, ''),
@@ -91,7 +91,7 @@ class ExportPosts extends Operation {
         IFNULL(expiredAt, ''),
         createdAt,
         updatedAt
-      FROM posts as PostModel
+      FROM posts
       ${filters}
       INTO OUTFILE S3 "s3://${bucket}/${prefix}/${filename}"
       FIELDS TERMINATED BY ','
