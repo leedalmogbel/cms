@@ -96,8 +96,8 @@ class ExportPosts extends Operation {
       INTO OUTFILE S3 "s3://${bucket}/${prefix}/${filename}"
       FIELDS TERMINATED BY ','
       OPTIONALLY ENCLOSED BY '"'
-      ESCAPED BY '/'
-      LINES TERMINATED BY '\n'
+      ESCAPED BY '"'
+      LINES TERMINATED BY '\r\n'
       OVERWRITE ON
     `);
 
