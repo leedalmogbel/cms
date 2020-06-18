@@ -20,41 +20,68 @@ class AutocompleteLocationOSM extends Operation {
     };
 
     try {
-      const url = `${process.env.OSM_AUTOSUGGEST_ENDPOINT}?search_type=dfs_query_then_fetch`;
+      const url = `${process.env.OSM_AUTOSUGGEST_ENDPOINT}`;
       const osmResponse = await this.httpClient.post(url, {
-        size: 20,
+        size: 50,
         query: {
-          multi_match: {
-            fields: ['complete_name', 'name'],
-            minimum_should_match: '100%',
-            query: location_string,
+          bool: {
+            must: {
+              bool: {
+                should: [
+                  {
+                    match_phrase: {
+                      'name.synonym': {
+                        query: location_string,
+                        slop: 5,
+                      },
+                    },
+                  },
+                  {
+                    match_phrase: {
+                      complete_name: {
+                        query: location_string,
+                        slop: 25,
+                      },
+                    },
+                  },
+                  {
+                    match_phrase: {
+                      name: {
+                        query: location_string,
+                        slop: 5,
+                        boost: 2,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            should: [
+              {
+                match: {
+                  'name.bigram': {
+                    query: location_string,
+                  },
+                },
+              },
+              {
+                match: {
+                  'complete_name.bigram': {
+                    query: location_string,
+                  },
+                },
+              },
+            ],
           },
         },
         sort: [{
-          _script: {
-            type: 'number',
-            script: {
-              lang: 'painless',
-              inline: "if(params.scores.containsKey(doc['location_level.keyword'].value)) { return params.scores[doc['location_level.keyword'].value];} return 10;",
-              params: {
-                scores: {
-                  Country: 1,
-                  'Island Group': 2,
-                  'Mega Region': 3,
-                  Region: 4,
-                  Province: 5,
-                  Municipality: 6,
-                  District: 7,
-                  Barangay: 8,
-                  Exact: 9,
-                },
-              },
-            },
+          location_level_score:
+          {
             order: 'asc',
           },
         },
         '_score',
-        'complete_name.keyword',
+        'complete_name.keyword_sort',
         ],
       });
 
