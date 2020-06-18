@@ -1,6 +1,9 @@
 
 const { BaseRepository } = require('../../infra/core/core');
 
+const Sequelize = require('sequelize');
+
+const { Op } = Sequelize;
 class UserRepository extends BaseRepository {
   constructor({ UserModel, RoleModel }) {
     super(UserModel);
@@ -24,6 +27,22 @@ class UserRepository extends BaseRepository {
           },
         },
       ];
+
+      if (data.role === 'editor') {
+        const roles = ['editor', 'administrator'];
+
+        args.include = [
+          {
+            model: this.RoleModel,
+            as: 'role',
+            where: {
+              title: {
+                [Op.in]: roles,
+              },
+            },
+          },
+        ];
+      }
     }
 
     // offset
