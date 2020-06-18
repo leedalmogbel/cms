@@ -12,6 +12,7 @@ class GetS3Url extends Operation {
 
   async execute(id, args) {
     const { SUCCESS, ERROR } = this.events;
+
     const today = new Date().toISOString().slice(0, 10);
 
     const Key = `Advisory/${today}/${id}/${args.fileName}`;
@@ -27,6 +28,7 @@ class GetS3Url extends Operation {
         downloadUrl: getUrl,
       },
       meta: {},
+      Key,
     });
   }
 
