@@ -1,5 +1,6 @@
 module.exports = (post) => {
   const nullable = (value) => (typeof value === 'undefined' ? null : value);
+  const nullToString = (value) => (value === null ? '' : value);
   const tagEmpty = (value) => (value.length ? value : [[]]);
   const stringToArray = (value) => (value ? JSON.parse(value.replace(/'/g, '"')) : []);
 
@@ -72,7 +73,7 @@ module.exports = (post) => {
   return {
     postId: post.postId,
     postTitle: post.title,
-    postFullContent: post.content,
+    postFullContent: nullToString(post.content),
     postTechnicalTags: null,
     postOperationalTags: null,
     postKeywords: tagEmpty([
@@ -121,10 +122,10 @@ module.exports = (post) => {
     postCommunityID: null,
     postExpirationDate: post.expiredAt,
     postCategoryId: post.categoryId,
-    postSubCategoryId: post.subCategoryId,
+    postSubCategoryId: nullToString(post.subCategoryId),
     postWordCount: post.title.split(' ').length,
     postCategories: post.category,
-    postSubCategory: post.subCategory,
+    postSubCategory: nullToString(post.subCategory),
     postGeofencedFlag: nullable(isGeofence),
     sensitivityFlag: null,
     sensitivityType: null,
