@@ -15,8 +15,8 @@ class AdvisoriesController extends BaseController {
     router.post('/', this.injector('CreateInitialAdvisory'), this.create);
     router.put('/:id', this.injector('SaveAdvisory'), this.update);
     router.post('/:id/publish', this.injector('PublishAdvisory'), this.update);
-    router.post('/:id/url', this.injector('AttachmentUrlAdvisory'), this.attach);
-    router.post('/:id/geturl', this.injector('GetS3Url'), this.attach);
+    // router.post('/:id/url', this.injector('AttachmentUrlAdvisory'), this.attach);
+    router.post('/:id/geturl', this.injector('GetS3UrlAdvisory'), this.attach);
     router.delete('/', this.injector('RemoveAdvisory'), this.delete);
 
     return router;
