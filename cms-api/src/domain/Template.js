@@ -7,6 +7,8 @@ const Template = attributes({
   modifiedBy: Number,
   category: String,
   subCategory: String,
+  categoryId: String,
+  subCategoryId: String,
   name: String,
   description: String,
   title: String,

@@ -13,6 +13,8 @@ module.exports = {
       modifiedBy: DataTypes.INTEGER,
       category: DataTypes.STRING,
       subCategory: DataTypes.STRING,
+      categoryId: DataTypes.STRING,
+      subCategoryId: DataTypes.STRING,
       name: DataTypes.STRING,
       description: DataTypes.STRING,
       title: DataTypes.STRING(500),
