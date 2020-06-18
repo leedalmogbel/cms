@@ -72,7 +72,8 @@ class ExportPosts extends Operation {
         "scheduledAt",
         "expiredAt",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "recalledAt"
       UNION ALL
       SELECT
         postId,
@@ -90,7 +91,8 @@ class ExportPosts extends Operation {
         IFNULL(scheduledAt, ''),
         IFNULL(expiredAt, ''),
         createdAt,
-        updatedAt
+        updatedAt,
+        recalledAt
       FROM posts
       ${filters}
       INTO OUTFILE S3 "s3://${bucket}/${prefix}/${filename}"
