@@ -368,6 +368,8 @@ class LockPostSocket extends Operation {
         Data: JSON.stringify(data),
       }).promise();
     } catch (err) {
+      console.log('Lock socket send error', err);
+      
       // remove stale connection
       if (err.statusCode === 410) {
         await this.SocketRepository.model.destroy({
