@@ -36,7 +36,7 @@ class InvokeExportAdvisories extends Operation {
 
       this.emit(SUCCESS, {
         meta: {},
-        message: 'Export advisory now in progress.',
+        message: 'Export advisory now in progress. Please do not refresh the page while it\'s exporting. We\'ll notify you when your file is ready for download.',
       });
     } catch (error) {
       this.emit(ERROR, error);
