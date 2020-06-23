@@ -39,7 +39,7 @@ class ExportS3Hook extends Operation {
     await this.NotificationSocket
       .notifyUser(Number(userId), {
         type: 'CSV_EXPORT',
-        message: `${type} file is now ready for download.`,
+        message: `${type} csv file is now ready for download.`,
         meta: {
           download_link: url,
         },
