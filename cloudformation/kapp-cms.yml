@@ -47,7 +47,7 @@ Parameters:
       db.m3.2xlarge, db.m4.large, db.m4.xlarge, db.m4.2xlarge, db.m4.4xlarge, db.m4.10xlarge,
       db.r3.large, db.r3.xlarge, db.r3.2xlarge, db.r3.4xlarge, db.r3.8xlarge, db.m2.xlarge,
       db.m2.2xlarge, db.m2.4xlarge, db.cr1.8xlarge, db.t2.micro, db.t2.small, db.t2.medium,
-      db.t2.large]
+      db.t2.large, db.r5.large]
     ConstraintDescription: must select a valid database instance type.
   #DBAllocatedStorage:
   #  Default: '5'
@@ -77,6 +77,15 @@ Parameters:
   SupportContact:
     Type: String
     Default: Stratpoint
+  attachmentBucketTagName:
+    Type: String
+    Default: kapp-cms-attachments-qa
+  siteBucketTagName:
+    Type: String
+    Default: kapp-cms-attachments-qa
+  websiteCloudfrontTagName:
+    Type: String
+    Default: CMS-Website-Cloudfront-QA
 
 Resources:
   AuroraMySQLDatabase:
@@ -163,7 +172,7 @@ Resources:
       Tags: 
         - 
           Key: "Name"
-          Value: "CMS-frontend-website-s3-QA"
+          Value: !Ref siteBucketTagName
         - 
           Key: "ProjectCode"
           Value: !Ref ProjectCode
@@ -174,7 +183,7 @@ Resources:
   AttachmentBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref siteBucket
+      BucketName: !Ref attachmentBucket
       CorsConfiguration:
         CorsRules:
         - AllowedHeaders: ['Authorization']
@@ -199,7 +208,7 @@ Resources:
       Tags: 
         -
           Key: "Name"
-          Value: "CMS-frontend-website-s3-QA"
+          Value: !Ref attachmentBucketTagName 
         - 
           Key: "ProjectCode"
           Value: !Ref ProjectCode
@@ -242,14 +251,14 @@ Resources:
               Forward: none
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
-          DefaultTTL: '2.0'
-          MaxTTL: '2.0'
-          MinTTL: '2.0'
+          DefaultTTL: '2'
+          MaxTTL: '2'
+          MinTTL: '2'
         PriceClass: PriceClass_All
       Tags:
         - 
           Key: Name
-          Value: CMS-Website-Cloudfront-QA
+          Value: !Ref websiteCloudfrontTagName
         - 
           Key: ProjectCode
           Value: !Ref ProjectCode
