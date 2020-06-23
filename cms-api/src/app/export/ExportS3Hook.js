@@ -31,11 +31,15 @@ class ExportS3Hook extends Operation {
     const url = `https://${bucket}.s3-${process.env.REGION}.amazonaws.com/${rawFile}`;
     console.log('CSV url', url);
 
+    // get type of csv
+    let type = filename.split('-').slice(0, -1).pop();
+    type = type === 'advisories' ? 'Advisory' : 'Post';
+
     // notify user the csv file is ready for download 
     await this.NotificationSocket
       .notifyUser(Number(userId), {
         type: 'CSV_EXPORT',
-        message: 'Csv file is now ready for download.',
+        message: `${type} file is now ready for download.`,
         meta: {
           download_link: url,
         },

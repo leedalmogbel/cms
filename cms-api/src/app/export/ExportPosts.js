@@ -58,11 +58,15 @@ class ExportPosts extends Operation {
     const res = await this.sequelize.query(`
       SELECT 
         "postId", 
-        "contributors",
+        "editor",
+        "writer",
         "category",
         "title",
         "content",
+        "source",
+        "priorityLevel",
         "locationAddress",
+        "geofence",
         "tagsOriginal",
         "tagsRetained",
         "tagsRemoved",
@@ -77,11 +81,19 @@ class ExportPosts extends Operation {
       UNION ALL
       SELECT
         postId,
-        contributors,
+        IFNULL(CONCAT(JSON_UNQUOTE(JSON_EXTRACT(contributors, '$.editor.firstName')), ' ', JSON_UNQUOTE(JSON_EXTRACT(contributors, '$.editor.lastName'))), '') AS "editor",
+        IFNULL(CONCAT(JSON_UNQUOTE(JSON_EXTRACT(contributors, '$.writers[0].firstName')), ' ', JSON_UNQUOTE(JSON_EXTRACT(contributors, '$.writers[0].lastName'))), '') AS "writer",
         IFNULL(category, ''),
         IFNULL(title, ''),
         IFNULL(content, ''),
-        IFNULL(JSON_EXTRACT(locations, '$[0].address'), '') AS "locationAddress",
+        IFNULL(source, ''),
+        CASE priorityLevel
+          WHEN 0 THEN 'normal'
+          WHEN 1 THEN 'urgent'
+          ELSE ''
+        END,
+        IFNULL(JSON_UNQUOTE(JSON_EXTRACT(locations, '$[0].address')), '') AS "locationAddress",
+        IFNULL(JSON_UNQUOTE(JSON_EXTRACT(locations, '$[0].isGeofence')), '') AS "geofence",
         IFNULL(tagsOriginal, ''),
         IFNULL(tagsRetained, ''),
         IFNULL(tagsRemoved, ''),
@@ -102,7 +114,7 @@ class ExportPosts extends Operation {
       LINES TERMINATED BY '\r\n'
       OVERWRITE ON
     `);
-
+    
     console.log('query response', res);
     console.log('Export Ended');
 
