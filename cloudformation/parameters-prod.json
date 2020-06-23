@@ -1,0 +1,71 @@
+[
+    {
+        "ParameterKey": "dbClusterName",
+        "ParameterValue": "kapp-cms-db-prodsim"
+    }, 
+    {
+        "ParameterKey": "dbInstanceName",
+        "ParameterValue": "kapp-cms-db-prodsim-instance"
+    },
+    {
+        "ParameterKey": "VpcId",
+        "ParameterValue": "vpc-0776a1e45c9ae439b"
+    }, 
+    {
+        "ParameterKey": "DBSubnets",
+        "ParameterValue": "subnet-00af53cefa7cc985e,subnet-01b9d165efad48507"
+    },
+    {
+        "ParameterKey": "DBName",
+        "ParameterValue": "kappcmsprodsim"
+    }, 
+    {
+        "ParameterKey": "DBUser",
+        "ParameterValue": "kappcmsprd01"
+    },
+    {
+        "ParameterKey": "DBPassword",
+        "ParameterValue": "kappcms123&&"
+    }, 
+    {
+        "ParameterKey": "DBInstanceClass",
+        "ParameterValue": "db.r5.large"
+    },
+    {
+        "ParameterKey": "MultiAZ",
+        "ParameterValue": "false"
+    }, 
+    {
+        "ParameterKey": "engineVer",
+        "ParameterValue": "5.7.mysql_aurora.2.07.2"
+    },
+    {
+        "ParameterKey": "siteBucket",
+        "ParameterValue": "kapp-cms-frontend-prodsimulation"
+    }, 
+    {
+        "ParameterKey": "attachmentBucket",
+        "ParameterValue": "kapp-cms-attachments-prodsim"
+    },
+    {
+        "ParameterKey": "ProjectCode",
+        "ParameterValue": "CMS"
+    }, 
+    {
+        "ParameterKey": "SupportContact",
+        "ParameterValue": "Stratpoint"
+    },
+    {
+        "ParameterKey": "attachmentBucketTagName",
+        "ParameterValue": "CMS-AttachmentS3-PRODSIM"
+    }, 
+    {
+        "ParameterKey": "siteBucketTagName",
+        "ParameterValue": "CMS-siteBucketS3-PRODSIM"
+    },
+    {
+        "ParameterKey": "websiteCloudfrontTagName",
+        "ParameterValue": "MS-Website-Cloudfront-PRODSIM"
+    }
+    
+]
