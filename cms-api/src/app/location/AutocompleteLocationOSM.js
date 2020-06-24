@@ -30,9 +30,9 @@ class AutocompleteLocationOSM extends Operation {
                 should: [
                   {
                     match_phrase: {
-                      'name.synonym': {
+                      'complete_name.synonym': {
                         query: location_string,
-                        slop: 5,
+                        slop: 20,
                       },
                     },
                   },
@@ -40,15 +40,14 @@ class AutocompleteLocationOSM extends Operation {
                     match_phrase: {
                       complete_name: {
                         query: location_string,
-                        slop: 25,
+                        slop: 20,
                       },
                     },
                   },
                   {
-                    match_phrase: {
+                    match: {
                       name: {
                         query: location_string,
-                        slop: 5,
                         boost: 2,
                       },
                     },
@@ -57,13 +56,6 @@ class AutocompleteLocationOSM extends Operation {
               },
             },
             should: [
-              {
-                match: {
-                  'name.bigram': {
-                    query: location_string,
-                  },
-                },
-              },
               {
                 match: {
                   'complete_name.bigram': {
