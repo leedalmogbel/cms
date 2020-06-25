@@ -140,7 +140,7 @@ module.exports.linkClickExternal = async (event, context) => {
   const { RecordId } = await firehose.putRecord({
     DeliveryStreamName,
     Record: {
-      Data: JSON.stringify({
+      Data: `${JSON.stringify({
         connectivity_type,
         longitude,
         latitude,
@@ -154,7 +154,7 @@ module.exports.linkClickExternal = async (event, context) => {
         post_id,
         link_destination,
         mobile_timestamp,
-      }),
+      })}\n`,
     },
   }).promise();
 
@@ -255,3 +255,6 @@ module.exports.userSeeds = async (event, context, callback) => {
 
   return 'success';
 };
+aws secretsmanager create-secret --name dev/CMS/sample4 \
+--description "secrets for cms app" \
+--secret-string file://secrets/secrets.json
