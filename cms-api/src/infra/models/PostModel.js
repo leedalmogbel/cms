@@ -73,6 +73,63 @@ module.exports = {
     }, {
       tableName: 'posts',
       timestamps: true,
+      indexes: [
+        {
+          name: 'idx_categoryId',
+          unique: false,
+          fields: ['categoryId'],
+        },
+        {
+          name: 'idx_subCategoryId',
+          unique: false,
+          fields: ['subCategoryId'],
+        },
+        {
+          name: 'idx_title',
+          unique: false,
+          fields: ['title'],
+        },
+        {
+          name: 'idx_content',
+          unique: false,
+          fields: ['content'],
+        },
+        {
+          name: 'idx_category',
+          unique: false,
+          fields: ['category'],
+        },
+        {
+          name: 'idx_publishedAt',
+          unique: false,
+          fields: ['publishedAt'],
+        },
+        {
+          name: 'idx_updateAt',
+          unique: false,
+          fields: ['updateAt'],
+        },
+        {
+          name: 'idx_recalledAt',
+          unique: false,
+          fields: ['recalledAt'],
+        },
+        {
+          name: 'idx_scheduledAt',
+          unique: false,
+          fields: ['scheduledAt'],
+        },
+        {
+          name: 'idx_source',
+          unique: false,
+          fields: ['source'],
+        },
+        {
+          name: 'idx_priorityLevel',
+          unique: false,
+          fields: ['priorityLevel'],
+        },
+      ],
     });
 
     PostModel.associate = () => {

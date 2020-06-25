@@ -41,6 +41,38 @@ module.exports = {
     }, {
       tableName: 'advisories',
       timestamps: true,
+      indexes: [
+        {
+          name: 'idx_title',
+          unique: false,
+          fields: ['title'],
+        },
+        {
+          name: 'idx_content',
+          unique: false,
+          fields: ['content'],
+        },
+        {
+          name: 'idx_category',
+          unique: false,
+          fields: ['category'],
+        },
+        {
+          name: 'idx_updateAt',
+          unique: false,
+          fields: ['updateAt'],
+        },
+        {
+          name: 'idx_status',
+          unique: false,
+          fields: ['status'],
+        },
+        {
+          name: 'idx_verified',
+          unique: false,
+          fields: ['verified'],
+        },
+      ],
     });
 
     AdvisoryModel.associate = function () {

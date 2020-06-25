@@ -11,10 +11,22 @@ module.exports = {
       },
       userId: DataTypes.INTEGER,
       type: DataTypes.STRING,
-      meta: DataTypes.JSON
+      meta: DataTypes.JSON,
     }, {
       tableName: 'recycleBin',
       timestamps: true,
+      indexes: [
+        {
+          name: 'idx_status',
+          unique: false,
+          fields: ['status'],
+        },
+        {
+          name: 'idx_type',
+          unique: false,
+          fields: ['type'],
+        },
+      ],
     });
 
     RecycleBinModel.associate = function () {
