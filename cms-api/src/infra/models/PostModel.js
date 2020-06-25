@@ -90,11 +90,6 @@ module.exports = {
           fields: ['title'],
         },
         {
-          name: 'idx_content',
-          unique: false,
-          fields: ['content'],
-        },
-        {
           name: 'idx_category',
           unique: false,
           fields: ['category'],
