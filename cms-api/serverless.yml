@@ -10,7 +10,7 @@ provider:
   runtime: nodejs10.x
   memorySize: 256
   versionFunctions: false
-  timeout: 30
+  timeout: 300
   environment: ${file(env.yml):${self:custom.stage}}
   websocketApiRouteSelectionExpression: $request.body.action
   vpc:
