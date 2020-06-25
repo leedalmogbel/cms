@@ -48,9 +48,14 @@ module.exports = {
           fields: ['title'],
         },
         {
-          name: 'idx_updateAt',
+          name: 'idx_category',
           unique: false,
-          fields: ['updateAt'],
+          fields: ['category'],
+        },
+        {
+          name: 'idx_updatedAt',
+          unique: false,
+          fields: ['updatedAt'],
         },
         {
           name: 'idx_status',

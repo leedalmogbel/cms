@@ -100,9 +100,9 @@ module.exports = {
           fields: ['publishedAt'],
         },
         {
-          name: 'idx_updateAt',
+          name: 'idx_updatedAt',
           unique: false,
-          fields: ['updateAt'],
+          fields: ['updatedAt'],
         },
         {
           name: 'idx_recalledAt',
