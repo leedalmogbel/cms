@@ -17,11 +17,6 @@ module.exports = {
       timestamps: true,
       indexes: [
         {
-          name: 'idx_status',
-          unique: false,
-          fields: ['status'],
-        },
-        {
           name: 'idx_type',
           unique: false,
           fields: ['type'],
