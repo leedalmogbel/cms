@@ -81,7 +81,7 @@ class RecallPost extends Operation {
       updatedPost = updatedPost.toJSON();
 
       // update firehose and pms stream
-      await this.firehoseIntegrate(updatedPost);
+      await this.firehoseIntegrate(updatedPost, action);
       if (action === 'cms') {
         await this.pmsIntegrate(postId, data);
       }
@@ -153,7 +153,7 @@ class RecallPost extends Operation {
     console.log(`PMS response for id: ${postId}`, res, payload);
   }
 
-  async firehoseIntegrate(post) {
+  async firehoseIntegrate(post, action) {
     if (post.status !== 'recalled') return;
     console.time('FIREHOSE RECALL INTEGRATION');
 
@@ -166,8 +166,8 @@ class RecallPost extends Operation {
       applicationUniqueId: null,
       buildVersionRelease: null,
       sessionId: null,
-      cmsUserId: recall.userId,
-      pmsWebUserId: recall.userId,
+      cmsUserId: action === 'cms' ? recall.userId : null,
+      pmsWebUserId: action === 'pmw' ? recall.userId : null,
       ipAddress: null,
       actionTake: null,
       clickedContent: null,
