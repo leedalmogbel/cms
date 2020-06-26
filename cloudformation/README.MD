@@ -1,32 +1,34 @@
-DEV
-aws cloudformation update-stack --stack-name kapp-cms-cf-frontend-website-s3-dev --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-DEV Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
+Deployment Flow
 
-aws cloudformation create-stack --stack-name kapp-cms-cf-frontend-website-s3-dev --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-DEV Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
+    Cognito (Done)
+    Database + S3 + Cloudfront CF Deployment
+    Secrets Manager Deployment
+    Backend Deployment Deployment
+    Lambda Edge Security Headers Deployment
+    S3 Events Notification
 
-QA
+    The deployments mentioned above will be recorded.
 
-aws cloudformation update-stack --stack-name kapp-cms-cf-frontend-website-s3-QA --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-QA Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
+    To Create:
+    aws cloudformation create-stack --stack-name kapp-cms-cf-prod --template-body file://kapp-cms.yml --tags Key=Name,Value=CMS-CF-prod Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1  --parameters file://parameters/parameters-dev.json 
 
-aws cloudformation create-stack --stack-name kapp-cms-cf-frontend-website-s3-QA --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-QA Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
+    to Update:
+    aws cloudformation update-stack --stack-name kapp-cms-cf-prod --template-body file://kapp-cms.yml --tags Key=Name,Value=CMS-CF-prod Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1  --parameters file://parameters/parameters.json 
 
-UAT
+Implementation Plan:
+- Backend devs to create backup of DBs prior to deployment and migration
+- Devs to merge, build and deploy all changes from the QA branch (BE) and dedicated branch (FE) to the UAT environment.
+- Backend devs to execute migration script for old posts
+    
 
-aws cloudformation update-stack --stack-name kapp-cms-cf-frontend-website-s3-UAT --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-UAT Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
+    [FOR APP]
+    Update secrets manager with values from env.yml.
+    
+    aws secretsmanager create-secret --name dev/CMS/sample5
+    --description "secrets for cms app"
+    --secret-string file://secrets/secrets-prod.json
 
-aws cloudformation create-stack --stack-name kapp-cms-cf-frontend-website-s3-UAT --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-UAT Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
+    [FOR DATABASE]
+    Configure secrets on console
 
-DEMO
-
-aws cloudformation update-stack --stack-name kapp-cms-cf-frontend-website-s3-DEMO --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-DEMO Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
-
-aws cloudformation create-stack --stack-name kapp-cms-cf-frontend-website-s3-DEMO --template-body file://kapp-cms.json --tags Key=Name,Value=CMS-frontend-website-s3-cf-DEMO Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1
-
-
-PRODSIM
-
-
-aws cloudformation update-stack --stack-name kapp-media-cf-alb-dev --template-body file://cloudformation.yml --tags Key=Name,Value=MEDIA-ALB-CF-DEV Key=ProjectCode,Value=MEDIA Key=SupportContact,Value=Stratpoint --region ap-southeast-1 --parameters ParameterKey=Lambda,ParameterValue=arn:aws:lambda:ap-southeast-1:210231714834:function:kapp-media-api-dev-app
-
-aws cloudformation create-stack --stack-name kapp-cms-cf-prodsim --template-body file://kapp-cms.yml --tags Key=Name,Value=CMS-CF-prodsim Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1  --parameters file://parameters.json --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND
-
-aws cloudformation update-stack --stack-name kapp-cms-cf-prodsim --template-body file://kapp-cms.yml --tags Key=Name,Value=CMS-CF-prodsim Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1  --parameters file://parameters.json --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND
+    

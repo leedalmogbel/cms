@@ -1,0 +1,71 @@
+[
+    {
+        "ParameterKey": "dbClusterName",
+        "ParameterValue": "sharea-cms"
+    }, 
+    {
+        "ParameterKey": "dbInstanceName",
+        "ParameterValue": "sharea-cms-instance"
+    },
+    {
+        "ParameterKey": "VpcId",
+        "ParameterValue": "vpc-0093cfa919f2cd5a3"
+    }, 
+    {
+        "ParameterKey": "DBSubnets",
+        "ParameterValue": "subnet-0a80886d05808e6c1,subnet-04b29d6a1641ef68b"
+    },
+    {
+        "ParameterKey": "DBName",
+        "ParameterValue": "kappcmsprd"
+    }, 
+    {
+        "ParameterKey": "DBUser",
+        "ParameterValue": "kappcmsprd01"
+    },
+    {
+        "ParameterKey": "DBPassword",
+        "ParameterValue": "kappcms123&&"
+    }, 
+    {
+        "ParameterKey": "DBInstanceClass",
+        "ParameterValue": "db.r5.large"
+    },
+    {
+        "ParameterKey": "MultiAZ",
+        "ParameterValue": "false"
+    }, 
+    {
+        "ParameterKey": "engineVer",
+        "ParameterValue": "5.7.mysql_aurora.2.07.2"
+    },
+    {
+        "ParameterKey": "siteBucket",
+        "ParameterValue": "cms-frontend-prod"
+    }, 
+    {
+        "ParameterKey": "attachmentBucket",
+        "ParameterValue": "cms-attachments-prod"
+    },
+    {
+        "ParameterKey": "ProjectCode",
+        "ParameterValue": "CMS"
+    }, 
+    {
+        "ParameterKey": "SupportContact",
+        "ParameterValue": "Stratpoint"
+    },
+    {
+        "ParameterKey": "attachmentBucketTagName",
+        "ParameterValue": "CMS-AttachmentS3-PRD"
+    }, 
+    {
+        "ParameterKey": "siteBucketTagName",
+        "ParameterValue": "CMS-siteBucketS3-PRD"
+    },
+    {
+        "ParameterKey": "websiteCloudfrontTagName",
+        "ParameterValue": "MS-Website-Cloudfront-PRD"
+    }
+    
+]
