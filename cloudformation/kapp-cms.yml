@@ -97,7 +97,7 @@ Resources:
       DatabaseName: !Ref DBName
       MasterUsername: !Ref DBUser
       MasterUserPassword: !Ref DBPassword
-      DBClusterParameterGroupName: allowawsaccess
+      DBClusterParameterGroupName: default.aurora-mysql5.7
       DBClusterIdentifier: !Ref DBName
       DBSubnetGroupName: !Ref AuroraMySQLSubnetGroup
       PreferredBackupWindow: 16:32-17:02
