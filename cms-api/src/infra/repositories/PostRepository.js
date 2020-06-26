@@ -49,7 +49,7 @@ class PostRepository extends BaseRepository {
       await Promise.all(
         data.keyword.map(async (key) => {
           key = key.toLowerCase();
-  
+
           // filter by tags
           const postTags = await this.PostTagRepository.filterPostTagsByName(key);
           const postTagIds = postTags.map((pTags) => pTags.postId);

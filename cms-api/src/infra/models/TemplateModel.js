@@ -42,6 +42,28 @@ module.exports = {
     }, {
       tableName: 'templates',
       timestamps: true,
+      indexes: [
+        {
+          name: 'idx_name',
+          unique: false,
+          fields: ['name'],
+        },
+        {
+          name: 'idx_description',
+          unique: false,
+          fields: ['description'],
+        },
+        {
+          name: 'idx_title',
+          unique: false,
+          fields: ['title'],
+        },
+        {
+          name: 'idx_category',
+          unique: false,
+          fields: ['category'],
+        },
+      ],
     });
 
     TemplateModel.associate = () => {
