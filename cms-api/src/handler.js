@@ -231,7 +231,7 @@ module.exports.userSeeds = async (event, context, callback) => {
   await Promise.all(
     users.map(async (user) => {
       const usr = await UserRepository.getByEmail(user.email);
-      
+
       if (usr) {
         const role = await RoleRepository.getByTitle(user.role);
         if (!role) return;
@@ -255,6 +255,3 @@ module.exports.userSeeds = async (event, context, callback) => {
 
   return 'success';
 };
-aws secretsmanager create-secret --name dev/CMS/sample4 \
---description "secrets for cms app" \
---secret-string file://secrets/secrets.json
