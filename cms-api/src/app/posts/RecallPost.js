@@ -63,7 +63,7 @@ class RecallPost extends Operation {
       const firstName = 'firstName' in data ? data.firstName : 'PMW';
       const lastName = 'lastName' in data ? data.lastName : 'Moderator';
 
-      if (!('userId' in data) || !data.userId) {
+      if (!('name' in data) || !data.name) {
         name = `${firstName} ${lastName}`;
       }
 
@@ -167,7 +167,7 @@ class RecallPost extends Operation {
       buildVersionRelease: null,
       sessionId: null,
       cmsUserId: recall.userId,
-      pmsWebUserId: null,
+      pmsWebUserId: recall.userId,
       ipAddress: null,
       actionTake: null,
       clickedContent: null,
