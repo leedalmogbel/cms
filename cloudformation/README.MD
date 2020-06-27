@@ -10,7 +10,7 @@ Deployment Flow
     The deployments mentioned above will be recorded.
 
     To Create:
-    aws cloudformation create-stack --stack-name kapp-cms-cf-prod --template-body file://kapp-cms.yml --tags Key=Name,Value=CMS-CF-prod Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1  --parameters file://parameters/parameters-dev.json 
+    aws cloudformation create-stack --stack-name kapp-cms-cf-prod --template-body file://kapp-cms.yml --tags Key=Name,Value=CMS-CF-prod Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1  --parameters file://parameters/parameters-prod.json 
 
     to Update:
     aws cloudformation update-stack --stack-name kapp-cms-cf-prod --template-body file://kapp-cms.yml --tags Key=Name,Value=CMS-CF-prod Key=ProjectCode,Value=CMS Key=SupportContact,Value=Stratpoint --region ap-southeast-1  --parameters file://parameters/parameters.json 
@@ -24,9 +24,7 @@ Implementation Plan:
     [FOR APP]
     Update secrets manager with values from env.yml.
     
-    aws secretsmanager create-secret --name dev/CMS/sample5
-    --description "secrets for cms app"
-    --secret-string file://secrets/secrets-prod.json
+    aws secretsmanager create-secret --name prod/CMS/application --description "secrets for cms app" --secret-string file://secrets/secrets-prod.json
 
     [FOR DATABASE]
     Configure secrets on console
