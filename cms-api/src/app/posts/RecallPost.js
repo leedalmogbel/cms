@@ -184,7 +184,7 @@ class RecallPost extends Operation {
     const fres = await firehose.putRecord({
       DeliveryStreamName: process.env.FIREHOSE_POST_STREAM_RECALL,
       Record: {
-        Data: JSON.stringify(payload),
+        Data: `${JSON.stringify(payload)}\n`,
       },
     }).promise();
 
