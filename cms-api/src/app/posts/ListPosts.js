@@ -38,6 +38,9 @@ class ListPosts extends Operation {
           if (post.categoryId && post.categoryId.match(/^[a-zA-Z0-9-_]+$/)) {
             post.category = await this.PostRepository
               .getPostCategory(post.categoryId);
+
+            post.categoryActive = await this.PostRepository
+              .getPostCategoryActive(post.categoryId);
           }
       
           if (post.subCategoryId && post.subCategoryId.match(/^[a-zA-Z0-9-_]+$/)) {

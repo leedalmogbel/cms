@@ -367,5 +367,14 @@
     "firstName": "Ramoncito",
     "lastName": "Clapano",
     "active": 1
+  },
+  {
+    "role": "administrator",
+    "username": "jdjasmin",
+    "email": "jdjasmin@abs-cbn.com",
+    "password": "",
+    "firstName": "Sir",
+    "lastName": "James",
+    "active": 1
   }
 ]

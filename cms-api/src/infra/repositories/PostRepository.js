@@ -275,7 +275,6 @@ class PostRepository extends BaseRepository {
           },
         },
       ],
-      logging: true,
     });
   }
 
@@ -348,6 +347,13 @@ class PostRepository extends BaseRepository {
     try {
       const { category } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/category/${categoryId}`, {});
       return category.name;
+    } catch (e) {}
+  }
+
+  async getPostCategoryActive(categoryId) {
+    try {
+      const { category } = await this.httpClient.get(`${process.env.PMS_LOOKUP_ENDPOINT}/category/${categoryId}`, {});
+      return category.isActive;
     } catch (e) {}
   }
 
