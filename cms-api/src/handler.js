@@ -77,20 +77,19 @@ module.exports.linkClickExternal = async (event, context) => {
     link_destination,
     mobile_timestamp,
   } = JSON.parse(event.body);
-
+console.log('BODY', event.body);
   const validations = async () => {
     let valid = true;
 
     const required = () => {
       let validRequired = true;
       Object.values([
-        big_data_session_id,
-        kapp_user_id,
         action_taken,
         clicked_content,
-        event_timestamp,
-        post_id,
+        kapp_user_id,
         link_destination,
+        post_id,
+        big_data_session_id,
         mobile_timestamp,
       ]).map((value) => {
         if (validRequired !== false) {
@@ -100,21 +99,21 @@ module.exports.linkClickExternal = async (event, context) => {
       return validRequired;
     };
 
-    const doubleValidity = () => {
-      let double = true;
-      Object.values([
-        longitude,
-        latitude,
-      ]).map((value) => {
-        if (double !== false) {
-          double = Number(value) === value && value % 1 !== 0;
-        }
-      });
-      return double;
-    };
+    // const doubleValidity = () => {
+    //   let double = true;
+    //   Object.values([
+    //     longitude,
+    //     latitude,
+    //   ]).map((value) => {
+    //     if (double !== false) {
+    //       double = Number(value) === value && value % 1 !== 0;
+    //     }
+    //   });
+    //   return double;
+    // };
 
     valid = required();
-    valid = doubleValidity();
+    // valid = doubleValidity();
 
     return valid;
   };
@@ -157,7 +156,7 @@ module.exports.linkClickExternal = async (event, context) => {
       })}\n`,
     },
   }).promise();
-
+  console.log('RecordId', RecordId);
   return {
     statusCode: 200,
     headers: {

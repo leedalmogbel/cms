@@ -159,7 +159,9 @@ class PublishPost extends Operation {
         return 'embargo';
       }
 
-      if (data.scheduledAt && !data.publishedAt && !data.isPublishedImmediately) {
+      if (data.scheduledAt
+        && !data.publishedAt
+        && data.isPublishedImmediately === false) {
         return 'scheduled';
       }
 
