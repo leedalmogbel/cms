@@ -52,6 +52,11 @@ module.exports.handler = (event, context, callback) => {
     });
   };
 
+  if (process.env.NODE_ENV === 'prod') {
+    process.env.PMS_POST_TOKEN = process.env.PMS_POST_TOKEN;
+    console.log('process.env.PMS_POST_TOKEN', process.env.PMS_POST_TOKEN);
+  }
+
   brew(config, async (brewed) => {
     if (process.env.NODE_ENV !== 'local') {
       setupDBSecrets();
